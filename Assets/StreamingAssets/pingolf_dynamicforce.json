@@ -16,7 +16,7 @@
   "per_block_obstacle": [ null, null, null, null, null, null, null, null, null, null ],
   "per_block_instruction": [ null, null, null, null, "ins2", null, null, "ins2", null, null ],
   "per_block_surface_materials": [ null, "mat2", null, "mat1", null, "mat1", "mat2", null, "mat2", "mat1" ],
-  "per_block_dynamic_curve": [ "cos", "sin", "linear", "linear", "linear", "linear", "linear", "linear", "linear", "linear" ],
+  "per_block_curve_type": [ "constant", "sin", "sin", "linear", "linear", "linear", "linear", "linear", "linear", "linear" ],
   "per_block_track_score": [ true, true, true, true, null, true, false, null, true, false ],
   "per_block_timerTime": [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
   "tl1": [ 75, 85, 95, 105 ],
@@ -28,7 +28,7 @@
   "mat2": [ "brick" ],
   "per_trial_dynamic_tilt": [ 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 ],
   "per_trial_dynamic_force": [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
-  "per_block_dynamic_force_x": [ 10, 0, 50, 0, 1, 1, 1, 1, 1, 1 ],
+  "per_block_dynamic_force_x": [ 10, 0, -50, 0, 1, 1, 1, 1, 1, 1 ],
   "per_block_dynamic_force_y": [ 0, -10, 0, 50, 0, 0, 0, 0, 0, 0 ],
 
   "ins1": "Hello! Thank you for participating in the Pingolf task!\n\nYour goal is to get points by firing the ball so that it gets as close to the target as possible!\nBonus points for hitting the target!\n\nPull on the spring and let go to fire, but be quick!\nYou will not get any points if you take too long.\n\nThe next few trials are practice!\nTry pulling the string at different lengths and different angles to see how it behaves!",

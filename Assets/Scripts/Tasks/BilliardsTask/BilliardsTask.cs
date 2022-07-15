@@ -116,7 +116,6 @@ public abstract class BilliardsTask : BaseTask
         Vector3 dir = new Vector3(x, 0, y);
 
         ball.GetComponent<Rigidbody>().AddForce(dir);
-
     }
 
     private float EvaluateDynamicCurve(float t)
@@ -124,7 +123,7 @@ public abstract class BilliardsTask : BaseTask
         float tilt = 0;
 
         // set up curve type for tilt to follow
-        switch (ctrler.Session.CurrentTrial.settings.GetString("per_block_dynamic_curve"))
+        switch (ctrler.Session.CurrentTrial.settings.GetString("per_block_curve_type"))
         {
             case "default":
                 tilt = t;
@@ -156,6 +155,9 @@ public abstract class BilliardsTask : BaseTask
                     tilt = Mathf.Pow(2 * t, 2) * ((c2 + 1) * 2 * t - c2) / 2;
                 else
                     tilt = Mathf.Pow(2 * t - 2, 2) * ((c2 + 1) * (t * 2 - 2) + c2) + 2 / 2;
+                break;
+            case "constant":
+                tilt = 1;
                 break;
         }
 

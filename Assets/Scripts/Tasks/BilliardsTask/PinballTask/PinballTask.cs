@@ -134,6 +134,13 @@ public class PinballTask : BilliardsTask
             // if dynamic force, 
             if (dynamicForce)
             {
+                // Dynamic force based on distance
+                //DynamicForce(1 - distanceToTarget / TARGET_DISTANCE); 
+
+                // Dynamic force based on speed (max speed of 3 in non vr)
+                //DynamicForce(1 - pinball.GetComponent<Rigidbody>().velocity.magnitude / 3);
+
+                // Dynamic force based on time 
                 DynamicForce(trialTimer / MAX_TRIAL_TIME);
             }
 
