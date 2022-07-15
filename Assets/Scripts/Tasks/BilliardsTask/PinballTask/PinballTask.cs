@@ -111,14 +111,15 @@ public class PinballTask : BilliardsTask
         if (currentStep == 1)
         {
             // if dynamic, update aligned target position each frame so that distance calcs are correct
-            if (ctrler.Session.settings.GetStringList("optional_params").Contains("per_trial_dynamic_tilt"))
+            if (dynamicForce || dynamicTilt)
                 GetPinballTargetAlignedPosition();
 
             // Current distance from pinball to the target
             distanceToTarget = Vector3.Distance(pinball.transform.position, pinballAlignedTargetPosition);
 
+
             // if dynamic, update tilt each frame
-            if (ctrler.Session.settings.GetStringList("optional_params").Contains("per_trial_dynamic_tilt"))
+            if (dynamicTilt)
             {
                 // Dynamic tilt based on distance
                 //DynamicTilt(1 - distanceToTarget / TARGET_DISTANCE); 
@@ -128,6 +129,12 @@ public class PinballTask : BilliardsTask
 
                 // Dynamic tilt based on time 
                 DynamicTilt(trialTimer / MAX_TRIAL_TIME);
+            }
+
+            // if dynamic force, 
+            if (dynamicForce)
+            {
+                DynamicForce(trialTimer / MAX_TRIAL_TIME);
             }
 
             // Every frame, we track the closest position the pinball has ever been to the target
@@ -237,7 +244,7 @@ public class PinballTask : BilliardsTask
                                 flickStartPos = mouse;
                                 flickStarted = true;
                                 ctrler.StartTimer();
-                            }    
+                            }
                             //pinballCam.GetComponent<Camera>().WorldToScreenPoint(pinball.transform.position),
                             //pinballCam.GetComponent<Camera>().WorldToScreenPoint(pinball.transform.position + new Vector3(indicatorLength, 0, 0))))
                             else if (Vector3.Distance(mouse, flickStartPos) > .1)
@@ -461,7 +468,7 @@ public class PinballTask : BilliardsTask
                         line.positionCount = pinballPoints.Count;
                         line.SetPositions(pinballPoints.ToArray());
 
-                        if (ctrler.Session.settings.GetStringList("optional_params").Contains("per_trial_dynamic_tilt"))
+                        if (dynamicTilt)
                         {
                             for (int i = 0; i < pinballPoints.Count; i++)
                             {
@@ -471,13 +478,13 @@ public class PinballTask : BilliardsTask
                             DynamicTilt(0); //tilt surface back to initial position - flat
                         }
 
-                        
+
 
                         // Set transform
                         if (enteredTarget)
                         {
-                            if (ctrler.Session.settings.GetStringList("optional_params").Contains("per_trial_dynamic_tilt"))
-                                pinball.transform.position = RotatePointAroundPivot(lastPositionInTarget, Surface.transform.parent.position, -dynamicTiltRotations[dynamicTiltRotations.Count-1]);
+                            if (dynamicTilt)
+                                pinball.transform.position = RotatePointAroundPivot(lastPositionInTarget, Surface.transform.parent.position, -dynamicTiltRotations[dynamicTiltRotations.Count - 1]);
                             else
                                 pinball.transform.position = lastPositionInTarget;
                         }
@@ -523,8 +530,8 @@ public class PinballTask : BilliardsTask
         }
         else // VR flick
         {
-            initialVelocity = ctrler.CursorController.GetVelocity();   
-            
+            initialVelocity = ctrler.CursorController.GetVelocity();
+
             // if magnitude of initialVelocity > #, then cap it at max Magnitude     
             if (initialVelocity.magnitude > MAX_MAGNITUDE)
             {
@@ -554,7 +561,7 @@ public class PinballTask : BilliardsTask
 
         flickEndTime = Time.time;
 
-        FirePinball();        
+        FirePinball();
     }
 
     private void FirePinball()
@@ -565,7 +572,7 @@ public class PinballTask : BilliardsTask
         pinball.transform.LookAt(pinball.transform.position - direction.normalized);
 
         if (ctrler.Session.CurrentBlock.settings.GetBool("per_block_tilt_after_fire")
-            && !ctrler.Session.settings.GetStringList("optional_params").Contains("per_trial_dynamic_tilt"))
+            && !dynamicTilt)
             SetTilt();
 
         // Perturbation
@@ -633,7 +640,7 @@ public class PinballTask : BilliardsTask
         ctrler.Session.CurrentTrial.result["indicator_angle"] = angle;
 
         // Magnitude is the distance (meters) on how much the participant pulled the spring back
-        ctrler.Session.CurrentTrial.result["magnitude"] = 
+        ctrler.Session.CurrentTrial.result["magnitude"] =
             (directionIndicator.transform.position - pinballStartPosition).magnitude;
 
         ctrler.Session.CurrentTrial.result["show_path"] =
@@ -652,7 +659,7 @@ public class PinballTask : BilliardsTask
         ctrler.Session.CurrentTrial.result["tracking_start_time"] = timeHandTrackingStarts;
 
 
-        if (ctrler.Session.settings.GetStringList("optional_params").Contains("per_trial_dynamic_tilt"))
+        if (dynamicTilt)
         {
 
             pinballPointsRelative.Clear();
@@ -686,7 +693,7 @@ public class PinballTask : BilliardsTask
 
         base.Setup();
 
-        pinball = GameObject.Find("Pinball"); 
+        pinball = GameObject.Find("Pinball");
         Home = GameObject.Find("PinballHome");
         Target = GameObject.Find("PinballTarget");
         pinballCam = GameObject.Find("PinballCamera");
@@ -713,7 +720,7 @@ public class PinballTask : BilliardsTask
 
         // checks if the current trial uses the obstacle and activates it if it does
         if (ctrler.Session.CurrentBlock.settings.GetBool("per_block_obstacle"))
-        {       
+        {
             obstacle.SetActive(true);
             // initializes the position
             obstacle.transform.position = new Vector3(0f, 0.065f, 0f);
@@ -771,7 +778,7 @@ public class PinballTask : BilliardsTask
 
         // Should the tilt be shown to the participant before they release the pinball?
         if (!ctrler.Session.CurrentBlock.settings.GetBool("per_block_tilt_after_fire")
-            && !ctrler.Session.settings.GetStringList("optional_params").Contains("per_trial_dynamic_tilt"))
+            && !dynamicTilt)
             SetTilt();
 
         if (ctrler.Session.settings.GetString("experiment_mode") != "pinball")
@@ -786,7 +793,7 @@ public class PinballTask : BilliardsTask
         if (ctrler.Session.CurrentBlock.settings.GetString("per_block_indicator_type") == "arc")
         {
             directionIndicator.GetComponent<MeshRenderer>().enabled = false;
-            
+
         }
 
         if (ctrler.Session.CurrentBlock.settings.GetString("per_block_fire_mode") == "flick")
@@ -826,7 +833,7 @@ public class PinballTask : BilliardsTask
         SetDynamicTilt(Surface.transform.parent.gameObject, surfaceTilt); //Tilt surface
 
         //Tilt VR Camera if needed
-        if (ctrler.Session.settings.GetString("experiment_mode") == "pinball_vr") 
+        if (ctrler.Session.settings.GetString("experiment_mode") == "pinball_vr")
         {
             //XRRig.transform.RotateAround(Home.transform.position + Vector3.up * 0.25f, pinballSpace.transform.forward,
             //   cameraTilt + surfaceTilt);
@@ -840,6 +847,11 @@ public class PinballTask : BilliardsTask
     private void DynamicTilt(float t)
     {
         base.DynamicTilt(t, pinballCam, XRRig, XRPosLock);
+    }
+
+    private void DynamicForce(float t)
+    {
+        base.DynamicForce(t, pinball);
     }
 
     public override void Disable()
@@ -934,7 +946,7 @@ public class PinballTask : BilliardsTask
             );
         */
         // Positions that are saved for data collection
-        
+
         Gizmos.color = Color.green;
         Gizmos.DrawSphere(
             lastPositionInTarget - ctrler.transform.position, 0.02f
