@@ -185,6 +185,8 @@ public class ExperimentController : MonoBehaviour
         if (Input.GetKey(KeyCode.Escape))
             Application.Quit();
 
+        //test
+
         if (!isPaused && CursorController.PauseTime > pauseTimeLength)
         {
             isPaused = true;
