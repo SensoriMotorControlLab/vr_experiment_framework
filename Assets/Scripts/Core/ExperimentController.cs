@@ -150,16 +150,19 @@ public class ExperimentController : MonoBehaviour
     {
         if (IsTracking && !isPaused)
         {
+            //log positions
             foreach (string key in trackedPositionPath.Keys)
             {
                 trackedPositionPath[key].Add(trackedPositions[key].transform.position);
             }
 
+            //log rotations
             foreach (string key in trackedRotationPath.Keys)
             {
                 trackedRotationPath[key].Add(trackedRotations[key].transform.rotation.eulerAngles);
             }
 
+            //log timestamps
             if (trackedPositionPath.Count > 0 || trackedRotationPath.Count > 0)
             {
                 trackingTimestamps.Add(Time.time);
@@ -185,15 +188,18 @@ public class ExperimentController : MonoBehaviour
         if (Input.GetKey(KeyCode.Escape))
             Application.Quit();
 
-        //test
 
-        if (!isPaused && CursorController.PauseTime > pauseTimeLength)
+        if (CursorController != null) //CursnorController is assigned once 
         {
-            isPaused = true;
-        }
-        else if (isPaused && CursorController.PauseTime < pauseTimeLength)
-        {
-            isPaused = false;
+            //Pause tracking if cursor/mouse is still for more than pauseTimeLength
+            if (!isPaused && CursorController.PauseTime > pauseTimeLength)
+            {
+                isPaused = true;
+            }
+            else if (isPaused && CursorController.PauseTime < pauseTimeLength)
+            {
+                isPaused = false;
+            }
         }
     }
 
@@ -248,10 +254,10 @@ public class ExperimentController : MonoBehaviour
         }
 
         if (per_block_type == "localization")
-        { 
+        {
             CurrentTask = gameObject.AddComponent<LocalizationTask>();
             CurrentTask.Setup();
-        
+
             return;
         }
 
@@ -592,35 +598,42 @@ public class ExperimentController : MonoBehaviour
         return null;
     }
 
-    public object PseudoRandom(string key){
+    public object PseudoRandom(string key)
+    {
         int curBlock = Session.currentBlockNum;
         String listk = Session.CurrentBlock.settings.GetString(key, "");
 
-        if(curBlock != block){
+        if (curBlock != block)
+        {
             lists.Clear();
             block = curBlock;
         }
 
-        if(!lists.ContainsKey(listk)){
-            lists[listk] = new List<object>();    
+        if (!lists.ContainsKey(listk))
+        {
+            lists[listk] = new List<object>();
             List<object> list = Session.settings.GetObjectList(listk);
-            if(list.Count == 1) {
+            if (list.Count == 1)
+            {
                 return lists[listk][0];
-                
+
             }
-            else if (list.Count == 0){
+            else if (list.Count == 0)
+            {
                 Debug.LogError(key +
                              " contains no elements. Not possible to sort");
-            throw new NullReferenceException();
+                throw new NullReferenceException();
             }
-            for(int i = 0; i < list.Count; i++){
+            for (int i = 0; i < list.Count; i++)
+            {
                 lists[listk].Add(list[i]);
             }
         }
-        object ran = lists[listk][UnityEngine.Random.Range(0,lists[listk].Count)];
+        object ran = lists[listk][UnityEngine.Random.Range(0, lists[listk].Count)];
 
-        while(ran == prev) {
-            ran = lists[listk][UnityEngine.Random.Range(0,lists[listk].Count)];
+        while (ran == prev)
+        {
+            ran = lists[listk][UnityEngine.Random.Range(0, lists[listk].Count)];
         }
 
         lists[listk].Remove(ran);
