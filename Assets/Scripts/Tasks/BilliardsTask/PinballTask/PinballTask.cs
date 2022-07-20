@@ -614,8 +614,8 @@ public class PinballTask : BilliardsTask
         GetPinballTargetAlignedPosition();
 
         // Add Pinball to tracked objects
-        ctrler.AddTrackedPosition("pinball_path", pinball);
-        ctrler.AddTrackedRotation("surface_tilt", Surface.transform.parent.gameObject);
+        /*ctrler.AddTrackedPosition("pinball_path", pinball);
+        ctrler.AddTrackedRotation("surface_tilt", Surface.transform.parent.gameObject);*/
         timeBallTrackingStarts = Time.time;
 
         IncrementStep();
@@ -811,6 +811,9 @@ public class PinballTask : BilliardsTask
         // Start tracking hand pos
         ctrler.AddTrackedPosition("hand", ctrler.CursorController.CurrentHand());
         timeHandTrackingStarts = Time.time;
+
+        ctrler.AddTrackedPosition("pinball_path", pinball);
+        ctrler.AddTrackedRotation("surface_tilt", Surface.transform.parent.gameObject);
 
         // set up surface materials for the plane
         switch (Convert.ToString(ctrler.PollPseudorandomList("per_block_surface_materials")))

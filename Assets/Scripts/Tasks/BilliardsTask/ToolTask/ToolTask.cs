@@ -410,7 +410,7 @@ public class ToolTask : BilliardsTask
                 baseObject.GetComponent<Rigidbody>().useGravity = true;
 
                 // Add ball to tracked objects
-                ctrler.AddTrackedPosition("ball_path", baseObject);
+                //ctrler.AddTrackedPosition("ball_path", baseObject);
 
                 break;
         }
@@ -570,6 +570,8 @@ public class ToolTask : BilliardsTask
             default:
                 break;
         }
+
+        ctrler.AddTrackedPosition("ball_path", baseObject);
     }
 
     public override void LogParameters()
