@@ -9,7 +9,7 @@ public class ReachTrack : ReachToTargetTask
 {
     protected GameObject field;
     protected GameObject goal;
-    protected Vector3 mousePoint;
+    //protected Vector3 mousePoint;
     protected GameObject baseObject;
     protected GameObject symbols;
     protected int velResult;
@@ -103,7 +103,6 @@ public class ReachTrack : ReachToTargetTask
         goal.transform.position =
         new Vector3(targets[2].transform.position.x,
         targets[2].transform.position.y - 0.005f, targets[2].transform.position.z);
-        reachSurface.SetActive(true);
 
         curDist = goal.transform.position.magnitude - field.transform.position.magnitude;
         fieldLength = (((curDist*100)/originalDist)*0.01f)+0.2f;
@@ -151,7 +150,8 @@ public class ReachTrack : ReachToTargetTask
             field.SetActive(true);
             //VelocityTrack();
         }
-        mousePoint = GetMousePoint(baseObject.transform);
+        reachSurface = GameObject.Find("Surface");
+        Vector3 mousePoint = GetMousePoint(baseObject.transform);
         base.Update();
         ctrler.CursorController.Model.transform.position = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
         baseObject.transform.position = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
@@ -285,10 +285,13 @@ public class ReachTrack : ReachToTargetTask
         //ToFix: can the below two be one function called point to planepoint?
 
         Vector3 ctrl = new Vector3(ctrler.CursorController.GetHandPosition().x, 3, ctrler.CursorController.GetHandPosition().z);
+
         return ctrler.CursorController.ControllerToPlanePoint(
-                            reachSurface.transform.up * ball.position.y,
-                            ball.position,
-                            ctrl);
+                        reachSurface.transform.up * ball.position.y,
+                        ball.position,
+                        ctrl);
+
+        
 
 
     }
