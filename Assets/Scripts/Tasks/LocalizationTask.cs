@@ -14,9 +14,12 @@ public class LocalizationTask : BaseTask
     private GameObject localizationSurface;
     private GameObject localizationPrefab;
 
+    float locZ;
+
     // Angle of the localizer along the arc, in non-vr mode
-    public float LocalizerAngle2D = 0;
-    private float localizerSpeed2D = 0.25f;
+    public float locX = 0;
+    private float localizerSpeed2D = 0.0005f;
+    private Vector3 localizerPos = new Vector3(0, 0, 0);
 
     ExperimentController ctrler;
 
@@ -24,11 +27,12 @@ public class LocalizationTask : BaseTask
     {
         ExperimentController ctrler = ExperimentController.Instance();
 
+
         switch (currentStep)
         {
             // When the user holds their hand and they are outside the home, begin the next phase of localization
             case 2 when ctrler.CursorController.PauseTime > 0.5f && 
-                        ctrler.CursorController.DistanceFromHome > 0.03f:
+                        ctrler.CursorController.DistanceFromHome > 0.01f:
                 IncrementStep();
                 break;
             case 3: 
@@ -40,17 +44,26 @@ public class LocalizationTask : BaseTask
                     // raycasts from camera to set localizer position
                     Plane plane = new Plane(Vector3.down, ctrler.transform.position.y);
                     Ray r = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
-
-                    if (plane.Raycast(r, out float hit))
-                        localizer.transform.position = r.GetPoint(hit);
+                    if (ctrler.Session.settings.GetObjectList("optional_params").Contains("headset")){
+                        if (plane.Raycast(r, out float hit))
+                            localizer.transform.position = r.GetPoint(hit);
+                    }
+                    else{
+                        if(ctrler.CursorController.Get2DAxis().magnitude > 0)
+                            locX += ctrler.CursorController.Get2DAxis().x * 0.002f;
+                            locZ += ctrler.CursorController.Get2DAxis().y * 0.002f;
+                            localizer.transform.position = new Vector3(locX, 0, locZ) + targets[2].transform.position;
+                    }              
                 }
                 else
                 {
+                    
                     // A/D keys, left/right arrow keys, or gamepad joystick as input
-                    LocalizerAngle2D += Input.GetAxisRaw("Horizontal") * localizerSpeed2D;
-                    LocalizerAngle2D = Mathf.Clamp(LocalizerAngle2D, -90f, 90f); 
+                    locX += Input.GetAxisRaw("Horizontal") * localizerSpeed2D;
+                    locZ += Input.GetAxisRaw("Vertical") * localizerSpeed2D;
+                    locX = Mathf.Clamp(locX, -90f, 90f); 
 
-                    float angle = LocalizerAngle2D * Mathf.Deg2Rad;
+                    float angle = locX * Mathf.Deg2Rad;
 
                     // centre == centre of Arc == centre of Home
                     Vector3 centre = Target.transform.position;
@@ -62,7 +75,7 @@ public class LocalizationTask : BaseTask
                     Vector3 newPos = new Vector3(Mathf.Sin(angle), 0, Mathf.Cos(angle)) * distance;
                     newPos += centre;
 
-                    localizer.transform.position = newPos;
+                    localizer.transform.position = new Vector3(locX, 0, locZ) + newPos;
                 }
 
                 // switch from click to enter or something? issue with clicking to refocus window
@@ -148,15 +161,15 @@ public class LocalizationTask : BaseTask
         localizationCam = GameObject.Find("LocalizationCamera");
         localizationSurface = GameObject.Find("Surface");
 
-    
-
         // Set up the dock position
         targets[0] = GameObject.Find("Dock");
-        targets[0].transform.position = new Vector3(ctrler.TargetContainer.transform.position.x, -0.450f, ctrler.TargetContainer.transform.position.z);
+        targets[0].transform.position = ctrler.TargetContainer.transform.position;
+        //targets[0].transform.position = new Vector3(ctrler.TargetContainer.transform.position.x, -0.250f, ctrler.TargetContainer.transform.position.z);
 
         // Set up the home position
         targets[1] = GameObject.Find("Home");
-        targets[1].transform.position = new Vector3(ctrler.TargetContainer.transform.position.x, -0.450f, ctrler.TargetContainer.transform.position.z) + ctrler.transform.forward * 0.05f;
+        targets[1].transform.position = ctrler.TargetContainer.transform.position;
+        //targets[1].transform.position = new Vector3(ctrler.TargetContainer.transform.position.x, -0.250f, ctrler.TargetContainer.transform.position.z) + ctrler.transform.forward * 0.05f;
         targets[1].SetActive(false);
         Home = targets[1];
 
@@ -215,12 +228,12 @@ public class LocalizationTask : BaseTask
     protected override void OnDestroy()
     {
         foreach (GameObject g in targets)
-            Destroy(g);
+             Destroy(g);
 
         Destroy(localizer);
 
         Destroy(localizationPrefab);
 
-        base.OnDestroy();
+        //base.OnDestroy();
     }
 }

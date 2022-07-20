@@ -51,6 +51,6 @@
   "ct2": [ 0 ],
   "st1": [ -15, -15, -15 ],
 
-  "per_block_curve_type": [ "sin", "cos", "linear" ],
+  "per_block_dynamic_tilt_curve": [ "sin", "cos", "linear" ],
   "per_trial_dynamic_tilt": [ 1, 1, 1, 1, 1, 1, 1, 1, 1 ]
 }

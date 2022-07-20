@@ -164,6 +164,11 @@ public class CursorController : MonoBehaviour
         return IsTriggerDown(CurrentTaskHand);
     }
 
+    public Vector2 Get2DAxis(){
+        LeftHandDevice.TryGetFeatureValue(CommonUsages.primary2DAxis, out Vector2 left2DAxis);
+        return left2DAxis;
+    }
+
     public bool IsTriggerDown(String hand)
     {
         if (hand == "l") {
