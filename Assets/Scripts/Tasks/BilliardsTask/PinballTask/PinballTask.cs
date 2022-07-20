@@ -742,7 +742,6 @@ public class PinballTask : BilliardsTask
             pinballCam.SetActive(false);
             ctrler.CursorController.SetCursorVisibility(false);
 
-            timerIndicator.transform.position = Home.transform.position;
             scoreboard.transform.position += Vector3.up * 0.33f;
 
             if (ctrler.Session.CurrentBlock.settings.GetString("per_block_hand") == "l")
@@ -774,8 +773,8 @@ public class PinballTask : BilliardsTask
             && !ctrler.Session.settings.GetStringList("optional_params").Contains("per_trial_dynamic_tilt"))
             SetTilt();
 
-        if (ctrler.Session.settings.GetString("experiment_mode") != "pinball")
-            timerIndicator.transform.rotation = Quaternion.LookRotation(timerIndicator.transform.position - pinballCam.transform.position);
+       /* if (ctrler.Session.settings.GetString("experiment_mode") != "pinball")
+            timerIndicator.transform.rotation = Quaternion.LookRotation(timerIndicator.transform.position - pinballCam.transform.position);*/
 
         pinballStartPosition = pinball.transform.position;
 
@@ -831,7 +830,7 @@ public class PinballTask : BilliardsTask
             //XRRig.transform.RotateAround(Home.transform.position + Vector3.up * 0.25f, pinballSpace.transform.forward,
             //   cameraTilt + surfaceTilt);
             SetDynamicTilt(XRRig, cameraTilt);
-            XRRig.transform.position = XRPosLock.transform.position; // lock position of XR Rig
+            //XRRig.transform.position = XRPosLock.transform.position; // lock position of XR Rig
             //XRCamOffset.transform.position = new Vector3(0, -0.8f, -0.2f);
         }
 
