@@ -13,7 +13,9 @@ public class LocalizationTask : BaseTask
     private GameObject localizationCam;
     private GameObject localizationSurface;
     private GameObject localizationPrefab;
+    protected AudioSource sound;
 
+    protected List<UnityEngine.XR.InputDevice> devices = new List<UnityEngine.XR.InputDevice>();
     float locZ;
 
     // Angle of the localizer along the arc, in non-vr mode
@@ -94,6 +96,7 @@ public class LocalizationTask : BaseTask
     public override bool IncrementStep()
     {
         ExperimentController ctrler = ExperimentController.Instance();
+        UnityEngine.XR.InputDevices.GetDevicesWithRole(UnityEngine.XR.InputDeviceRole.RightHanded, devices);
 
         switch (currentStep)
         {
@@ -122,6 +125,9 @@ public class LocalizationTask : BaseTask
             case 2: // Pause in arc
                 localizer.SetActive(true);
                 Target.GetComponent<ArcScript>().Expand();
+                sound.Play();
+                if (ctrler.Session.settings.GetObjectList("optional_params").Contains("vr"))
+                    VibrateController(0, 0.34f, 0.15f, devices);
 
                 break;
             case 3: // Select the spot they think their real hand is
@@ -160,6 +166,7 @@ public class LocalizationTask : BaseTask
 
         localizationCam = GameObject.Find("LocalizationCamera");
         localizationSurface = GameObject.Find("Surface");
+        
 
         // Set up the dock position
         targets[0] = GameObject.Find("Dock");
@@ -189,12 +196,14 @@ public class LocalizationTask : BaseTask
         targets[2].GetComponent<ArcScript>().Angle = targets[2].transform.rotation.eulerAngles.y;
         //targets[2].transform.localScale = Vector3.one;
         Target = targets[2];
+        sound = targets[2].GetComponent<AudioSource>();
 
         // Set up the GameObject that tracks the user's gaze
         localizer = GameObject.Find("Localizer");
         localizer.GetComponent<SphereCollider>().enabled = false;
         localizer.GetComponent<BaseTarget>().enabled = false;
         localizer.SetActive(false);
+        
 
         localizer.transform.SetParent(ctrler.TargetContainer.transform);
         localizer.name = "Localizer";
