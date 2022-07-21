@@ -44,7 +44,7 @@ public class LocalizationTask : BaseTask
                     // raycasts from camera to set localizer position
                     Plane plane = new Plane(Vector3.down, ctrler.transform.position.y);
                     Ray r = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
-                    if (ctrler.Session.settings.GetObjectList("optional_params").Contains("headset")){
+                    if (ctrler.Session.settings.GetObjectList("optional_params").Contains("localize_via_gaze")){
                         if (plane.Raycast(r, out float hit))
                             localizer.transform.position = r.GetPoint(hit);
                     }

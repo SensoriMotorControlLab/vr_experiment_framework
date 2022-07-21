@@ -54,7 +54,7 @@ public class ReachTrack : ReachToTargetTask
 
         reachPrefab = Instantiate(ctrler.GetPrefab("ReachTrack"));
         reachPrefab.transform.SetParent(ctrler.transform);
-        reachPrefab.transform.localPosition = new Vector3(0, -0.8f, 0);
+        reachPrefab.transform.localPosition = new Vector3(0, 0, 0);
 
         reachCam = GameObject.Find("ReachCam");
         reachSurface = GameObject.Find("Surface");
@@ -150,7 +150,7 @@ public class ReachTrack : ReachToTargetTask
             field.SetActive(true);
             //VelocityTrack();
         }
-        reachSurface = GameObject.Find("Surface");
+        
         Vector3 mousePoint = GetMousePoint(baseObject.transform);
         base.Update();
         ctrler.CursorController.Model.transform.position = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
@@ -285,7 +285,6 @@ public class ReachTrack : ReachToTargetTask
         //ToFix: can the below two be one function called point to planepoint?
 
         Vector3 ctrl = new Vector3(ctrler.CursorController.GetHandPosition().x, 3, ctrler.CursorController.GetHandPosition().z);
-
         return ctrler.CursorController.ControllerToPlanePoint(
                         reachSurface.transform.up * ball.position.y,
                         ball.position,

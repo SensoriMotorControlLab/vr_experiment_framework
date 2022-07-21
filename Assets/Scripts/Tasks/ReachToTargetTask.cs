@@ -144,6 +144,18 @@ public class ReachToTargetTask : BaseTask
                 break;
 
                 case(3):
+                tint.gameObject.GetComponent<Renderer>().material.color = (new Color(0,1,0,0.20f));
+                break;
+
+                case(4):
+                tint.gameObject.GetComponent<Renderer>().material.color = (new Color(1,1,0,0.20f));
+                break;
+
+                case(5):
+                tint.gameObject.GetComponent<Renderer>().material.color = (new Color(1,0,1,0.20f));
+                break;
+
+                case(6):
                 tint.SetActive(false);
                 break;
             }
@@ -219,7 +231,7 @@ public class ReachToTargetTask : BaseTask
         // Use static camera for non-vr version
         if (ctrler.Session.settings.GetObjectList("optional_params").Contains("vr"))
         {
-            reachSurface.SetActive(false);
+            reachSurface.SetActive(true);
             reachCam.SetActive(false);
             ctrler.CursorController.UseVR = true;
         }

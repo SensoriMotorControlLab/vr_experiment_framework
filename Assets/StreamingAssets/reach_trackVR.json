@@ -3,7 +3,7 @@
   "optional_params": ["vr"],
   "track_score": true,
   "per_block_type": [
-    "localization",
+    "clamped",
     "clamped",
     "aligned",
     "aligned",
@@ -63,6 +63,6 @@
     0, 1,  0.5,  0
   ],
   "tc1": [
-    0,  1, 0,  1
+    0, 1, 2, 3, 4
   ]
 }
