@@ -1,9 +1,9 @@
 {
   "experiment_mode": "targetTrack",
-  "optional_params": ["vr"],
+  "optional_params": [],
   "track_score": true,
   "per_block_type": [
-    "clamped",
+    "localization",
     "clamped",
     "aligned",
     "aligned",
