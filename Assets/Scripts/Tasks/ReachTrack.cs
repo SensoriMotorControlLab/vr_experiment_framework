@@ -41,6 +41,7 @@ public class ReachTrack : ReachToTargetTask
     float fieldLength;
     bool hasRotated = false;
     int scoreTrack;
+    bool wasOutside = false;
 
     // Start is called before the first frame update
     public override void Setup()
@@ -135,8 +136,7 @@ public class ReachTrack : ReachToTargetTask
                 break;
         }
         
-        //speedometer.SetActive(false);
-
+        ctrler.AddTrackedPosition("ball_path", baseObject);
 
 
     }
@@ -177,6 +177,7 @@ public class ReachTrack : ReachToTargetTask
                     sound.clip = ctrler.AudioClips["incorrect"];
                     sound.Play();
                     hasPlayed = true;
+                    wasOutside = true;
                     VibrateController(0, 0.34f, 0.15f, devices);
                 }
                 else if(hit.collider.gameObject.name == "soccer"){
@@ -237,6 +238,7 @@ public class ReachTrack : ReachToTargetTask
     IEnumerator Wait(){
         yield return new WaitForSeconds(2f);
         base.IncrementStep();
+        LogParameters();
     }
 
     void VelocityTrack(){
@@ -293,5 +295,18 @@ public class ReachTrack : ReachToTargetTask
         
 
 
+    }
+
+    public override void LogParameters()
+    {
+        ctrler.LogObjectPosition("target", targets[2].transform.position);
+
+        ctrler.Session.CurrentTrial.result["score"] = scoreTrack;
+        ctrler.Session.CurrentTrial.result["velocity_result"] = velResult;
+        ctrler.Session.CurrentTrial.result["was_outside"] = wasOutside;
+        ctrler.Session.CurrentTrial.result["per_block_type"] = trial.settings.GetString("per_block_type");
+        ctrler.Session.CurrentTrial.result["per_block_surface_materials"] = ctrler.Session.CurrentBlock.settings.GetString("per_block_surface_materials");
+        ctrler.Session.CurrentTrial.result["per_block_width"] = ctrler.Session.CurrentBlock.settings.GetFloat("per_block_width");
+        ctrler.Session.CurrentTrial.result["per_block_distance"] = trial.settings.GetFloat("per_block_distance") / 100f;
     }
 }
