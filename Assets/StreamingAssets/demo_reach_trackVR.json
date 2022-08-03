@@ -1,0 +1,68 @@
+{
+  "experiment_mode": "targetTrack",
+  "optional_params": ["vr"],
+  "track_score": true,
+  "per_block_type": [
+    "aligned",
+    "aligned",
+    "aligned",
+    "aligned",
+    "rotated",
+    "rotated",
+    "rotated",
+    "rotated",
+    "clamped"
+  ],
+  "per_block_rotation": [
+    0,0,0,0,0,30,-20,10,0
+  ],
+  "per_block_distance": [
+    12,12,12,12,12,12,12,12,12
+  ],
+  "per_block_n": [
+    5,5,5,5,5,5,5,5,5
+  ],
+  "per_block_hand": [
+    "r","r","r","r","r","r","r","r","r"
+  ],
+  "per_block_targetListToUse": [
+    "tl2","tl2","tl2","tl2","tl2","tl2","tl2","tl2","tl2"
+  ],
+  "per_block_waterPresent": [
+    null,null,null,null,null,null,null,null,null
+  ],
+  "per_block_track_score": [
+    false,true,true,true,true,true,true,true,true
+  ],
+  "per_block_tintPresent": [
+    null, "tc1", "tc1", "tc1", "tc1", "tc1", "tc1", "tc1", null
+  ],
+  "per_block_timerTime": [
+    2,  1,  1,  1,  1,  1, 1, 1, 1
+  ],
+  "per_block_width": [
+    1, 1, 1, 1, 1, 0.25, 0.25,  0.25,  1
+  ],
+  "per_block_surface_materials": [ "Glass", "Ice", "Pavement", "Marble", "BrickMat", "Glass", "Ice", "Pavement", "Marble" ],
+  "tl2": [
+    70, 80, 90, 100, 110
+  ],
+  "tl1": [
+    15, 30,  45, 60,  75
+  ],
+  "ct1": [
+    20,  10,  0
+  ],
+  "ct2": [
+    15, 0
+  ],
+  "st1": [
+    20, 10, 0
+  ],
+  "wp1": [
+    0, 1,  0.5,  0
+  ],
+  "tc1": [
+    0, 1, 2, 3, 4
+  ]
+}
