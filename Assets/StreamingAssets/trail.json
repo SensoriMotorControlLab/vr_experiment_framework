@@ -1,5 +1,5 @@
 {
-  "optional_params": [],
+  "optional_params": ["vr"],
   "experiment_mode": "trail",
   "exp_record_score": true,
   "per_block_n": [ 1, 1, 4 ],
@@ -10,4 +10,5 @@
   "per_block_timerTime": [ 1, 1, 1 ],
   "per_block_startPoint": [ 0, 0.25, 0 ],
   "per_block_endPoint": [ 0.25, 0, 1 ]
+  
 }

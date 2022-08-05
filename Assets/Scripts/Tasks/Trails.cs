@@ -23,8 +23,8 @@ public class Trails : BaseTask
 
     private float startPoint, endPoint, midPoint; // Percentages between 0-1 where the start, mid, and end gates will be placed along the track (clockwise)
 
-    private GameObject car;
-
+    private GameObject car, car_VR;
+    
     [SerializeField]
     private bool carPastMidpoint = false;
 
@@ -44,9 +44,11 @@ public class Trails : BaseTask
     private List<BaseTarget> midwayTriggers = new List<BaseTarget>();
 
     // Whether to use raycasts or use the inner track to dermine whether offtrack
-    private bool useRayCasts = false;
+    private bool useRayCasts = true;
 
     private float inTrackTime, outTrackTime;
+
+    public LayerMask planeLayer; 
 
     [SerializeField]
     private int score;
@@ -75,7 +77,7 @@ public class Trails : BaseTask
     {
         maxSteps = 3;
         ctrler = ExperimentController.Instance();
-
+        ctrler.room.SetActive(false);
         trailSpace = Instantiate(ctrler.GetPrefab("TrailPrefab"));
 
         trailGate1 = GameObject.Find("TrailGate1");
@@ -169,10 +171,34 @@ public class Trails : BaseTask
         }
 
         car = GameObject.Find("Car");
+        car_VR = GameObject.Find("Car_VR");
+        if (ctrler.Session.settings.GetObjectList("optional_params").Contains("vr"))
+        {
+            car.SetActive(false);
+            car_VR.transform.position = trailGate1.transform.position;
+            //raycastOrigins.AddRange(car_VR.GetComponentsInChildren<Transform>());
+            foreach(Transform t in car_VR.GetComponentsInChildren<Transform>()){
+                if(t.name.Contains("Raycast origin")){
+                    raycastOrigins.Add(t);
+                    Debug.LogError("Jesus here I come");
+                     
+                }
+               
+            }
+            IncrementStep();
 
-        car.transform.position = trailGate1.transform.position;
 
-        raycastOrigins.AddRange(car.GetComponentsInChildren<Transform>());
+        }
+        else {
+            car_VR.SetActive(false);
+            car.transform.position = trailGate1.transform.position;
+            raycastOrigins.AddRange(car.GetComponentsInChildren<Transform>());
+        }
+           
+
+       
+
+        
 
 
         innerTrackColliders.AddRange(GameObject.Find("innertrack").transform.GetComponentsInChildren<BaseTarget>());
@@ -195,7 +221,8 @@ public class Trails : BaseTask
         {
 
         }
-
+        planeLayer = LayerMask.GetMask("Plane Layer");
+       // planeLayer = ~planeLayer;
     }
 
     private void FixedUpdate()
@@ -358,7 +385,9 @@ public class Trails : BaseTask
 
     public override void Disable()
     {
+        ctrler.room.SetActive(true);
         // Realign XR Rig to non-tilted position
+        
         if (ctrler.Session.settings.GetString("experiment_mode") == "trail_vr")
         {
            /* XRRig.transform.RotateAround(trailSpace.transform.position, trailSpace.transform.forward,

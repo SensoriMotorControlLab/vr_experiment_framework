@@ -115,16 +115,17 @@ public class CarController : MonoBehaviour
     void FixedUpdate()
     {
         float speed = Vector3.Distance(prevPosition, transform.position) / Time.fixedDeltaTime * 3.6f;
-        speedtext.text = "Speed: " + speed.ToString("F2") + " KM/H";
+//        speedtext.text = "Speed: " + speed.ToString("F2") + " KM/H";
 
         prevPosition = transform.position;
 
         float interp = 5f * Time.deltaTime;
 
-        Camera.main.transform.position =
-            Vector3.Lerp(Camera.main.transform.position, FollowObject.transform.position, interp);
+    //     Camera.main.transform.position =
+    //         Vector3.Lerp(Camera.main.transform.position, FollowObject.transform.position, interp);
 
-        Camera.main.transform.rotation = transform.rotation;
+    //     Camera.main.transform.rotation = transform.rotation;
+    // 
     }
 
     void LateUpdate()
