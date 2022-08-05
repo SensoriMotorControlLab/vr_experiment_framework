@@ -41,7 +41,8 @@ public class ReachTrack : ReachToTargetTask
     float fieldLength;
     bool hasRotated = false;
     int scoreTrack;
-    bool wasOutside = false;
+    object wasOutside = false;
+    
 
     // Start is called before the first frame update
     public override void Setup()
@@ -135,15 +136,16 @@ public class ReachTrack : ReachToTargetTask
                 reachSurface.GetComponent<MeshRenderer>().material = ctrler.Materials["BrickMat"];
                 break;
         }
-        
-        ctrler.AddTrackedPosition("ball_path", baseObject);
 
+        ctrler.AddTrackedPosition("ball_path", baseObject);
+        ctrler.AddTrackedBool("is_ball_outside", wasOutside);
 
     }
 
     // Update is called once per frame
     void Update()
     {
+        Debug.Log("wasoutside: " + wasOutside);
         UnityEngine.XR.InputDevices.GetDevicesWithRole(UnityEngine.XR.InputDeviceRole.RightHanded, devices);
         if (currentStep > 1)
         {
@@ -303,10 +305,13 @@ public class ReachTrack : ReachToTargetTask
 
         ctrler.Session.CurrentTrial.result["score"] = scoreTrack;
         ctrler.Session.CurrentTrial.result["velocity_result"] = velResult;
-        ctrler.Session.CurrentTrial.result["was_outside"] = wasOutside;
+        ctrler.Session.CurrentTrial.result["tint_colour"] = tintColur;
+        //ctrler.Session.CurrentTrial.result["was_outside"] = wasOutside;
         ctrler.Session.CurrentTrial.result["per_block_type"] = trial.settings.GetString("per_block_type");
         ctrler.Session.CurrentTrial.result["per_block_surface_materials"] = ctrler.Session.CurrentBlock.settings.GetString("per_block_surface_materials");
         ctrler.Session.CurrentTrial.result["per_block_width"] = ctrler.Session.CurrentBlock.settings.GetFloat("per_block_width");
         ctrler.Session.CurrentTrial.result["per_block_distance"] = trial.settings.GetFloat("per_block_distance") / 100f;
     }
 }
+
+

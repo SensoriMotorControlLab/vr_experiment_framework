@@ -57,6 +57,8 @@ public class ExperimentController : MonoBehaviour
     public Dictionary<string, List<Vector3>> trackedPositionPath = new Dictionary<string, List<Vector3>>();
     public Dictionary<string, GameObject> trackedRotations = new Dictionary<string, GameObject>();
     public Dictionary<string, List<Vector3>> trackedRotationPath = new Dictionary<string, List<Vector3>>();
+    public Dictionary<string, object> trackedBools = new Dictionary<string, object>();
+    public Dictionary<string, List<bool>> trackedBoolResulta = new Dictionary<string, List<bool>>();
     private List<float> trackingTimestamps = new List<float>();
 
     // Used to track when a step has been incremented
@@ -69,6 +71,10 @@ public class ExperimentController : MonoBehaviour
     public CurveController curves;
 
     public GameObject room;
+
+    int location;
+
+    object ran;
 
     /// <summary>
     /// Gets the singleton instance of our experiment controller. Use it for
@@ -161,6 +167,14 @@ public class ExperimentController : MonoBehaviour
             {
                 trackingTimestamps.Add(Time.time);
             }
+
+            foreach (string key in trackedBoolResulta.Keys)
+            {
+                Debug.Log("boolIndict: " + trackedBools[key]);
+                trackedBoolResulta[key].Add((bool)trackedBools[key]);
+            }
+
+            
         }
     }
 
@@ -426,6 +440,13 @@ public class ExperimentController : MonoBehaviour
             LogVector3List(key, trackedRotationPath[key]);
         }
 
+        foreach (string key in trackedBools.Keys)
+        {
+            if (trackedBoolResulta[key].Count == 0) continue;
+
+            LogBoolList(key, trackedBoolResulta[key]);
+        }
+
         // Timestamps for tracked objects
         Session.CurrentTrial.result["tracking_timestamp"] =
             string.Join(",", trackingTimestamps.Select(i => string.Format($"{i:F6}")));
@@ -603,16 +624,42 @@ public class ExperimentController : MonoBehaviour
                 lists[listk].Add(list[i]);
             }
         }
-        object ran = lists[listk][UnityEngine.Random.Range(0,lists[listk].Count)];
+        location = UnityEngine.Random.Range(0,lists[listk].Count);
+        ran = lists[listk][location];
 
         while(ran == prev) {
-            ran = lists[listk][UnityEngine.Random.Range(0,lists[listk].Count)];
+            location = UnityEngine.Random.Range(0,lists[listk].Count);
+            ran = lists[listk][location];
         }
 
         lists[listk].Remove(ran);
         prev = ran;
 
         return ran;
+    }
+
+    public object PairPseudoRandom(string key, string key2){
+        String listk = Session.CurrentBlock.settings.GetString(key, "");
+        String listk2 = Session.CurrentBlock.settings.GetString(key2, "");
+        
+        List<object> list = Session.settings.GetObjectList(listk);
+        List<object> list2 = Session.settings.GetObjectList(listk2);
+
+        if(list2.Count > list.Count || list2.Count < list.Count){
+            Debug.LogError(key +
+                             " must have the same number of elements as " + key2);
+            throw new NullReferenceException();
+        }
+
+        location = list2.IndexOf(ran);
+
+        if(location == -1){
+            Debug.LogError(key2 +
+                             " contains no elements. Or the the element was not found in the list of " + key2);
+            throw new NullReferenceException();
+        }
+
+        return list[location];
     }
 
 
@@ -675,6 +722,19 @@ public class ExperimentController : MonoBehaviour
         }
     }
 
+    public void AddTrackedBool(string key, object obj)
+    {
+        if (trackedBools.ContainsKey(key))
+        {
+            Debug.LogWarning("You are trying to add a tracker that has already been added");
+        }
+        else
+        {
+            trackedBools[key] = obj;
+            trackedBoolResulta[key] = new List<bool>();
+        }
+    }
+
     /// <summary>
     /// Clears all of the tracked objects
     /// </summary>
@@ -698,6 +758,15 @@ public class ExperimentController : MonoBehaviour
         {
             trackedRotations.Remove(key);
             trackedRotationPath.Remove(key);
+        }
+
+        string[] boolKeys = new string[trackedBools.Keys.Count];
+        trackedBools.Keys.CopyTo(boolKeys, 0);
+
+        foreach (string key in boolKeys)
+        {
+            trackedBools.Remove(key);
+            trackedBoolResulta.Remove(key);
         }
 
         trackingTimestamps.Clear();
@@ -728,5 +797,15 @@ public class ExperimentController : MonoBehaviour
 
         Session.CurrentTrial.result[key + "_z"] =
             string.Join(",", list.Select(i => string.Format($"{i.z:F6}")));
+    }
+
+    public void LogBoolList(string key, List<bool> positions)
+    {
+        var list = positions;
+
+        // For each element (Select), remove scientific notation and round to 6 decimal places.
+        // Then join all these numbers separated by a comma
+        Session.CurrentTrial.result[key] =
+            string.Join(",", list.Select(i => string.Format($"{i}")));
     }
 }
