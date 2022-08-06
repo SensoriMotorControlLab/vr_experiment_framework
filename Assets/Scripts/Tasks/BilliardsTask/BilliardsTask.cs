@@ -115,6 +115,10 @@ public abstract class BilliardsTask : BaseTask
 
         Vector3 dir = new Vector3(x, 0, y);
 
+        // Rotate dir by the surface normal 
+        dir = Quaternion.AngleAxis(Vector3.SignedAngle(surfaceNormal, Vector3.up, Vector3.forward), Vector3.forward) * dir;
+
+
         ball.GetComponent<Rigidbody>().AddForce(dir);
 
     }
