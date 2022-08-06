@@ -70,6 +70,9 @@ public class ExperimentController : MonoBehaviour
 
     public GameObject room;
 
+    public bool isPaused = false;
+    public float pauseTimeLength = 10;
+
     /// <summary>
     /// Gets the singleton instance of our experiment controller. Use it for
     /// Getting the state of the experiment (input, current trial, etc)
@@ -145,18 +148,21 @@ public class ExperimentController : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (IsTracking)
+        if (IsTracking && !isPaused)
         {
+            //log positions
             foreach (string key in trackedPositionPath.Keys)
             {
                 trackedPositionPath[key].Add(trackedPositions[key].transform.position);
             }
 
+            //log rotations
             foreach (string key in trackedRotationPath.Keys)
             {
                 trackedRotationPath[key].Add(trackedRotations[key].transform.rotation.eulerAngles);
             }
 
+            //log timestamps
             if (trackedPositionPath.Count > 0 || trackedRotationPath.Count > 0)
             {
                 trackingTimestamps.Add(Time.time);
@@ -181,6 +187,15 @@ public class ExperimentController : MonoBehaviour
 
         if (Input.GetKey(KeyCode.Escape))
             Application.Quit();
+
+        if (!isPaused && CursorController.PauseTime > pauseTimeLength)
+        {
+            isPaused = true;
+        }
+        else if (isPaused && CursorController.PauseTime < pauseTimeLength)
+        {
+            isPaused = false;
+        }
     }
 
     public void CenterExperiment()

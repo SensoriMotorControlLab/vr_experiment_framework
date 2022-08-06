@@ -21,6 +21,8 @@ public abstract class BilliardsTask : BaseTask
     // for starting the miss timer
     protected const float TARGET_DISTANCE = 0.85f; // Target distance from home
 
+    public bool dynamicForce, dynamicTilt;
+
     public override void Setup()
     {
         Surface = GameObject.Find("Surface");
@@ -33,6 +35,13 @@ public abstract class BilliardsTask : BaseTask
         cameraTilt = Convert.ToSingle(ctrler.PollPseudorandomList("per_block_list_camera_tilt"));
         surfaceTilt = Convert.ToSingle(ctrler.PollPseudorandomList("per_block_list_surface_tilt"));
         //cameraTilt -= surfaceTilt; // As surfaceTilt rotates the entire prefab, this line makes creating the json more intuitive 
+
+
+        dynamicForce = (ctrler.Session.settings.GetStringList("optional_params").Contains("per_trial_dynamic_force")
+            && ctrler.Session.CurrentTrial.settings.GetInt("per_block_dynamic_force") == 1);
+
+        dynamicTilt = (ctrler.Session.settings.GetStringList("optional_params").Contains("per_trial_dynamic_tilt")
+            && ctrler.Session.CurrentTrial.settings.GetInt("per_block_dynamic_tilt") == 1);
 
         // Whether or not this is a practice trial 
         // replaces scoreboard with 'Practice Round', doesn't record score
@@ -58,13 +67,64 @@ public abstract class BilliardsTask : BaseTask
         Target.transform.position += Target.transform.forward.normalized * TARGET_DISTANCE;
     }
 
+    /// <summary>
+    /// Rotates Surface and cam/XRRig based on t, per_block_dynamic_curve, surfaceTilt, and cameraTilt/
+    /// </summary>
+    /// <param name="t">A value between 0-1. When using linear curve type (default), 0 is flat, 1 is fully tilted (to surface/cameraTilt)</param>
     protected void DynamicTilt(float t, GameObject cam, GameObject XRRig, GameObject XRPosLock)
     {
+        float tilt = EvaluateDynamicCurve(t);
+
+        float camtilt = tilt * cameraTilt;
+        tilt *= surfaceTilt;
+
+
+        Vector3 ball_pos = Home.transform.position + Vector3.up * 0.25f;
+
+        ctrler.room.transform.parent = cam.transform.parent;
+
+        SetDynamicTilt(cam.transform.parent.gameObject, camtilt);
+
+
+        SetDynamicTilt(Surface.transform.parent.gameObject, tilt); //Tilt surface
+
+        //Tilt VR Camera if needed
+        if (ctrler.Session.settings.GetString("experiment_mode") == "pinball_vr")
+        {
+            //XRRig.transform.RotateAround(Home.transform.position + Vector3.up * 0.25f, pinballSpace.transform.forward,
+            //   cameraTilt + surfaceTilt);
+            SetDynamicTilt(XRRig, camtilt);
+            XRRig.transform.position = XRPosLock.transform.position; // lock position of XR Rig
+            //XRCamOffset.transform.position = new Vector3(0, -0.8f, -0.2f);
+        }
+
+    }
+
+    /// <summary>
+    /// Adds a force to ball based on t, and per_block_dynamic_force_x/y.
+    /// </summary>
+    /// <param name="t">A value between 0-1. When using linear curve type (default), 0 is no force, 1 is full force (to per_block_dynamic_force_x/y)</param>
+    protected void DynamicForce(float t, GameObject ball)
+    {
+        Vector3 surfaceNormal = Surface.transform.up;
+
+        float force = EvaluateDynamicCurve(t);
+
+        float x = ctrler.Session.CurrentBlock.settings.GetFloat("per_block_dynamic_force_x") * force;
+        float y = ctrler.Session.CurrentBlock.settings.GetFloat("per_block_dynamic_force_y") * force;
+
+        Vector3 dir = new Vector3(x, 0, y);
+
+        ball.GetComponent<Rigidbody>().AddForce(dir);
+
+    }
+
+    private float EvaluateDynamicCurve(float t)
+    {
         float tilt = 0;
-        float camtilt = 0;
 
         // set up curve type for tilt to follow
-        switch (ctrler.Session.CurrentTrial.settings.GetString("per_block_dynamic_tilt_curve"))
+        switch (ctrler.Session.CurrentTrial.settings.GetString("per_block_curve_type"))
         {
             case "default":
                 tilt = t;
@@ -97,31 +157,12 @@ public abstract class BilliardsTask : BaseTask
                 else
                     tilt = Mathf.Pow(2 * t - 2, 2) * ((c2 + 1) * (t * 2 - 2) + c2) + 2 / 2;
                 break;
+            case "constant":
+                tilt = 1;
+                break;
         }
 
-        camtilt = tilt * cameraTilt;
-        tilt *= surfaceTilt;
-
-
-        Vector3 ball_pos = Home.transform.position + Vector3.up * 0.25f;
-
-        ctrler.room.transform.parent = cam.transform.parent;
-
-        SetDynamicTilt(cam.transform.parent.gameObject, camtilt);
-
-
-        SetDynamicTilt(Surface.transform.parent.gameObject, tilt); //Tilt surface
-
-        //Tilt VR Camera if needed
-        if (ctrler.Session.settings.GetString("experiment_mode") == "pinball_vr")
-        {
-            //XRRig.transform.RotateAround(Home.transform.position + Vector3.up * 0.25f, pinballSpace.transform.forward,
-            //   cameraTilt + surfaceTilt);
-            SetDynamicTilt(XRRig, camtilt);
-            XRRig.transform.position = XRPosLock.transform.position; // lock position of XR Rig
-            //XRCamOffset.transform.position = new Vector3(0, -0.8f, -0.2f);
-        }
-
+        return tilt;
     }
 
 

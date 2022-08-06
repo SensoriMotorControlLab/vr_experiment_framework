@@ -163,7 +163,7 @@ public class ToolTask : BilliardsTask
                 distanceToTarget = Vector3.Distance(ballObjects.transform.position, Target.transform.position);
 
                 // if dynamic, update tilt each frame
-                if (ctrler.Session.settings.GetStringList("optional_params").Contains("per_trial_dynamic_tilt"))
+                if (dynamicTilt)
                 {
                     // Dynamic tilt based on distance
                     DynamicTilt(1 - distanceToTarget / TARGET_DISTANCE);
@@ -280,7 +280,7 @@ public class ToolTask : BilliardsTask
                         line.SetPositions(ballPoints.ToArray());
 
                         List<Vector3> ballPointsRelative = new List<Vector3>();
-                        if (ctrler.Session.settings.GetStringList("optional_params").Contains("per_trial_dynamic_tilt"))
+                        if (dynamicTilt)
                         {
                             for (int i = 0; i < ballPoints.Count; i++)
                             {
@@ -347,7 +347,7 @@ public class ToolTask : BilliardsTask
                         line.SetPositions(ballPoints.ToArray());
 
                         List<Vector3> ballPointsRelative = new List<Vector3>();
-                        if (ctrler.Session.settings.GetStringList("optional_params").Contains("per_trial_dynamic_tilt"))
+                        if (dynamicTilt)
                         {
                             for (int i = 0; i < ballPoints.Count; i++)
                             {
@@ -401,16 +401,15 @@ public class ToolTask : BilliardsTask
                 break;
             // User launched the ball/puck
             case 1:
-                if (ctrler.Session.CurrentBlock.settings.GetBool("per_block_tilt_after_fire") 
-                    && !ctrler.Session.settings.GetStringList("optional_params").Contains("per_trial_dynamic_tilt"))
+                if (ctrler.Session.CurrentBlock.settings.GetBool("per_block_tilt_after_fire")
+                    && !dynamicTilt)
                     SetTilt();
 
                 timerIndicator.Cancel();
 
                 baseObject.GetComponent<Rigidbody>().useGravity = true;
 
-                // Add ball to tracked objects
-                ctrler.AddTrackedPosition("ball_path", baseObject);
+                
 
                 break;
         }
@@ -475,7 +474,7 @@ public class ToolTask : BilliardsTask
 
         // Should the tilt be shown to the participant before they release the pinball?
         if (!ctrler.Session.CurrentBlock.settings.GetBool("per_block_tilt_after_fire")
-            && !ctrler.Session.settings.GetStringList("optional_params").Contains("per_trial_dynamic_tilt"))
+            && !dynamicTilt)
             SetTilt();
 
         // Disable all balls/puck (to be enabled in child classes)
@@ -570,6 +569,9 @@ public class ToolTask : BilliardsTask
             default:
                 break;
         }
+
+        // Add ball to tracked objects
+        ctrler.AddTrackedPosition("ball_path", baseObject);
     }
 
     public override void LogParameters()

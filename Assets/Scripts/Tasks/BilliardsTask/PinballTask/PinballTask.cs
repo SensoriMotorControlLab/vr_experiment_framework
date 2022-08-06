@@ -111,23 +111,29 @@ public class PinballTask : BilliardsTask
         if (currentStep == 1)
         {
             // if dynamic, update aligned target position each frame so that distance calcs are correct
-            if (ctrler.Session.settings.GetStringList("optional_params").Contains("per_trial_dynamic_tilt"))
+            if (dynamicForce || dynamicTilt)
                 GetPinballTargetAlignedPosition();
 
             // Current distance from pinball to the target
             distanceToTarget = Vector3.Distance(pinball.transform.position, pinballAlignedTargetPosition);
 
             // if dynamic, update tilt each frame
-            if (ctrler.Session.settings.GetStringList("optional_params").Contains("per_trial_dynamic_tilt"))
+            if (dynamicTilt)
             {
-                // Dynamic tilt based on distance
-                //DynamicTilt(1 - distanceToTarget / TARGET_DISTANCE); 
+                // Dynamic tilt based on distance 
+                //DynamicTilt(1 - distanceToTarget / TARGET_DISTANCE);  
 
-                // Dynamic tilt based on speed (max speed of 3 in non vr)
-                //DynamicTilt(1 - pinball.GetComponent<Rigidbody>().velocity.magnitude / 3);
+                // Dynamic tilt based on speed (max speed of 3 in non vr) 
+                //DynamicTilt(1 - pinball.GetComponent<Rigidbody>().velocity.magnitude / 3); 
 
-                // Dynamic tilt based on time 
+                // Dynamic tilt based on time  
                 DynamicTilt(trialTimer / MAX_TRIAL_TIME);
+            }
+
+            // if dynamic force,  
+            if (dynamicForce)
+            {
+                DynamicForce(trialTimer / MAX_TRIAL_TIME);
             }
 
             // Every frame, we track the closest position the pinball has ever been to the target
@@ -461,7 +467,7 @@ public class PinballTask : BilliardsTask
                         line.positionCount = pinballPoints.Count;
                         line.SetPositions(pinballPoints.ToArray());
 
-                        if (ctrler.Session.settings.GetStringList("optional_params").Contains("per_trial_dynamic_tilt"))
+                        if (dynamicTilt)
                         {
                             for (int i = 0; i < pinballPoints.Count; i++)
                             {
@@ -476,7 +482,7 @@ public class PinballTask : BilliardsTask
                         // Set transform
                         if (enteredTarget)
                         {
-                            if (ctrler.Session.settings.GetStringList("optional_params").Contains("per_trial_dynamic_tilt"))
+                            if (dynamicTilt)
                                 pinball.transform.position = RotatePointAroundPivot(lastPositionInTarget, Surface.transform.parent.position, -dynamicTiltRotations[dynamicTiltRotations.Count-1]);
                             else
                                 pinball.transform.position = lastPositionInTarget;
@@ -565,7 +571,7 @@ public class PinballTask : BilliardsTask
         pinball.transform.LookAt(pinball.transform.position - direction.normalized);
 
         if (ctrler.Session.CurrentBlock.settings.GetBool("per_block_tilt_after_fire")
-            && !ctrler.Session.settings.GetStringList("optional_params").Contains("per_trial_dynamic_tilt"))
+            && !dynamicTilt)
             SetTilt();
 
         // Perturbation
@@ -599,9 +605,7 @@ public class PinballTask : BilliardsTask
 
         GetPinballTargetAlignedPosition();
 
-        // Add Pinball to tracked objects
-        ctrler.AddTrackedPosition("pinball_path", pinball);
-        ctrler.AddTrackedRotation("surface_tilt", Surface.transform.parent.gameObject);
+
         timeBallTrackingStarts = Time.time;
 
         IncrementStep();
@@ -652,7 +656,7 @@ public class PinballTask : BilliardsTask
         ctrler.Session.CurrentTrial.result["tracking_start_time"] = timeHandTrackingStarts;
 
 
-        if (ctrler.Session.settings.GetStringList("optional_params").Contains("per_trial_dynamic_tilt"))
+        if (dynamicTilt)
         {
 
             pinballPointsRelative.Clear();
@@ -771,7 +775,7 @@ public class PinballTask : BilliardsTask
 
         // Should the tilt be shown to the participant before they release the pinball?
         if (!ctrler.Session.CurrentBlock.settings.GetBool("per_block_tilt_after_fire")
-            && !ctrler.Session.settings.GetStringList("optional_params").Contains("per_trial_dynamic_tilt"))
+            && !dynamicTilt)
             SetTilt();
 
         if (ctrler.Session.settings.GetString("experiment_mode") != "pinball")
@@ -810,6 +814,10 @@ public class PinballTask : BilliardsTask
                 pinballWall.GetComponent<MeshRenderer>().material = ctrler.Materials["BrickMat"];
                 break;
         }
+
+        // Add Pinball to tracked objects
+        ctrler.AddTrackedPosition("pinball_path", pinball);
+        ctrler.AddTrackedRotation("surface_tilt", Surface.transform.parent.gameObject);
     }
 
     private void SetTilt()
@@ -840,6 +848,11 @@ public class PinballTask : BilliardsTask
     private void DynamicTilt(float t)
     {
         base.DynamicTilt(t, pinballCam, XRRig, XRPosLock);
+    }
+
+    private void DynamicForce(float t)
+    {
+        base.DynamicForce(t, pinball);
     }
 
     public override void Disable()
