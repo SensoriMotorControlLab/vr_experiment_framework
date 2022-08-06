@@ -166,6 +166,7 @@ public abstract class BilliardsTask : BaseTask
                 break;
         }
 
+
         return tilt;
     }
 
