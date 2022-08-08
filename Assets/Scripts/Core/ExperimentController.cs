@@ -57,7 +57,7 @@ public class ExperimentController : MonoBehaviour
     public Dictionary<string, List<Vector3>> trackedPositionPath = new Dictionary<string, List<Vector3>>();
     public Dictionary<string, GameObject> trackedRotations = new Dictionary<string, GameObject>();
     public Dictionary<string, List<Vector3>> trackedRotationPath = new Dictionary<string, List<Vector3>>();
-    public Dictionary<string, object> trackedBools = new Dictionary<string, object>();
+    public Dictionary<string, bool> trackedBools = new Dictionary<string, bool>();
     public Dictionary<string, List<bool>> trackedBoolResulta = new Dictionary<string, List<bool>>();
     private List<float> trackingTimestamps = new List<float>();
 
@@ -171,10 +171,10 @@ public class ExperimentController : MonoBehaviour
             foreach (string key in trackedBoolResulta.Keys)
             {
                 Debug.Log("boolIndict: " + trackedBools[key]);
-                trackedBoolResulta[key].Add((bool)trackedBools[key]);
+                trackedBoolResulta[key].Add(trackedBools[key]);
             }
 
-            
+
         }
     }
 
@@ -248,10 +248,10 @@ public class ExperimentController : MonoBehaviour
         }
 
         if (per_block_type == "localization")
-        { 
+        {
             CurrentTask = gameObject.AddComponent<LocalizationTask>();
             CurrentTask.Setup();
-        
+
             return;
         }
 
@@ -599,36 +599,43 @@ public class ExperimentController : MonoBehaviour
         return null;
     }
 
-    public object PseudoRandom(string key){
+    public object PseudoRandom(string key)
+    {
         int curBlock = Session.currentBlockNum;
         String listk = Session.CurrentBlock.settings.GetString(key, "");
 
-        if(curBlock != block){
+        if (curBlock != block)
+        {
             lists.Clear();
             block = curBlock;
         }
 
-        if(!lists.ContainsKey(listk)){
-            lists[listk] = new List<object>();    
+        if (!lists.ContainsKey(listk))
+        {
+            lists[listk] = new List<object>();
             List<object> list = Session.settings.GetObjectList(listk);
-            if(list.Count == 1) {
+            if (list.Count == 1)
+            {
                 return lists[listk][0];
-                
+
             }
-            else if (list.Count == 0){
+            else if (list.Count == 0)
+            {
                 Debug.LogError(key +
                              " contains no elements. Not possible to sort");
-            throw new NullReferenceException();
+                throw new NullReferenceException();
             }
-            for(int i = 0; i < list.Count; i++){
+            for (int i = 0; i < list.Count; i++)
+            {
                 lists[listk].Add(list[i]);
             }
         }
-        location = UnityEngine.Random.Range(0,lists[listk].Count);
+        location = UnityEngine.Random.Range(0, lists[listk].Count);
         ran = lists[listk][location];
 
-        while(ran == prev) {
-            location = UnityEngine.Random.Range(0,lists[listk].Count);
+        while (ran == prev)
+        {
+            location = UnityEngine.Random.Range(0, lists[listk].Count);
             ran = lists[listk][location];
         }
 
@@ -638,14 +645,16 @@ public class ExperimentController : MonoBehaviour
         return ran;
     }
 
-    public object PairPseudoRandom(string key, string key2){
+    public object PairPseudoRandom(string key, string key2)
+    {
         String listk = Session.CurrentBlock.settings.GetString(key, "");
         String listk2 = Session.CurrentBlock.settings.GetString(key2, "");
-        
+
         List<object> list = Session.settings.GetObjectList(listk);
         List<object> list2 = Session.settings.GetObjectList(listk2);
 
-        if(list2.Count > list.Count || list2.Count < list.Count){
+        if (list2.Count > list.Count || list2.Count < list.Count)
+        {
             Debug.LogError(key +
                              " must have the same number of elements as " + key2);
             throw new NullReferenceException();
@@ -653,7 +662,8 @@ public class ExperimentController : MonoBehaviour
 
         location = list2.IndexOf(ran);
 
-        if(location == -1){
+        if (location == -1)
+        {
             Debug.LogError(key2 +
                              " contains no elements. Or the the element was not found in the list of " + key2);
             throw new NullReferenceException();
@@ -722,7 +732,7 @@ public class ExperimentController : MonoBehaviour
         }
     }
 
-    public void AddTrackedBool(string key, object obj)
+    public void AddTrackedBool(string key, bool tracked_bool)
     {
         if (trackedBools.ContainsKey(key))
         {
@@ -730,7 +740,7 @@ public class ExperimentController : MonoBehaviour
         }
         else
         {
-            trackedBools[key] = obj;
+            trackedBools[key] = tracked_bool;
             trackedBoolResulta[key] = new List<bool>();
         }
     }
