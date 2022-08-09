@@ -65,8 +65,6 @@ public class ReachTrack : ReachToTargetTask
         field = GameObject.Find("soccer");
         goal = field.transform.GetChild(0).gameObject;
         baseObject = GameObject.Find("BaseObject");
-        text = baseObject.transform.GetChild(0).GetComponent<TextMeshPro>();
-        text.transform.parent = reachPrefab.transform;
         sound = baseObject.GetComponent<AudioSource>();
         ray = GameObject.Find("Ray");
         speedometer = GameObject.Find("speedometer");
@@ -164,7 +162,8 @@ public class ReachTrack : ReachToTargetTask
         Vector3 mousePoint = GetMousePoint(baseObject.transform);
         base.Update();
         ctrler.CursorController.Model.transform.position = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
-        baseObject.transform.position =Quaternion.Euler(0f, rotation, 0f) *  new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
+        //baseObject.transform.position = new Vector3(baseObject.transform.position.x, mousePoint.y, baseObject.transform.position.z);
+        baseObject.transform.position = ctrler.CursorController.ConvertPosition(ctrler.CursorController.Model.transform.position);
         cur = baseObject.transform.localPosition;
         vel = (cur - prev) / Time.deltaTime;
         dist = vel.magnitude;
@@ -175,7 +174,7 @@ public class ReachTrack : ReachToTargetTask
         //{
         baseObject.transform.localRotation = Quaternion.Euler(rotationAxis * angle) * baseObject.transform.localRotation;
         //}
-        VelocityTrack();
+        //VelocityTrack();
 
         switch(currentStep){
             case 0:
@@ -188,12 +187,7 @@ public class ReachTrack : ReachToTargetTask
                     IncrementStep();
                 }
                 break;
-        }
-
-
-        if (currentStep == 2)
-        {
-
+            case 2:
             ray.transform.position = baseObject.transform.position;
             if (Physics.Raycast(ray.transform.position, -ray.transform.up, out RaycastHit hit, 0.1f))
             {
@@ -212,47 +206,51 @@ public class ReachTrack : ReachToTargetTask
                     hasPlayed = false;
                 }
             }
-            if (currentStep == 2 &&
-            ctrler.CursorController.PauseTime > 0.3f &&
+            if ( ctrler.CursorController.PauseTime > 0.3f &&
             Mathf.Abs(targets[2].transform.localPosition.magnitude - baseObject.transform.localPosition.magnitude) < 0.001f)
             {
                 sound.clip = ctrler.AudioClips["correct"];
                 sound.Play();
                 if (trackScore)
                 {
+                    if(wasOutside){
+                        scoreTrack = 0;
+                    }
+                    else
+                    {
+                        scoreTrack = 5;
+                    }
                     ctrler.Score += scoreTrack;
                 }
                 IncrementStep();
             }
-
+                break;
         }
 
         if (currentStep > 2 && !hasRotated)
         {
-            //text.text = ("Max Vel: " + maxVel.ToString());
             speedometer.transform.position = goal.transform.position + new Vector3(0, 0.02f, 0);
             speedometer.SetActive(true);
-            //speedometer.transform.GetChild(0).transform.Rotate (0, velResult, 0);
             hasRotated = true;
 
-            switch (velResult)
-            {
-                case 75:
-                    speedometer.transform.GetChild(4).GetComponent<TextMeshPro>().text = "Too Fast";
-                    break;
-                case 35:
-                    speedometer.transform.GetChild(4).GetComponent<TextMeshPro>().text = "Slow down a bit.";
-                    break;
-                case 0:
-                    speedometer.transform.GetChild(4).GetComponent<TextMeshPro>().text = "Perfect speed!";
-                    break;
-                case -35:
-                    speedometer.transform.GetChild(4).GetComponent<TextMeshPro>().text = "speed up a bit.";
-                    break;
-                case -75:
-                    speedometer.transform.GetChild(4).GetComponent<TextMeshPro>().text = "Too Slow";
-                    break;
-            }
+            // switch (velResult)
+            // {
+            //     case 75:
+            //         speedometer.transform.GetChild(4).GetComponent<TextMeshPro>().text = "Too Fast";
+            //         break;
+            //     case 35:
+            //         speedometer.transform.GetChild(4).GetComponent<TextMeshPro>().text = "Slow down a bit.";
+            //         break;
+            //     case 0:
+            //         speedometer.transform.GetChild(4).GetComponent<TextMeshPro>().text = "Perfect speed!";
+            //         break;
+            //     case -35:
+            //         speedometer.transform.GetChild(4).GetComponent<TextMeshPro>().text = "speed up a bit.";
+            //         break;
+            //     case -75:
+            //         speedometer.transform.GetChild(4).GetComponent<TextMeshPro>().text = "Too Slow";
+            //         break;
+            // }
 
             if (trackScore)
             {
@@ -275,12 +273,16 @@ public class ReachTrack : ReachToTargetTask
         LogParameters();
     }
 
+    public override float GetRotation()
+    {
+        return rotation;
+    }
+
     void VelocityTrack()
     {
         newPos = baseObject.transform.position;
         curVel = ((newPos - prevPos) / Time.deltaTime).magnitude;
         prevPos = newPos;
-        text.gameObject.transform.position = baseObject.transform.position + new Vector3(0, 0.04f, 0);
 
         if (currentStep == 2)
         {
@@ -317,12 +319,7 @@ public class ReachTrack : ReachToTargetTask
                 velResult = -75;
                 scoreTrack = 1;
             }
-            text.text = ("Current Vel: " + curVel.ToString() + "\nMax Vel: " + maxVel.ToString());
-        }
 
-        else if (currentStep < 2)
-        {
-            text.text = ("Current Vel: " + curVel.ToString() + "\nMax Vel: to be calculated after home step");
         }
     }
 

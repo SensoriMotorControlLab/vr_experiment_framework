@@ -366,7 +366,7 @@ public class CursorController : MonoBehaviour
     /// Converts the user's hand location into the transformed cursor location
     /// </summary>
     /// <returns></returns>
-    private Vector3 ConvertPosition(Vector3 position)
+    public Vector3 ConvertPosition(Vector3 position)
     {
         ExperimentController ctrler = ExperimentController.Instance();
 
@@ -377,12 +377,22 @@ public class CursorController : MonoBehaviour
         switch (MoveType)
         {
             case MovementType.aligned:
+            Debug.Log("aligned");
                 return position;
             case MovementType.rotated:
-                float angle = ctrler.Session.CurrentTrial.settings
+                
+                if(ctrler.Session.CurrentBlock.settings.GetString("per_block_rotation") is string){
+                    float angle = ctrler.CurrentTask.GetRotation();
+                    Debug.Log(angle);
+                    return Quaternion.Euler(0, -angle, 0) * (position - home) + home;
+                }
+                else{
+                    float angle = ctrler.Session.CurrentTrial.settings
                     .GetFloat("per_block_rotation");
 
-                return Quaternion.Euler(0, -angle, 0) * (position - home) + home;
+                    return Quaternion.Euler(0, -angle, 0) * (position - home) + home;
+                }
+                
             case MovementType.clamped:
                 // Get vector between home position and target
                 Vector3 target = ctrler.CurrentTask.Target.transform.position;

@@ -23,6 +23,10 @@ public abstract class BaseTask : MonoBehaviour
         return finished;
     }
 
+    public virtual float GetRotation(){
+        return 0;
+    }
+
     private GameObject[] trackers;
 
     // This task's "home" position

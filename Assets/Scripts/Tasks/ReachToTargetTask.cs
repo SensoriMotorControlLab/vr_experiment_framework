@@ -124,14 +124,17 @@ public class ReachToTargetTask : BaseTask
         return finished;
     }
 
+    public override float GetRotation(){
+        return rotation;
+    }
+
     public void SetSetup(){
         targetAngle = Convert.ToSingle(ctrler.PseudoRandom("per_block_targetListToUse"));
         if (ctrler.Session.CurrentBlock.settings.GetString("per_block_tintPresent") == "tc1"){
-
-            float curTint = Convert.ToSingle(ctrler.PseudoRandom("per_block_tintPresent"));
-            rotation = Convert.ToSingle(ctrler.PairPseudoRandom("per_block_rotation", "per_block_tintPresent"));
-
-             tint.SetActive(true);
+            object obj = ctrler.PseudoRandom("per_block_tintPresent");
+            float curTint = Convert.ToSingle(obj);
+            rotation = Convert.ToSingle(ctrler.PairPseudoRandom("per_block_rotation", "per_block_tintPresent", obj));
+            tint.SetActive(true);
 
             tint.transform.parent = Camera.main.transform;
             tint.transform.localPosition = new Vector3(0,0, 0.1f);
