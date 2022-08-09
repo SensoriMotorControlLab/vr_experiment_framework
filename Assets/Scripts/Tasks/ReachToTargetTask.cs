@@ -34,6 +34,9 @@ public class ReachToTargetTask : BaseTask
     protected bool trackScore;
     protected bool hasTimer;
 
+    protected string tintColur;
+    public float rotation = 0; 
+
     public void Update()
     {
         if (!trackScore) scoreboard.ManualScoreText = "Practice Round";
@@ -125,37 +128,45 @@ public class ReachToTargetTask : BaseTask
         targetAngle = Convert.ToSingle(ctrler.PseudoRandom("per_block_targetListToUse"));
         if (ctrler.Session.CurrentBlock.settings.GetString("per_block_tintPresent") == "tc1"){
 
+            float curTint = Convert.ToSingle(ctrler.PseudoRandom("per_block_tintPresent"));
+            rotation = Convert.ToSingle(ctrler.PairPseudoRandom("per_block_rotation", "per_block_tintPresent"));
+
              tint.SetActive(true);
 
             tint.transform.parent = Camera.main.transform;
             tint.transform.localPosition = new Vector3(0,0, 0.1f);
             tint.transform.localRotation = Quaternion.Euler(-90,0,0);
 
-            float curTint = Convert.ToSingle(ctrler.PseudoRandom("per_block_tintPresent"));
+            
 
             switch(curTint) 
             {
                 case(0):
                 tint.gameObject.GetComponent<Renderer>().material.color = (new Color(1,0,0,0.20f));
+                tintColur = "red";
                 break;
 
                 case(1):
                 tint.gameObject.GetComponent<Renderer>().material.color = (new Color(0,0,1,0.20f));
+                tintColur = "blue";
+                break;
+
+                case(2):
+                tint.gameObject.GetComponent<Renderer>().material.color = (new Color(0,1,0,0.20f));
+                tintColur = "green";
                 break;
 
                 case(3):
-                tint.gameObject.GetComponent<Renderer>().material.color = (new Color(0,1,0,0.20f));
+                tint.gameObject.GetComponent<Renderer>().material.color = (new Color(1,1,0,0.20f));
+                tintColur = "yellow";
                 break;
 
                 case(4):
-                tint.gameObject.GetComponent<Renderer>().material.color = (new Color(1,1,0,0.20f));
+                tint.gameObject.GetComponent<Renderer>().material.color = (new Color(1,0,1,0.20f));
+                tintColur = "purple";
                 break;
 
                 case(5):
-                tint.gameObject.GetComponent<Renderer>().material.color = (new Color(1,0,1,0.20f));
-                break;
-
-                case(6):
                 tint.SetActive(false);
                 break;
             }
