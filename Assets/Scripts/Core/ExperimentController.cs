@@ -74,8 +74,6 @@ public class ExperimentController : MonoBehaviour
 
     public bool isPaused = false;
     public float pauseTimeLength = 10;
-    int location;
-    object ran;
     /// <summary>
     /// Gets the singleton instance of our experiment controller. Use it for
     /// Getting the state of the experiment (input, current trial, etc)
@@ -199,14 +197,14 @@ public class ExperimentController : MonoBehaviour
         if (Input.GetKey(KeyCode.Escape))
             Application.Quit();
 
-        if (!isPaused && CursorController.PauseTime > pauseTimeLength)
-        {
-            isPaused = true;
-        }
-        else if (isPaused && CursorController.PauseTime < pauseTimeLength)
-        {
-            isPaused = false;
-        }
+        // if (!isPaused && CursorController.PauseTime > pauseTimeLength)
+        // {
+        //     isPaused = true;
+        // }
+        // else if (isPaused && CursorController.PauseTime < pauseTimeLength)
+        // {
+        //     isPaused = false;
+        // }
     }
 
     public void CenterExperiment()
@@ -642,13 +640,11 @@ public class ExperimentController : MonoBehaviour
                 lists[listk].Add(list[i]);
             }
         }
-        location = UnityEngine.Random.Range(0, lists[listk].Count);
-        ran = lists[listk][location];
+        object ran = lists[listk][UnityEngine.Random.Range(0, lists[listk].Count)];
 
         while (ran == prev)
         {
-            location = UnityEngine.Random.Range(0, lists[listk].Count);
-            ran = lists[listk][location];
+            ran = lists[listk][UnityEngine.Random.Range(0, lists[listk].Count)];
         }
 
         lists[listk].Remove(ran);
@@ -657,7 +653,7 @@ public class ExperimentController : MonoBehaviour
         return ran;
     }
 
-    public object PairPseudoRandom(string key, string key2)
+    public object PairPseudoRandom(string key, string key2, object obj)
     {
         String listk = Session.CurrentBlock.settings.GetString(key, "");
         String listk2 = Session.CurrentBlock.settings.GetString(key2, "");
@@ -672,7 +668,7 @@ public class ExperimentController : MonoBehaviour
             throw new NullReferenceException();
         }
 
-        location = list2.IndexOf(ran);
+        int location = list2.IndexOf(obj);
 
         if (location == -1)
         {

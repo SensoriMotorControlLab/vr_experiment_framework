@@ -3,15 +3,15 @@
   "optional_params": [],
   "track_score": true,
   "per_block_type": [
-    "aligned",
-    "clamped",
-    "aligned",
-    "aligned",
+    "rotated",
     "clamped",
     "rotated",
+    "aligned",
     "rotated",
     "rotated",
-    "aligned"
+    "clamped",
+    "rotated",
+    "rotated"
   ],
   "per_block_rotation": [
     "br1",null,"br1",null,"br1","br1",null,"br1","br1"
