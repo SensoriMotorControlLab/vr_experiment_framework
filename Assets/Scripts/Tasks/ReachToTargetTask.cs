@@ -35,6 +35,7 @@ public class ReachToTargetTask : BaseTask
     protected bool hasTimer;
 
     protected string tintColur;
+    public float rotation = 0; 
 
     public void Update()
     {
@@ -128,7 +129,7 @@ public class ReachToTargetTask : BaseTask
         if (ctrler.Session.CurrentBlock.settings.GetString("per_block_tintPresent") == "tc1"){
 
             float curTint = Convert.ToSingle(ctrler.PseudoRandom("per_block_tintPresent"));
-            float rotation = Convert.ToSingle(ctrler.PairPseudoRandom("per_block_rotation", "per_block_tintPresent"));
+            rotation = Convert.ToSingle(ctrler.PairPseudoRandom("per_block_rotation", "per_block_tintPresent"));
 
              tint.SetActive(true);
 

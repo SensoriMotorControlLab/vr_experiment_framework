@@ -164,8 +164,7 @@ public class ReachTrack : ReachToTargetTask
         Vector3 mousePoint = GetMousePoint(baseObject.transform);
         base.Update();
         ctrler.CursorController.Model.transform.position = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
-        baseObject.transform.position = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
-
+        baseObject.transform.position =Quaternion.Euler(0f, rotation, 0f) *  new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
         cur = baseObject.transform.localPosition;
         vel = (cur - prev) / Time.deltaTime;
         dist = vel.magnitude;
@@ -177,6 +176,20 @@ public class ReachTrack : ReachToTargetTask
         baseObject.transform.localRotation = Quaternion.Euler(rotationAxis * angle) * baseObject.transform.localRotation;
         //}
         VelocityTrack();
+
+        switch(currentStep){
+            case 0:
+                if(Mathf.Abs(targets[0].transform.localPosition.magnitude - baseObject.transform.localPosition.magnitude) < 0.001f){
+                    IncrementStep();
+                }
+                break;
+            case 1:
+                if(Mathf.Abs(targets[1].transform.localPosition.magnitude - baseObject.transform.localPosition.magnitude) < 0.001f){
+                    IncrementStep();
+                }
+                break;
+        }
+
 
         if (currentStep == 2)
         {
@@ -216,7 +229,7 @@ public class ReachTrack : ReachToTargetTask
 
         if (currentStep > 2 && !hasRotated)
         {
-            text.text = ("Max Vel: " + maxVel.ToString());
+            //text.text = ("Max Vel: " + maxVel.ToString());
             speedometer.transform.position = goal.transform.position + new Vector3(0, 0.02f, 0);
             speedometer.SetActive(true);
             //speedometer.transform.GetChild(0).transform.Rotate (0, velResult, 0);
