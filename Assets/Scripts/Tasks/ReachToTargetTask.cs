@@ -210,7 +210,7 @@ public class ReachToTargetTask : BaseTask
 
         // Set up the dock position
         targets.Add(GameObject.Find("Dock"));
-        targets[0].transform.localPosition = ctrler.TargetContainer.transform.localPosition+ ctrler.transform.forward * 0.05f;
+        targets[0].transform.localPosition = ctrler.TargetContainer.transform.localPosition;
 
         // Set up the home position
         targets.Add(GameObject.Find("Home"));
