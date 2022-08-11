@@ -45,7 +45,7 @@ public class ReachToTargetTask : BaseTask
             IncrementStep();
 
         if (currentStep == 2 &&
-            ctrler.CursorController.PauseTime > 0.5f &&
+            ctrler.CursorController.stillTime > 0.5f &&
             ctrler.CursorController.DistanceFromHome > 0.05f &&
             trial.settings.GetString("per_block_type") == "nocursor")
             IncrementStep();
@@ -210,7 +210,7 @@ public class ReachToTargetTask : BaseTask
 
         // Set up the dock position
         targets.Add(GameObject.Find("Dock"));
-        targets[0].transform.localPosition = ctrler.TargetContainer.transform.localPosition;
+        targets[0].transform.localPosition = ctrler.TargetContainer.transform.localPosition+ ctrler.transform.forward * 0.05f;
 
         // Set up the home position
         targets.Add(GameObject.Find("Home"));

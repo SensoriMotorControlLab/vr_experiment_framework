@@ -74,6 +74,8 @@ public class ExperimentController : MonoBehaviour
 
     public bool isPaused = false;
     public float pauseTimeLength = 10;
+
+    
     /// <summary>
     /// Gets the singleton instance of our experiment controller. Use it for
     /// Getting the state of the experiment (input, current trial, etc)
@@ -632,7 +634,7 @@ public class ExperimentController : MonoBehaviour
             else if (list.Count == 0)
             {
                 Debug.LogError(key +
-                             " contains no elements. Not possible to sort");
+                             " contains no elements. Not possible to select");
                 throw new NullReferenceException();
             }
             for (int i = 0; i < list.Count; i++)
@@ -656,10 +658,15 @@ public class ExperimentController : MonoBehaviour
     public object PairPseudoRandom(string key, string key2, object obj)
     {
         String listk = Session.CurrentBlock.settings.GetString(key, "");
+        Debug.Log(listk);
+        if(listk == null || listk == ""){
+            return 0;
+        }
+
         String listk2 = Session.CurrentBlock.settings.GetString(key2, "");
 
         List<object> list = Session.settings.GetObjectList(listk);
-        List<object> list2 = Session.settings.GetObjectList(listk2);
+        List<object> list2 = Session.settings.GetObjectList(listk2); 
 
         if (list2.Count > list.Count || list2.Count < list.Count)
         {
