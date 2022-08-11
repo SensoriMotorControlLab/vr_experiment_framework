@@ -4,7 +4,7 @@
   "track_score": true,
   "per_block_type": [
     "rotated",
-    "clamped",
+    "aligned",
     "rotated",
     "aligned",
     "rotated",
@@ -14,7 +14,7 @@
     "rotated"
   ],
   "per_block_rotation": [
-    "br1",
+    null,
     null,
     "br1",
     null,

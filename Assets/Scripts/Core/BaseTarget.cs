@@ -53,7 +53,9 @@ public class BaseTarget : MonoBehaviour
             switch (other.gameObject.tag)
             {
                 case "Hand":
-                    AdvanceStep();
+                    if(ctrler.CursorController.useHand == true){
+                        AdvanceStep();
+                    }
                     break;
                 case "Car":
                     AdvanceStep();

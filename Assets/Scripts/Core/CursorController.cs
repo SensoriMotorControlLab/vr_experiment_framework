@@ -37,7 +37,7 @@ public class CursorController : MonoBehaviour
 
     // Used to track hold time
     private Vector3 previousPosition;
-    public float PauseTime { get; private set; }
+    public float stillTime { get; private set; }
 
     // Returns the distance from the cursor to the home
     public float DistanceFromHome { get; private set; }
@@ -50,6 +50,7 @@ public class CursorController : MonoBehaviour
 
     // Bool for whether or not to use VR controllers as input for the cursor position
     public bool UseVR;
+    public bool useHand = true;
 
     public enum MovementType
     {
@@ -323,9 +324,9 @@ public class CursorController : MonoBehaviour
         transform.position = ConvertPosition(realHandPosition);
 
         if ((previousPosition - realHandPosition).magnitude > 0.001f)
-            PauseTime = 0f;
+            stillTime = 0f;
         else
-            PauseTime += Time.deltaTime;
+            stillTime += Time.deltaTime;
 
         previousPosition = realHandPosition;
 

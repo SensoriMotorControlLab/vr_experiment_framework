@@ -47,7 +47,7 @@ public class ReachTrack : ReachToTargetTask
     // Start is called before the first frame update
     public override void Setup()
     {
-        maxSteps = 4;
+        maxSteps = 5;
         ctrler = ExperimentController.Instance();
         trial = ctrler.Session.CurrentTrial;
         d = null;
@@ -139,6 +139,7 @@ public class ReachTrack : ReachToTargetTask
 
         ctrler.AddTrackedPosition("ball_path", baseObject);
         ctrler.AddTrackedBool("is_ball_outside", wasOutside);
+        ctrler.CursorController.useHand = false;
 
     }
 
@@ -161,9 +162,10 @@ public class ReachTrack : ReachToTargetTask
 
         Vector3 mousePoint = GetMousePoint(baseObject.transform);
         base.Update();
-        ctrler.CursorController.Model.transform.position = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
+        //ctrler.CursorController.Model.transform.position = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
+        Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
         //baseObject.transform.position = new Vector3(baseObject.transform.position.x, mousePoint.y, baseObject.transform.position.z);
-        baseObject.transform.position = ctrler.CursorController.ConvertPosition(ctrler.CursorController.Model.transform.position);
+        baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
         cur = baseObject.transform.localPosition;
         vel = (cur - prev) / Time.deltaTime;
         dist = vel.magnitude;
@@ -178,12 +180,14 @@ public class ReachTrack : ReachToTargetTask
 
         switch(currentStep){
             case 0:
-                if(Mathf.Abs(targets[0].transform.localPosition.magnitude - baseObject.transform.localPosition.magnitude) < 0.001f){
+                if(Mathf.Abs(targets[0].transform.localPosition.magnitude - baseObject.transform.localPosition.magnitude) < 0.001f 
+                && ctrler.CursorController.stillTime > 0.3f){
                     IncrementStep();
                 }
                 break;
             case 1:
-                if(Mathf.Abs(targets[1].transform.localPosition.magnitude - baseObject.transform.localPosition.magnitude) < 0.001f){
+                if(Mathf.Abs(targets[1].transform.localPosition.magnitude - baseObject.transform.localPosition.magnitude) < 0.001f 
+                && ctrler.CursorController.stillTime > 0.3f){
                     IncrementStep();
                 }
                 break;
@@ -206,7 +210,7 @@ public class ReachTrack : ReachToTargetTask
                     hasPlayed = false;
                 }
             }
-            if ( ctrler.CursorController.PauseTime > 0.3f &&
+            if ( ctrler.CursorController.stillTime > 0.3f &&
             Mathf.Abs(targets[2].transform.localPosition.magnitude - baseObject.transform.localPosition.magnitude) < 0.001f)
             {
                 sound.clip = ctrler.AudioClips["correct"];
@@ -225,12 +229,19 @@ public class ReachTrack : ReachToTargetTask
                 IncrementStep();
             }
                 break;
+
+            case 4:
+                targets[1].SetActive(true);
+                if(Mathf.Abs(targets[1].transform.localPosition.magnitude - baseObject.transform.localPosition.magnitude) < 0.001f 
+                    && ctrler.CursorController.stillTime > 0.3f){
+                    IncrementStep();
+                    }
+                break;
         }
 
         if (currentStep > 2 && !hasRotated)
         {
             speedometer.transform.position = goal.transform.position + new Vector3(0, 0.02f, 0);
-            speedometer.SetActive(true);
             hasRotated = true;
 
             // switch (velResult)
@@ -254,6 +265,7 @@ public class ReachTrack : ReachToTargetTask
 
             if (trackScore)
             {
+                speedometer.SetActive(true);
                 speedometer.transform.GetChild(3).GetComponent<TextMeshPro>().text = "+" + scoreTrack.ToString();
             }
             else

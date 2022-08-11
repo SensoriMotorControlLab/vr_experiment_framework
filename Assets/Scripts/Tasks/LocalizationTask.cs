@@ -33,7 +33,7 @@ public class LocalizationTask : BaseTask
         switch (currentStep)
         {
             // When the user holds their hand and they are outside the home, begin the next phase of localization
-            case 2 when ctrler.CursorController.PauseTime > 0.5f && 
+            case 2 when ctrler.CursorController.stillTime > 0.5f && 
                         ctrler.CursorController.DistanceFromHome > 0.01f:
                 IncrementStep();
                 break;
