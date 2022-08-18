@@ -213,8 +213,10 @@ public class ReachTrack : ReachToTargetTask
             if ( ctrler.CursorController.stillTime > 0.3f &&
             Mathf.Abs(targets[2].transform.localPosition.magnitude - baseObject.transform.localPosition.magnitude) < 0.001f)
             {
-                sound.clip = ctrler.AudioClips["correct"];
-                sound.Play();
+                if(!wasOutside){
+                    sound.clip = ctrler.AudioClips["correct"];
+                    sound.Play();
+                }   
                 if (trackScore)
                 {
                     if(wasOutside){
@@ -280,7 +282,7 @@ public class ReachTrack : ReachToTargetTask
 
     IEnumerator Wait()
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(0.5f);
         base.IncrementStep();
         LogParameters();
     }
