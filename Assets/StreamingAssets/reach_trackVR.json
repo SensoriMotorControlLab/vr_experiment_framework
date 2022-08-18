@@ -14,7 +14,7 @@
     "rotated"
   ],
   "per_block_rotation": [
-    null,
+    "br1",
     null,
     "br1",
     null,

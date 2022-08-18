@@ -184,14 +184,14 @@ public class ExperimentController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //if (Input.GetKeyDown(KeyCode.C))
-        //{
-        //    Debug.Log("Re-centered Experiment to: " + CursorController.transform.position);
-        //    transform.position = CursorController.RightHand.transform.position - Vector3.up * .075f;
-        //    // TODO: offset by ball height
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+           Debug.Log("Re-centered Experiment to: " + CursorController.transform.position);
+           transform.position = CursorController.RightHand.transform.position - Vector3.up * .075f;
+           // TODO: offset by ball height
 
-        //    StartCoroutine(TempDisableCursor());
-        //}
+           StartCoroutine(TempDisableCursor());
+        }
 
         if (Input.GetKeyDown(KeyCode.M))
             EndAndPrepare();
