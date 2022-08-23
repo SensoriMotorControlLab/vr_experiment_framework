@@ -105,6 +105,8 @@ public class PinballTask : BilliardsTask
 
     public LineRenderer line;
 
+    protected List<UnityEngine.XR.InputDevice> devices = new List<UnityEngine.XR.InputDevice>();
+
     void FixedUpdate()
     {
         // While the pinball is in motion
@@ -218,9 +220,8 @@ public class PinballTask : BilliardsTask
     }
 
     // Update is called once per frame
-    void Update()
+    protected virtual void Update()
     {
-        base.Update();
 
         //make sure that this is still centered on the exp controller
         switch (currentStep)
@@ -313,7 +314,7 @@ public class PinballTask : BilliardsTask
                         {
                             Vector3 hand = ctrler.CursorController.GetHandPosition();
 
-                            Debug.Log("trigger is down");
+                            //Debug.Log("trigger is down");
 
                             if (!flickStarted)
                             {
@@ -817,6 +818,23 @@ public class PinballTask : BilliardsTask
         // Add Pinball to tracked objects
         ctrler.AddTrackedPosition("pinball_path", pinball);
         ctrler.AddTrackedRotation("surface_tilt", Surface.transform.parent.gameObject);
+
+        //VIBRATE
+        if (ctrler.Session.CurrentBlock.settings.GetString("per_block_hand") == "l")
+        {
+            UnityEngine.XR.InputDevices.GetDevicesWithRole(UnityEngine.XR.InputDeviceRole.LeftHanded, devices);
+        }
+        else if (ctrler.Session.CurrentBlock.settings.GetString("per_block_hand") == "r")
+        {
+            UnityEngine.XR.InputDevices.GetDevicesWithRole(UnityEngine.XR.InputDeviceRole.RightHanded, devices);
+        }
+
+
+        // vibrate controller if trial in block is 1
+        //if (ctrler.Session.CurrentTrial.numberInBlock == 1)
+        //{
+            VibrateController(0, 0.9f, 0.5f, devices);
+        //}
     }
 
     private void SetTilt()

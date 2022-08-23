@@ -69,7 +69,7 @@ public abstract class BaseTask : MonoBehaviour
     public abstract void Disable();
 
 
-    protected void Update()
+    protected virtual void Update()
     {
         if (Input.GetKeyDown(KeyCode.C))
         {

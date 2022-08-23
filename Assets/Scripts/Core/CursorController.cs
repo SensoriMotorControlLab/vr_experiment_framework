@@ -384,7 +384,7 @@ public class CursorController : MonoBehaviour
         switch (MoveType)
         {
             case MovementType.aligned:
-                Debug.Log("aligned");
+                // Debug.Log("aligned");
                 return position;
             case MovementType.rotated:
 
