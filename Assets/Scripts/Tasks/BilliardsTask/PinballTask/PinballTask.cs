@@ -104,6 +104,8 @@ public class PinballTask : BilliardsTask
     private float timeBallTrackingStarts, timeHandTrackingStarts;
 
     public LineRenderer line;
+    protected List<UnityEngine.XR.InputDevice> devices = new List<UnityEngine.XR.InputDevice>();
+    protected AudioSource sound;
 
     void FixedUpdate()
     {
@@ -710,6 +712,7 @@ public class PinballTask : BilliardsTask
         handR = GameObject.Find("handR");
         handL.SetActive(false);
         handR.SetActive(false);
+        sound = pinballSpace.GetComponent<AudioSource>();
 
         float targetAngle = Convert.ToSingle(ctrler.PollPseudorandomList("per_block_targetListToUse"));
 
@@ -817,6 +820,27 @@ public class PinballTask : BilliardsTask
         // Add Pinball to tracked objects
         ctrler.AddTrackedPosition("pinball_path", pinball);
         ctrler.AddTrackedRotation("surface_tilt", Surface.transform.parent.gameObject);
+
+        //VIBRATE
+        if (ctrler.Session.CurrentBlock.settings.GetString("per_block_hand") == "l")
+        {
+            UnityEngine.XR.InputDevices.GetDevicesWithRole(UnityEngine.XR.InputDeviceRole.LeftHanded, devices);
+            sound.clip = ctrler.AudioClips["left hand"];
+            sound.Play();
+        }
+        else if (ctrler.Session.CurrentBlock.settings.GetString("per_block_hand") == "r")
+        {
+            UnityEngine.XR.InputDevices.GetDevicesWithRole(UnityEngine.XR.InputDeviceRole.RightHanded, devices);
+            sound.clip = ctrler.AudioClips["right hand"];
+            sound.Play();
+        }
+
+
+        // vibrate controller if trial in block is 1
+        //if (ctrler.Session.CurrentTrial.numberInBlock == 1)
+        //{
+            VibrateController(0, 0.9f, 0.5f, devices);
+        //}
     }
 
     private void SetTilt()

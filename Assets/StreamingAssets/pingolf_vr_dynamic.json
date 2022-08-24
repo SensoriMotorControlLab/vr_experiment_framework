@@ -1,11 +1,11 @@
 {
   "experiment_mode": "pinball_vr",
-  "optional_params": [ "per_trial_dynamic_tilt" ],
+  "optional_params": [ ],
   "exp_record_score": true,
   "per_block_type": [ "aligned", "aligned", "aligned", "aligned", "instruction", "aligned", "aligned", "instruction", "aligned", "aligned" ],
   "per_block_rotation": [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
   "per_block_n": [ 8, 8, 8, 4, 1, 4, 4, 1, 4, 4 ],
-  "per_block_hand": [ "r", "r", "r", "r", "r", "r", "r", "r", "r", "r" ],
+  "per_block_hand": [ "l", "r", "r", "r", "r", "r", "r", "r", "r", "r" ],
   "per_block_targetListToUse": [ "tl1", "tl1", "tl1", "tl1", "tl1", "tl1", "tl1", "tl1", "tl1", "tl1" ],
   "per_block_indicator_type": [ "arc", "arc", "arc", "arc", "spring", "arc", "spring", "arc", "spring", "arc" ],
   "per_block_fire_mode": [ "flick", "flick", "flick", "flick", "spring", "flick", "spring", "flick", "spring", "flick" ],
