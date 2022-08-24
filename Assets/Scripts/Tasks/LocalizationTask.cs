@@ -28,13 +28,14 @@ public class LocalizationTask : BaseTask
     public void LateUpdate()
     {
         ExperimentController ctrler = ExperimentController.Instance();
-
+        Debug.Log(ctrler.CursorController.transform.localPosition.z);
 
         switch (currentStep)
         {
             // When the user holds their hand and they are outside the home, begin the next phase of localization
             case 2 when ctrler.CursorController.stillTime > 0.5f && 
-                        ctrler.CursorController.DistanceFromHome > 0.01f:
+                        ctrler.CursorController.DistanceFromHome > 0.1f && ctrler.CursorController.transform.localPosition.z > 0:
+                        
                 IncrementStep();
                 break;
             case 3: 
@@ -83,7 +84,7 @@ public class LocalizationTask : BaseTask
                 // switch from click to enter or something? issue with clicking to refocus window
 
                 // If the user presses the trigger associated with the hand, we end the trial
-                if (ctrler.CursorController.IsTriggerDown(ctrler.CursorController.CurrentTaskHand) || Input.GetKeyDown(KeyCode.N) || Input.GetKeyDown(KeyCode.Space))
+                if (ctrler.CursorController.IsTriggerDown("l") || Input.GetKeyDown(KeyCode.N) || Input.GetKeyDown(KeyCode.Space))
                     IncrementStep();
 
                 break;
