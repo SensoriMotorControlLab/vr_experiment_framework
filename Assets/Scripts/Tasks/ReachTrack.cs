@@ -43,6 +43,8 @@ public class ReachTrack : ReachToTargetTask
     int scoreTrack;
     bool wasOutside = false;
 
+    float timer = 0.5f;
+
 
     // Start is called before the first frame update
     public override void Setup()
@@ -233,11 +235,18 @@ public class ReachTrack : ReachToTargetTask
                 break;
 
             case 4:
+             if (ctrler.Session.settings.GetObjectList("optional_params").Contains("return_visible")){
                 targets[1].SetActive(true);
                 if(Mathf.Abs(targets[1].transform.localPosition.magnitude - baseObject.transform.localPosition.magnitude) < 0.001f 
                     && ctrler.CursorController.stillTime > 0.3f){
                     IncrementStep();
                     }
+             }
+             else {
+                timer = 2f;
+                StartCoroutine(Wait());
+             }
+                
                 break;
         }
 
@@ -282,7 +291,7 @@ public class ReachTrack : ReachToTargetTask
 
     IEnumerator Wait()
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(timer);
         base.IncrementStep();
         LogParameters();
     }
