@@ -3,7 +3,7 @@
   "optional_params": ["return_visible"],
   "track_score": true,
   "per_block_type": [
-    "rotated",
+    "localization",
     "aligned",
     "rotated",
     "aligned",

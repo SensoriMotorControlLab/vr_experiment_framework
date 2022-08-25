@@ -32,6 +32,17 @@ public class LocalizationTask : BaseTask
 
         switch (currentStep)
         {
+            case 0:
+                targets[0].SetActive(true);
+                if (!ctrler.Session.settings.GetObjectList("optional_params").Contains("return_visible"))
+                    {
+                        // make the ball invisible
+                        ctrler.CursorController.Model.GetComponent<Renderer>().enabled = false;   
+                    }         
+                break;
+            case 1:
+                ctrler.CursorController.Model.GetComponent<Renderer>().enabled = true;  
+                break;
             // When the user holds their hand and they are outside the home, begin the next phase of localization
             case 2 when ctrler.CursorController.stillTime > 0.5f &&
                         ctrler.CursorController.DistanceFromHome > 0.1f && ctrler.CursorController.transform.localPosition.z > 0:
@@ -178,7 +189,7 @@ public class LocalizationTask : BaseTask
 
         // Set up the home position
         targets[1] = GameObject.Find("Home");
-        targets[1].transform.position = ctrler.TargetContainer.transform.position;
+        targets[1].transform.position = ctrler.TargetContainer.transform.position + ctrler.transform.forward * 0.05f;
         //targets[1].transform.position = new Vector3(ctrler.TargetContainer.transform.position.x, -0.250f, ctrler.TargetContainer.transform.position.z) + ctrler.transform.forward * 0.05f;
         targets[1].SetActive(false);
         Home = targets[1];
