@@ -75,7 +75,7 @@ public class ExperimentController : MonoBehaviour
     public bool isPaused = false;
     public float pauseTimeLength = 10;
 
-    
+
     /// <summary>
     /// Gets the singleton instance of our experiment controller. Use it for
     /// Getting the state of the experiment (input, current trial, etc)
@@ -173,7 +173,7 @@ public class ExperimentController : MonoBehaviour
 
             foreach (string key in trackedBoolResulta.Keys)
             {
-                Debug.Log("boolIndict: " + trackedBools[key]);
+                // Debug.Log("boolIndict: " + trackedBools[key]);
                 trackedBoolResulta[key].Add(trackedBools[key]);
             }
 
@@ -186,11 +186,11 @@ public class ExperimentController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.C))
         {
-           Debug.Log("Re-centered Experiment to: " + CursorController.transform.position);
-           transform.position = CursorController.RightHand.transform.position - Vector3.up * .075f;
-           // TODO: offset by ball height
+            Debug.Log("Re-centered Experiment to: " + CursorController.transform.position);
+            transform.position = CursorController.RightHand.transform.position - Vector3.up * .075f;
+            // TODO: offset by ball height
 
-           StartCoroutine(TempDisableCursor());
+            StartCoroutine(TempDisableCursor());
         }
 
         if (Input.GetKeyDown(KeyCode.M))
@@ -659,14 +659,15 @@ public class ExperimentController : MonoBehaviour
     {
         String listk = Session.CurrentBlock.settings.GetString(key, "");
         Debug.Log(listk);
-        if(listk == null || listk == ""){
+        if (listk == null || listk == "")
+        {
             return 0;
         }
 
         String listk2 = Session.CurrentBlock.settings.GetString(key2, "");
 
         List<object> list = Session.settings.GetObjectList(listk);
-        List<object> list2 = Session.settings.GetObjectList(listk2); 
+        List<object> list2 = Session.settings.GetObjectList(listk2);
 
         if (list2.Count > list.Count || list2.Count < list.Count)
         {

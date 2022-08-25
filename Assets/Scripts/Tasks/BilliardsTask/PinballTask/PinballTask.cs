@@ -245,7 +245,7 @@ public class PinballTask : BilliardsTask
                                 flickStartPos = mouse;
                                 flickStarted = true;
                                 ctrler.StartTimer();
-                            }    
+                            }
                             //pinballCam.GetComponent<Camera>().WorldToScreenPoint(pinball.transform.position),
                             //pinballCam.GetComponent<Camera>().WorldToScreenPoint(pinball.transform.position + new Vector3(indicatorLength, 0, 0))))
                             else if (Vector3.Distance(mouse, flickStartPos) > .1)
@@ -479,13 +479,13 @@ public class PinballTask : BilliardsTask
                             DynamicTilt(0); //tilt surface back to initial position - flat
                         }
 
-                        
+
 
                         // Set transform
                         if (enteredTarget)
                         {
                             if (dynamicTilt)
-                                pinball.transform.position = RotatePointAroundPivot(lastPositionInTarget, Surface.transform.parent.position, -dynamicTiltRotations[dynamicTiltRotations.Count-1]);
+                                pinball.transform.position = RotatePointAroundPivot(lastPositionInTarget, Surface.transform.parent.position, -dynamicTiltRotations[dynamicTiltRotations.Count - 1]);
                             else
                                 pinball.transform.position = lastPositionInTarget;
                         }
@@ -531,8 +531,8 @@ public class PinballTask : BilliardsTask
         }
         else // VR flick
         {
-            initialVelocity = ctrler.CursorController.GetVelocity();   
-            
+            initialVelocity = ctrler.CursorController.GetVelocity();
+
             // if magnitude of initialVelocity > #, then cap it at max Magnitude     
             if (initialVelocity.magnitude > MAX_MAGNITUDE)
             {
@@ -562,7 +562,7 @@ public class PinballTask : BilliardsTask
 
         flickEndTime = Time.time;
 
-        FirePinball();        
+        FirePinball();
     }
 
     private void FirePinball()
@@ -639,7 +639,7 @@ public class PinballTask : BilliardsTask
         ctrler.Session.CurrentTrial.result["indicator_angle"] = angle;
 
         // Magnitude is the distance (meters) on how much the participant pulled the spring back
-        ctrler.Session.CurrentTrial.result["magnitude"] = 
+        ctrler.Session.CurrentTrial.result["magnitude"] =
             (directionIndicator.transform.position - pinballStartPosition).magnitude;
 
         ctrler.Session.CurrentTrial.result["show_path"] =
@@ -692,7 +692,7 @@ public class PinballTask : BilliardsTask
 
         base.Setup();
 
-        pinball = GameObject.Find("Pinball"); 
+        pinball = GameObject.Find("Pinball");
         Home = GameObject.Find("PinballHome");
         Target = GameObject.Find("PinballTarget");
         pinballCam = GameObject.Find("PinballCamera");
@@ -720,7 +720,7 @@ public class PinballTask : BilliardsTask
 
         // checks if the current trial uses the obstacle and activates it if it does
         if (ctrler.Session.CurrentBlock.settings.GetBool("per_block_obstacle"))
-        {       
+        {
             obstacle.SetActive(true);
             // initializes the position
             obstacle.transform.position = new Vector3(0f, 0.065f, 0f);
@@ -780,8 +780,8 @@ public class PinballTask : BilliardsTask
             && !dynamicTilt)
             SetTilt();
 
-       /* if (ctrler.Session.settings.GetString("experiment_mode") != "pinball")
-            timerIndicator.transform.rotation = Quaternion.LookRotation(timerIndicator.transform.position - pinballCam.transform.position);*/
+        /* if (ctrler.Session.settings.GetString("experiment_mode") != "pinball")
+             timerIndicator.transform.rotation = Quaternion.LookRotation(timerIndicator.transform.position - pinballCam.transform.position);*/
 
         pinballStartPosition = pinball.transform.position;
 
@@ -792,7 +792,7 @@ public class PinballTask : BilliardsTask
         if (ctrler.Session.CurrentBlock.settings.GetString("per_block_indicator_type") == "arc")
         {
             directionIndicator.GetComponent<MeshRenderer>().enabled = false;
-            
+
         }
 
         if (ctrler.Session.CurrentBlock.settings.GetString("per_block_fire_mode") == "flick")
@@ -826,21 +826,22 @@ public class PinballTask : BilliardsTask
         {
             UnityEngine.XR.InputDevices.GetDevicesWithRole(UnityEngine.XR.InputDeviceRole.LeftHanded, devices);
             sound.clip = ctrler.AudioClips["left hand"];
-            sound.Play();
         }
         else if (ctrler.Session.CurrentBlock.settings.GetString("per_block_hand") == "r")
         {
             UnityEngine.XR.InputDevices.GetDevicesWithRole(UnityEngine.XR.InputDeviceRole.RightHanded, devices);
             sound.clip = ctrler.AudioClips["right hand"];
-            sound.Play();
         }
 
 
-        // vibrate controller if trial in block is 1
-        //if (ctrler.Session.CurrentTrial.numberInBlock == 1)
-        //{
-            VibrateController(0, 0.9f, 0.5f, devices);
-        //}
+        // play audio clip if first trial in block
+        if (ctrler.Session.CurrentTrial.numberInBlock == 1)
+        {
+            sound.Play();
+        }
+        // vibrate the controller
+        VibrateController(0, 0.9f, 0.25f, devices);
+
     }
 
     private void SetTilt()
@@ -857,7 +858,7 @@ public class PinballTask : BilliardsTask
         SetDynamicTilt(Surface.transform.parent.gameObject, surfaceTilt); //Tilt surface
 
         //Tilt VR Camera if needed
-        if (ctrler.Session.settings.GetString("experiment_mode") == "pinball_vr") 
+        if (ctrler.Session.settings.GetString("experiment_mode") == "pinball_vr")
         {
             //XRRig.transform.RotateAround(Home.transform.position + Vector3.up * 0.25f, pinballSpace.transform.forward,
             //   cameraTilt + surfaceTilt);
@@ -970,7 +971,7 @@ public class PinballTask : BilliardsTask
             );
         */
         // Positions that are saved for data collection
-        
+
         Gizmos.color = Color.green;
         Gizmos.DrawSphere(
             lastPositionInTarget - ctrler.transform.position, 0.02f

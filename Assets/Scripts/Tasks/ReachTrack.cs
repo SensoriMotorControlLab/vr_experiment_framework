@@ -154,7 +154,7 @@ public class ReachTrack : ReachToTargetTask
     // Update is called once per frame
     void Update()
     {
-        Debug.Log("wasoutside: " + wasOutside);
+        // Debug.Log("wasoutside: " + wasOutside);
         UnityEngine.XR.InputDevices.GetDevicesWithRole(UnityEngine.XR.InputDeviceRole.RightHanded, devices);
         if (currentStep > 1)
         {
@@ -180,73 +180,96 @@ public class ReachTrack : ReachToTargetTask
         //}
         //VelocityTrack();
 
-        switch(currentStep){
+        switch (currentStep)
+        {
             case 0:
-                if(Mathf.Abs(targets[0].transform.localPosition.magnitude - baseObject.transform.localPosition.magnitude) < 0.001f 
-                && ctrler.CursorController.stillTime > 0.3f){
+                if (ctrler.Session.settings.GetObjectList("optional_params").Contains("return_visible"))
+                {
+                    // do nothing     
+                }
+                else
+                {
+                    // make the ball invisible
+                    baseObject.GetComponent<Renderer>().enabled = false;
+                }
+
+                if (Mathf.Abs(targets[0].transform.localPosition.magnitude - baseObject.transform.localPosition.magnitude) < 0.001f
+                && ctrler.CursorController.stillTime > 0.3f)
+                {
+                    // make the ball visible
+                    baseObject.GetComponent<Renderer>().enabled = false;
                     IncrementStep();
                 }
                 break;
             case 1:
-                if(Mathf.Abs(targets[1].transform.localPosition.magnitude - baseObject.transform.localPosition.magnitude) < 0.001f 
-                && ctrler.CursorController.stillTime > 0.3f){
+                if (Mathf.Abs(targets[1].transform.localPosition.magnitude - baseObject.transform.localPosition.magnitude) < 0.001f
+                && ctrler.CursorController.stillTime > 0.3f)
+                {
                     IncrementStep();
                 }
                 break;
             case 2:
-            ray.transform.position = baseObject.transform.position;
-            if (Physics.Raycast(ray.transform.position, -ray.transform.up, out RaycastHit hit, 0.1f))
-            {
-                if (hit.collider.gameObject.name == "Surface" && !hasPlayed)
+                ray.transform.position = baseObject.transform.position;
+                if (Physics.Raycast(ray.transform.position, -ray.transform.up, out RaycastHit hit, 0.1f))
                 {
-                    baseObject.GetComponent<Renderer>().material.color = Color.gray;
-                    sound.clip = ctrler.AudioClips["incorrect"];
-                    sound.Play();
-                    hasPlayed = true;
-                    wasOutside = true;
-                    VibrateController(0, 0.34f, 0.15f, devices);
-                }
-                else if (hit.collider.gameObject.name == "soccer")
-                {
-                    baseObject.GetComponent<Renderer>().material.color = Color.white;
-                    hasPlayed = false;
-                }
-            }
-            if ( ctrler.CursorController.stillTime > 0.3f &&
-            Mathf.Abs(targets[2].transform.localPosition.magnitude - baseObject.transform.localPosition.magnitude) < 0.001f)
-            {
-                if(!wasOutside){
-                    sound.clip = ctrler.AudioClips["correct"];
-                    sound.Play();
-                }   
-                if (trackScore)
-                {
-                    if(wasOutside){
-                        scoreTrack = 0;
-                    }
-                    else
+                    if (hit.collider.gameObject.name == "Surface" && !hasPlayed)
                     {
-                        scoreTrack = 5;
+                        baseObject.GetComponent<Renderer>().material.color = Color.gray;
+                        sound.clip = ctrler.AudioClips["incorrect"];
+                        sound.Play();
+                        hasPlayed = true;
+                        wasOutside = true;
+                        VibrateController(0, 0.34f, 0.15f, devices);
                     }
-                    ctrler.Score += scoreTrack;
+                    else if (hit.collider.gameObject.name == "soccer")
+                    {
+                        baseObject.GetComponent<Renderer>().material.color = Color.white;
+                        hasPlayed = false;
+                    }
                 }
-                IncrementStep();
-            }
+                if (ctrler.CursorController.stillTime > 0.3f &&
+                Mathf.Abs(targets[2].transform.localPosition.magnitude - baseObject.transform.localPosition.magnitude) < 0.001f)
+                {
+                    if (!wasOutside)
+                    {
+                        sound.clip = ctrler.AudioClips["correct"];
+                        sound.Play();
+                    }
+                    if (trackScore)
+                    {
+                        if (wasOutside)
+                        {
+                            scoreTrack = 0;
+                        }
+                        else
+                        {
+                            scoreTrack = 5;
+                        }
+                        ctrler.Score += scoreTrack;
+                    }
+                    IncrementStep();
+                }
                 break;
 
             case 4:
-             if (ctrler.Session.settings.GetObjectList("optional_params").Contains("return_visible")){
-                targets[1].SetActive(true);
-                if(Mathf.Abs(targets[1].transform.localPosition.magnitude - baseObject.transform.localPosition.magnitude) < 0.001f 
-                    && ctrler.CursorController.stillTime > 0.3f){
-                    IncrementStep();
+                if (ctrler.Session.settings.GetObjectList("optional_params").Contains("return_visible"))
+                {
+                    targets[1].SetActive(true);
+                    if (Mathf.Abs(targets[1].transform.localPosition.magnitude - baseObject.transform.localPosition.magnitude) < 0.001f
+                        && ctrler.CursorController.stillTime > 0.3f)
+                    {
+                        IncrementStep();
                     }
-             }
-             else {
-                timer = 2f;
-                StartCoroutine(Wait());
-             }
-                
+                }
+                else
+                {
+                    // make the ball invisible
+                    baseObject.GetComponent<Renderer>().enabled = false;
+
+                    timer = 1f;
+                    StartCoroutine(Wait());
+                }
+
                 break;
         }
 

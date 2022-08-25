@@ -73,30 +73,30 @@ public class CursorController : MonoBehaviour
         List<InputDevice> devices = new List<InputDevice>();
         //InputDevices.GetDevices(devices);
 
-/*        InputDevices.GetDevicesWithCharacteristics(InputDeviceCharacteristics.Right, devices);
-        if (devices.Count > 0)
-        {
-            RightHandDevice = devices[0];
-            Debug.Log("Detecting devices...");
-            Debug.Log("Found Right Device: " + RightHandDevice);
-        }
-        else
-        {
-            Debug.Log("No devices detected.");
-        }
+        /*        InputDevices.GetDevicesWithCharacteristics(InputDeviceCharacteristics.Right, devices);
+                if (devices.Count > 0)
+                {
+                    RightHandDevice = devices[0];
+                    Debug.Log("Detecting devices...");
+                    Debug.Log("Found Right Device: " + RightHandDevice);
+                }
+                else
+                {
+                    Debug.Log("No devices detected.");
+                }
 
 
-        InputDevices.GetDevicesWithCharacteristics(InputDeviceCharacteristics.Left, devices);
-        if (devices.Count > 0)
-        {
-            LeftHandDevice = devices[0];
-            Debug.Log("Detecting devices...");
-            Debug.Log("Found Left Device: " + LeftHandDevice);
-        }
-        else
-        {
-            Debug.Log("No devices detected.");
-        }*/
+                InputDevices.GetDevicesWithCharacteristics(InputDeviceCharacteristics.Left, devices);
+                if (devices.Count > 0)
+                {
+                    LeftHandDevice = devices[0];
+                    Debug.Log("Detecting devices...");
+                    Debug.Log("Found Left Device: " + LeftHandDevice);
+                }
+                else
+                {
+                    Debug.Log("No devices detected.");
+                }*/
 
 
         vrCamera = GameObject.Find("Main Camera");
@@ -165,18 +165,22 @@ public class CursorController : MonoBehaviour
         return IsTriggerDown(CurrentTaskHand);
     }
 
-    public Vector2 Get2DAxis(){
+    public Vector2 Get2DAxis()
+    {
         LeftHandDevice.TryGetFeatureValue(CommonUsages.primary2DAxis, out Vector2 left2DAxis);
         return left2DAxis;
     }
 
     public bool IsTriggerDown(String hand)
     {
-        if (hand == "l") {
+        if (hand == "l")
+        {
             return LeftHandDevice == null
                 ? false
                 : LeftHandDevice.TryGetFeatureValue(CommonUsages.triggerButton, out bool val) && val;
-        } else {
+        }
+        else
+        {
 
             return RightHandDevice == null
                 ? false
@@ -190,7 +194,7 @@ public class CursorController : MonoBehaviour
     {
         return OnTriggerUp(CurrentTaskHand);
     }
-    
+
     public bool OnTriggerUp(String hand)
     {
         if (hand == "l")
@@ -198,7 +202,9 @@ public class CursorController : MonoBehaviour
             return LeftHandDevice == null
                 ? false
                 : !LeftHandDevice.TryGetFeatureValue(CommonUsages.triggerButton, out bool val) && prevLeftTrigger;
-        } else {
+        }
+        else
+        {
             return RightHandDevice == null
                 ? false
                 : !RightHandDevice.TryGetFeatureValue(CommonUsages.triggerButton, out bool val) && prevRightTrigger;
@@ -306,7 +312,7 @@ public class CursorController : MonoBehaviour
             if (!IsPressed)
             {
                 IsPressed = true;
-                Debug.Log("Trig down now");
+                // Debug.Log("Trig down now");
             }
         }
         else if (IsPressed) // check for button release
@@ -318,7 +324,7 @@ public class CursorController : MonoBehaviour
 
         if (ExperimentController.Instance().CurrentTask == null) return;
 
-        Vector3 realHandPosition = GetHandPosition(); 
+        Vector3 realHandPosition = GetHandPosition();
 
         // Update the position of the cursor depending on which hand is involved
         transform.position = ConvertPosition(realHandPosition);
@@ -362,7 +368,7 @@ public class CursorController : MonoBehaviour
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.transform.position.z));
         return new Vector3(mousePos.x, ExperimentController.Instance().transform.position.y, mousePos.z);
     }
-  
+
     /// <summary>
     /// Converts the user's hand location into the transformed cursor location
     /// </summary>
@@ -374,26 +380,28 @@ public class CursorController : MonoBehaviour
         // Get home position. Returns Vector3.zero when task doesn't use a home position
         Vector3 home = ctrler.CurrentTask.Home != null ?
             ctrler.CurrentTask.Home.transform.position : Vector3.zero;
-        
+
         switch (MoveType)
         {
             case MovementType.aligned:
-            Debug.Log("aligned");
+                // Debug.Log("aligned");
                 return position;
             case MovementType.rotated:
-                
-                if(ctrler.Session.CurrentBlock.settings.GetString("per_block_rotation") is string){
+
+                if (ctrler.Session.CurrentBlock.settings.GetString("per_block_rotation") is string)
+                {
                     float angle = ctrler.CurrentTask.GetRotation();
                     Debug.Log(angle);
                     return Quaternion.Euler(0, -angle, 0) * (position - home) + home;
                 }
-                else{
+                else
+                {
                     float angle = ctrler.Session.CurrentTrial.settings
                     .GetFloat("per_block_rotation");
 
                     return Quaternion.Euler(0, -angle, 0) * (position - home) + home;
                 }
-                
+
             case MovementType.clamped:
                 // Get vector between home position and target
                 Vector3 target = ctrler.CurrentTask.Target.transform.position;
@@ -444,12 +452,12 @@ public class CursorController : MonoBehaviour
         Plane plane = new Plane(planeNormal.normalized, planePos);
         Ray r;
         if (ctrller.y <= planePos.y)
-        {        
+        {
             r = new Ray(ctrller, Vector3.up);
         }
         else
-        {         
-           r = new Ray(ctrller, Vector3.down);
+        {
+            r = new Ray(ctrller, Vector3.down);
         }
 
         return plane.Raycast(r, out float enter) ? r.GetPoint(enter) : Vector3.zero;

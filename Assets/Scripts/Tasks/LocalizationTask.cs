@@ -28,17 +28,17 @@ public class LocalizationTask : BaseTask
     public void LateUpdate()
     {
         ExperimentController ctrler = ExperimentController.Instance();
-        Debug.Log(ctrler.CursorController.transform.localPosition.z);
+        // Debug.Log(ctrler.CursorController.transform.localPosition.z);
 
         switch (currentStep)
         {
             // When the user holds their hand and they are outside the home, begin the next phase of localization
-            case 2 when ctrler.CursorController.stillTime > 0.5f && 
+            case 2 when ctrler.CursorController.stillTime > 0.5f &&
                         ctrler.CursorController.DistanceFromHome > 0.1f && ctrler.CursorController.transform.localPosition.z > 0:
-                        
+
                 IncrementStep();
                 break;
-            case 3: 
+            case 3:
                 // VR: User uses their head to localize their hand
                 // Non-VR: User uses horizontal axis to localize their mouse
 
@@ -47,24 +47,26 @@ public class LocalizationTask : BaseTask
                     // raycasts from camera to set localizer position
                     Plane plane = new Plane(Vector3.down, ctrler.transform.position.y);
                     Ray r = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
-                    if (ctrler.Session.settings.GetObjectList("optional_params").Contains("localize_via_gaze")){
+                    if (ctrler.Session.settings.GetObjectList("optional_params").Contains("localize_via_gaze"))
+                    {
                         if (plane.Raycast(r, out float hit))
                             localizer.transform.position = r.GetPoint(hit);
                     }
-                    else{
-                        if(ctrler.CursorController.Get2DAxis().magnitude > 0)
+                    else
+                    {
+                        if (ctrler.CursorController.Get2DAxis().magnitude > 0)
                             locX += ctrler.CursorController.Get2DAxis().x * 0.002f;
-                            locZ += ctrler.CursorController.Get2DAxis().y * 0.002f;
-                            localizer.transform.position = new Vector3(locX, 0, locZ) + targets[2].transform.position;
-                    }              
+                        locZ += ctrler.CursorController.Get2DAxis().y * 0.002f;
+                        localizer.transform.position = new Vector3(locX, 0, locZ) + targets[2].transform.position;
+                    }
                 }
                 else
                 {
-                    
+
                     // A/D keys, left/right arrow keys, or gamepad joystick as input
                     locX += Input.GetAxisRaw("Horizontal") * localizerSpeed2D;
                     locZ += Input.GetAxisRaw("Vertical") * localizerSpeed2D;
-                    locX = Mathf.Clamp(locX, -90f, 90f); 
+                    locX = Mathf.Clamp(locX, -90f, 90f);
 
                     float angle = locX * Mathf.Deg2Rad;
 
@@ -167,7 +169,7 @@ public class LocalizationTask : BaseTask
 
         localizationCam = GameObject.Find("LocalizationCamera");
         localizationSurface = GameObject.Find("Surface");
-        
+
 
         // Set up the dock position
         targets[0] = GameObject.Find("Dock");
@@ -204,7 +206,7 @@ public class LocalizationTask : BaseTask
         localizer.GetComponent<SphereCollider>().enabled = false;
         localizer.GetComponent<BaseTarget>().enabled = false;
         localizer.SetActive(false);
-        
+
 
         localizer.transform.SetParent(ctrler.TargetContainer.transform);
         localizer.name = "Localizer";
@@ -238,7 +240,7 @@ public class LocalizationTask : BaseTask
     protected override void OnDestroy()
     {
         foreach (GameObject g in targets)
-             Destroy(g);
+            Destroy(g);
 
         Destroy(localizer);
 
