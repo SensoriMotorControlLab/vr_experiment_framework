@@ -38,10 +38,20 @@ public class LocalizationTask : BaseTask
                     {
                         // make the ball invisible
                         ctrler.CursorController.Model.GetComponent<Renderer>().enabled = false;   
-                    }         
+                    }
+                if(Mathf.Abs(targets[0].transform.localPosition.magnitude - ctrler.CursorController.transform.localPosition.magnitude) < 0.001f
+                                && ctrler.CursorController.stillTime > 0.3f)
+                {
+                    ctrler.CursorController.Model.GetComponent<Renderer>().enabled = true;
+                    IncrementStep();
+                }         
                 break;
             case 1:
-                ctrler.CursorController.Model.GetComponent<Renderer>().enabled = true;  
+                  if(Mathf.Abs(targets[1].transform.localPosition.magnitude - ctrler.CursorController.transform.localPosition.magnitude) < 0.001f
+                                && ctrler.CursorController.stillTime > 0.3f)
+                {
+                    IncrementStep();
+                }
                 break;
             // When the user holds their hand and they are outside the home, begin the next phase of localization
             case 2 when ctrler.CursorController.stillTime > 0.5f &&
