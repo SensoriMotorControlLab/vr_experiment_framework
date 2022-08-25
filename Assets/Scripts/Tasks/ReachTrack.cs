@@ -183,21 +183,17 @@ public class ReachTrack : ReachToTargetTask
         switch (currentStep)
         {
             case 0:
-                if (ctrler.Session.settings.GetObjectList("optional_params").Contains("return_visible"))
-                {
-                    // do nothing     
-                }
-                else
+                if (!ctrler.Session.settings.GetObjectList("optional_params").Contains("return_visible"))
                 {
                     // make the ball invisible
-                    baseObject.GetComponent<Renderer>().enabled = false;
+                    baseObject.GetComponent<Renderer>().enabled = false;   
                 }
 
                 if (Mathf.Abs(targets[0].transform.localPosition.magnitude - baseObject.transform.localPosition.magnitude) < 0.001f
                 && ctrler.CursorController.stillTime > 0.3f)
                 {
                     // make the ball visible
-                    baseObject.GetComponent<Renderer>().enabled = false;
+                    baseObject.GetComponent<Renderer>().enabled = true;
                     IncrementStep();
                 }
                 break;
@@ -263,9 +259,6 @@ public class ReachTrack : ReachToTargetTask
                 }
                 else
                 {
-                    // make the ball invisible
-                    baseObject.GetComponent<Renderer>().enabled = false;
-
                     timer = 1f;
                     StartCoroutine(Wait());
                 }

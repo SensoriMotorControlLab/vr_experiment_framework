@@ -1,9 +1,9 @@
 {
   "experiment_mode": "targetTrack",
-  "optional_params": ["vr"],
+  "optional_params": ["return_visible"],
   "track_score": true,
   "per_block_type": [
-    "localization",
+    "rotated",
     "aligned",
     "rotated",
     "aligned",
