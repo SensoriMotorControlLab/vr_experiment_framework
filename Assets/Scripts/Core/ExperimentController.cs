@@ -75,6 +75,8 @@ public class ExperimentController : MonoBehaviour
     public bool isPaused = false;
     public float pauseTimeLength = 10;
 
+    private Vector3 exp_centre_pos;
+
 
     /// <summary>
     /// Gets the singleton instance of our experiment controller. Use it for
@@ -181,17 +183,23 @@ public class ExperimentController : MonoBehaviour
         }
     }
 
+    public void CentreExperiment(Vector3 centre){
+        exp_centre_pos = centre;
+        transform.position = exp_centre_pos;
+        StartCoroutine(TempDisableCursor());
+    }
+
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            Debug.Log("Re-centered Experiment to: " + CursorController.transform.position);
-            transform.position = CursorController.RightHand.transform.position - Vector3.up * .075f;
-            // TODO: offset by ball height
+        // if (Input.GetKeyDown(KeyCode.C))
+        // {
+        //     Debug.Log("Re-centered Experiment to: " + CursorController.transform.position);
+        //     transform.position = CursorController.RightHand.transform.position - Vector3.up * .075f;
+        //     // TODO: offset by ball height
 
-            StartCoroutine(TempDisableCursor());
-        }
+        //     StartCoroutine(TempDisableCursor());
+        // }
 
         if (Input.GetKeyDown(KeyCode.M))
             EndAndPrepare();

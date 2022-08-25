@@ -174,6 +174,8 @@ public class LocalizationTask : BaseTask
         ExperimentController.Instance().LogObjectPosition("loc", localizer.transform.localPosition);
     }
 
+        
+    
     public override void Setup()
     {
         ExperimentController ctrler = ExperimentController.Instance();
