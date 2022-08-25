@@ -66,6 +66,8 @@ public class PinballTask : BilliardsTask
 
     private const float PINBALL_FIRE_FORCE = 15f;
 
+    public float table_height = 0;
+
     // Plane that is parallel to the environment plane
     private Plane pPlane;
 
@@ -511,6 +513,15 @@ public class PinballTask : BilliardsTask
         }
 
         if (Finished) ctrler.EndAndPrepare();
+
+        if (Input.GetKeyDown(KeyCode.C)){
+            Centre();
+        }
+    }
+
+    protected void Centre(){
+        Vector3 pos = new Vector3 (ctrler.CursorController.transform.position.x, table_height, ctrler.CursorController.transform.position.z);
+        ctrler.CentreExperiment(pos);
     }
 
     private void FlickPinball()

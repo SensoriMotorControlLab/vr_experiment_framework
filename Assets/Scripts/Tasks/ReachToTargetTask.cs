@@ -66,6 +66,15 @@ public class ReachToTargetTask : BaseTask
         {
             targets[1].SetActive(true);
         }
+
+        if (Input.GetKeyDown(KeyCode.C)){
+            Centre();
+        }
+    }
+
+    protected void Centre(){
+        Vector3 pos = new Vector3 (ctrler.CursorController.transform.position.x, 0, ctrler.CursorController.transform.position.z);
+        ctrler.CentreExperiment(pos + ctrler.CursorController.transform.forward * 0.025f);
     }
 
     public override bool IncrementStep()
@@ -218,11 +227,11 @@ public class ReachToTargetTask : BaseTask
 
         // Set up the dock position
         targets.Add(GameObject.Find("Dock"));
-        targets[0].transform.localPosition = ctrler.TargetContainer.transform.localPosition + ctrler.transform.forward * 0.025f;
+        targets[0].transform.localPosition = ctrler.TargetContainer.transform.localPosition - ctrler.transform.forward * 0.025f;
 
         // Set up the home position
         targets.Add(GameObject.Find("Home"));
-        targets[1].transform.localPosition = ctrler.TargetContainer.transform.localPosition + ctrler.transform.forward * 0.05f;
+        targets[1].transform.localPosition = ctrler.TargetContainer.transform.localPosition;
         targets[1].SetActive(false);
         Home = targets[1];
 
