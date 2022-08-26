@@ -24,6 +24,10 @@ public class ReachTrack : ReachToTargetTask
     float dist;
     float angle;
     Vector3 rotationAxis = new Vector3();
+
+    float hold_still_time = 0.3f;
+    protected float req_targ_accuracy = 0.005f;
+
     float maxVel = 0;
     Vector3 newPos;
     Vector3 prevPos;
@@ -194,8 +198,8 @@ public class ReachTrack : ReachToTargetTask
                     baseObject.GetComponent<Renderer>().enabled = false;
                 }
 
-                if (Mathf.Abs(targets[0].transform.localPosition.magnitude - baseObject.transform.localPosition.magnitude) < 0.001f
-                && ctrler.CursorController.stillTime > 0.3f)
+                if (Mathf.Abs(targets[0].transform.localPosition.magnitude - baseObject.transform.localPosition.magnitude) < req_targ_accuracy
+                && ctrler.CursorController.stillTime > hold_still_time)
                 {
                     // make the ball visible
                     baseObject.GetComponent<Renderer>().enabled = true;
@@ -203,8 +207,8 @@ public class ReachTrack : ReachToTargetTask
                 }
                 break;
             case 1:
-                if (Mathf.Abs(targets[1].transform.localPosition.magnitude - baseObject.transform.localPosition.magnitude) < 0.001f
-                && ctrler.CursorController.stillTime > 0.3f)
+                if (Mathf.Abs(targets[1].transform.localPosition.magnitude - baseObject.transform.localPosition.magnitude) < req_targ_accuracy
+                && ctrler.CursorController.stillTime > hold_still_time)
                 {
                     IncrementStep();
                 }
@@ -228,8 +232,8 @@ public class ReachTrack : ReachToTargetTask
                         hasPlayed = false;
                     }
                 }
-                if (ctrler.CursorController.stillTime > 0.3f &&
-                Mathf.Abs(targets[2].transform.localPosition.magnitude - baseObject.transform.localPosition.magnitude) < 0.001f)
+                if (ctrler.CursorController.stillTime > hold_still_time &&
+                Mathf.Abs(targets[2].transform.localPosition.magnitude - baseObject.transform.localPosition.magnitude) < req_targ_accuracy)
                 {
                     if (!wasOutside)
                     {
@@ -256,8 +260,8 @@ public class ReachTrack : ReachToTargetTask
                 if (ctrler.Session.settings.GetObjectList("optional_params").Contains("return_visible"))
                 {
                     targets[1].SetActive(true);
-                    if (Mathf.Abs(targets[1].transform.localPosition.magnitude - baseObject.transform.localPosition.magnitude) < 0.001f
-                        && ctrler.CursorController.stillTime > 0.3f)
+                    if (Mathf.Abs(targets[1].transform.localPosition.magnitude - baseObject.transform.localPosition.magnitude) < req_targ_accuracy
+                        && ctrler.CursorController.stillTime > hold_still_time)
                     {
                         IncrementStep();
                     }

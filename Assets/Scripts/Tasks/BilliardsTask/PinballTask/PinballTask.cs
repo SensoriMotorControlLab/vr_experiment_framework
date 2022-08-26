@@ -62,7 +62,7 @@ public class PinballTask : BilliardsTask
     private float indicatorLength = 0.2f;
 
     private float trialTimer;
-    private const float MAX_TRIAL_TIME = 2.0f;
+    private const float MAX_TRIAL_TIME = 10.0f;
 
     private const float PINBALL_FIRE_FORCE = 15f;
 
@@ -97,7 +97,7 @@ public class PinballTask : BilliardsTask
     private Vector3 flickStartPos;
     private bool flickStarted = false;
     // The max distance before a VR flick automatically ends
-    private float flickCutoff = 0.15f;
+    private float flickCutoff = 0.17f;
     private const float VR_FLICK_FIRE_FORCE = 2f;
     private const float MAX_MAGNITUDE = 4f;
 
@@ -108,6 +108,168 @@ public class PinballTask : BilliardsTask
     public LineRenderer line;
     protected List<UnityEngine.XR.InputDevice> devices = new List<UnityEngine.XR.InputDevice>();
     protected AudioSource sound;
+
+    public override void Setup()
+    {
+        maxSteps = 3;
+
+        ctrler = ExperimentController.Instance();
+
+        pinballSpace = Instantiate(ctrler.GetPrefab("PinballPrefab"));
+
+        base.Setup();
+
+        pinball = GameObject.Find("Pinball");
+        Home = GameObject.Find("PinballHome");
+        Target = GameObject.Find("PinballTarget");
+        pinballCam = GameObject.Find("PinballCamera");
+        directionIndicator = GameObject.Find("PinballSpring");
+        directionIndicator.SetActive(false);
+        arcIndicator = GameObject.Find("ArcTarget").GetComponent<ArcScript>();
+        arcIndicator.gameObject.SetActive(false);
+        XRRig = GameObject.Find("XR Rig");
+        pinballWall = GameObject.Find("PinballWall");
+        XRPosLock = GameObject.Find("XRPosLock");
+        XRCamOffset = GameObject.Find("Dummy Camera");
+
+        bonusText = GameObject.Find("BonusText");
+        obstacle = GameObject.Find("Obstacle");
+        pinballSurface = GameObject.Find("Surface");
+        handL = GameObject.Find("handL");
+        handR = GameObject.Find("handR");
+        handL.SetActive(false);
+        handR.SetActive(false);
+        sound = pinballSpace.GetComponent<AudioSource>();
+
+        float targetAngle = Convert.ToSingle(ctrler.PollPseudorandomList("per_block_targetListToUse"));
+
+        SetTargetPosition(targetAngle);
+
+        // checks if the current trial uses the obstacle and activates it if it does
+        if (ctrler.Session.CurrentBlock.settings.GetBool("per_block_obstacle"))
+        {
+            obstacle.SetActive(true);
+            // initializes the position
+            obstacle.transform.position = new Vector3(0f, 0.065f, 0f);
+            //rotates the object
+            obstacle.transform.rotation = Quaternion.Euler(0f, -targetAngle + 90f, 0f);
+            //moves object forward towards the direction it is facing
+            obstacle.transform.position += Target.transform.forward.normalized * (TARGET_DISTANCE / 2);
+        }
+        else
+        {
+            obstacle.SetActive(false);
+        }
+
+        // Use static camera for non-vr version of pinball
+        if (ctrler.Session.settings.GetString("experiment_mode") == "pinball")
+        {
+            // Setup Pinball Camera Offset
+            pinballCam.transform.position = pinballCamOffset;
+            pinballCam.transform.rotation = Quaternion.Euler(pinballAngle, 0f, 0f);
+
+            ctrler.CursorController.SetVRCamera(false);
+        }
+        else
+        {
+            ctrler.CursorController.UseVR = true;
+            pinballCam.SetActive(false);
+            ctrler.CursorController.SetCursorVisibility(false);
+
+            scoreboard.transform.position += Vector3.up * 0.33f;
+
+            if (ctrler.Session.CurrentBlock.settings.GetString("per_block_hand") == "l")
+            {
+                handL.SetActive(true);
+            }
+            else
+            {
+                handR.SetActive(true);
+            }
+        }
+
+        // Cutoff distance is 70cm more than the distance to the target
+        cutoffDistance = 0.70f + TARGET_DISTANCE;
+
+        currentHand = ctrler.CursorController.CurrentHand();
+
+        // Parent to experiment controller
+        pinballSpace.transform.SetParent(ctrler.transform);
+        pinballSpace.transform.localPosition = Vector3.zero;
+
+        line = GameObject.Find("DefaultLine").GetComponent<LineRenderer>();
+
+        // Setup line renderer for pinball path
+        line.startWidth = line.endWidth = 0.015f;
+
+        // Should the tilt be shown to the participant before they release the pinball?
+        if (!ctrler.Session.CurrentBlock.settings.GetBool("per_block_tilt_after_fire")
+            && !dynamicTilt)
+            SetTilt();
+
+        /* if (ctrler.Session.settings.GetString("experiment_mode") != "pinball")
+             timerIndicator.transform.rotation = Quaternion.LookRotation(timerIndicator.transform.position - pinballCam.transform.position);*/
+
+        pinballStartPosition = pinball.transform.position;
+
+        timerIndicator.Timer = ctrler.Session.CurrentBlock.settings.GetFloat("per_block_timerTime");
+
+        timerIndicator.GetComponent<TimerIndicator>().BeginTimer();
+
+        if (ctrler.Session.CurrentBlock.settings.GetString("per_block_indicator_type") == "arc")
+        {
+            directionIndicator.GetComponent<MeshRenderer>().enabled = false;
+
+        }
+
+        if (ctrler.Session.CurrentBlock.settings.GetString("per_block_fire_mode") == "flick")
+        {
+            Cursor.visible = false;
+        }
+
+        // Start tracking hand pos
+        ctrler.AddTrackedPosition("hand", ctrler.CursorController.CurrentHand());
+        timeHandTrackingStarts = Time.time;
+
+        // set up surface materials for the plane
+        switch (Convert.ToString(ctrler.PollPseudorandomList("per_block_surface_materials")))
+        {
+            case "default":
+                // Default material in prefab
+                break;
+
+            case "brick":
+                base.SetSurfaceMaterial(ctrler.Materials["GrassMaterial"]);
+                pinballWall.GetComponent<MeshRenderer>().material = ctrler.Materials["BrickMat"];
+                break;
+        }
+
+        // Add Pinball to tracked objects
+        ctrler.AddTrackedPosition("pinball_path", pinball);
+        ctrler.AddTrackedRotation("surface_tilt", Surface.transform.parent.gameObject);
+
+        //VIBRATE
+        if (ctrler.Session.CurrentBlock.settings.GetString("per_block_hand") == "l")
+        {
+            UnityEngine.XR.InputDevices.GetDevicesWithRole(UnityEngine.XR.InputDeviceRole.LeftHanded, devices);
+            sound.clip = ctrler.AudioClips["left hand"];
+        }
+        else if (ctrler.Session.CurrentBlock.settings.GetString("per_block_hand") == "r")
+        {
+            UnityEngine.XR.InputDevices.GetDevicesWithRole(UnityEngine.XR.InputDeviceRole.RightHanded, devices);
+            sound.clip = ctrler.AudioClips["right hand"];
+        }
+
+
+        // play audio clip if first trial in block
+        if (ctrler.Session.CurrentTrial.numberInBlock == 1)
+        {
+            sound.Play();
+        }
+        // vibrate the controller
+        VibrateController(0, 0.9f, 0.25f, devices);
+
+    }
 
     void FixedUpdate()
     {
@@ -199,8 +361,7 @@ public class PinballTask : BilliardsTask
             }
 
             // Trial ends if the ball stops moving OR
-            // The distance between the home position and the pinball exceeds the distance
-            // between the pinball and the target
+            // The distance between the home position and the pinball exceeds the cutoff distance
             if (pinball.GetComponent<Rigidbody>().velocity.magnitude <= 0.0001f ||
                 Vector3.Distance(pinball.transform.position, Home.transform.position) >= cutoffDistance)
             {
@@ -392,6 +553,8 @@ public class PinballTask : BilliardsTask
                 }
 
                 break;
+
+            // case 2 = after pinball stops moving: feedback shown to participant
             case 2:
                 // Pause the screen for 1.5 seconds
                 if (timer == 0f)
@@ -695,167 +858,7 @@ public class PinballTask : BilliardsTask
         }
     }
 
-    public override void Setup()
-    {
-        maxSteps = 3;
 
-        ctrler = ExperimentController.Instance();
-
-        pinballSpace = Instantiate(ctrler.GetPrefab("PinballPrefab"));
-
-        base.Setup();
-
-        pinball = GameObject.Find("Pinball");
-        Home = GameObject.Find("PinballHome");
-        Target = GameObject.Find("PinballTarget");
-        pinballCam = GameObject.Find("PinballCamera");
-        directionIndicator = GameObject.Find("PinballSpring");
-        directionIndicator.SetActive(false);
-        arcIndicator = GameObject.Find("ArcTarget").GetComponent<ArcScript>();
-        arcIndicator.gameObject.SetActive(false);
-        XRRig = GameObject.Find("XR Rig");
-        pinballWall = GameObject.Find("PinballWall");
-        XRPosLock = GameObject.Find("XRPosLock");
-        XRCamOffset = GameObject.Find("Dummy Camera");
-
-        bonusText = GameObject.Find("BonusText");
-        obstacle = GameObject.Find("Obstacle");
-        pinballSurface = GameObject.Find("Surface");
-        handL = GameObject.Find("handL");
-        handR = GameObject.Find("handR");
-        handL.SetActive(false);
-        handR.SetActive(false);
-        sound = pinballSpace.GetComponent<AudioSource>();
-
-        float targetAngle = Convert.ToSingle(ctrler.PollPseudorandomList("per_block_targetListToUse"));
-
-        SetTargetPosition(targetAngle);
-
-        // checks if the current trial uses the obstacle and activates it if it does
-        if (ctrler.Session.CurrentBlock.settings.GetBool("per_block_obstacle"))
-        {
-            obstacle.SetActive(true);
-            // initializes the position
-            obstacle.transform.position = new Vector3(0f, 0.065f, 0f);
-            //rotates the object
-            obstacle.transform.rotation = Quaternion.Euler(0f, -targetAngle + 90f, 0f);
-            //moves object forward towards the direction it is facing
-            obstacle.transform.position += Target.transform.forward.normalized * (TARGET_DISTANCE / 2);
-        }
-        else
-        {
-            obstacle.SetActive(false);
-        }
-
-        // Use static camera for non-vr version of pinball
-        if (ctrler.Session.settings.GetString("experiment_mode") == "pinball")
-        {
-            // Setup Pinball Camera Offset
-            pinballCam.transform.position = pinballCamOffset;
-            pinballCam.transform.rotation = Quaternion.Euler(pinballAngle, 0f, 0f);
-
-            ctrler.CursorController.SetVRCamera(false);
-        }
-        else
-        {
-            ctrler.CursorController.UseVR = true;
-            pinballCam.SetActive(false);
-            ctrler.CursorController.SetCursorVisibility(false);
-
-            scoreboard.transform.position += Vector3.up * 0.33f;
-
-            if (ctrler.Session.CurrentBlock.settings.GetString("per_block_hand") == "l")
-            {
-                handL.SetActive(true);
-            }
-            else
-            {
-                handR.SetActive(true);
-            }
-        }
-
-        // Cutoff distance is 30cm more than the distance to the target
-        cutoffDistance = 0.30f + TARGET_DISTANCE;
-
-        currentHand = ctrler.CursorController.CurrentHand();
-
-        // Parent to experiment controller
-        pinballSpace.transform.SetParent(ctrler.transform);
-        pinballSpace.transform.localPosition = Vector3.zero;
-
-        line = GameObject.Find("DefaultLine").GetComponent<LineRenderer>();
-
-        // Setup line renderer for pinball path
-        line.startWidth = line.endWidth = 0.015f;
-
-        // Should the tilt be shown to the participant before they release the pinball?
-        if (!ctrler.Session.CurrentBlock.settings.GetBool("per_block_tilt_after_fire")
-            && !dynamicTilt)
-            SetTilt();
-
-        /* if (ctrler.Session.settings.GetString("experiment_mode") != "pinball")
-             timerIndicator.transform.rotation = Quaternion.LookRotation(timerIndicator.transform.position - pinballCam.transform.position);*/
-
-        pinballStartPosition = pinball.transform.position;
-
-        timerIndicator.Timer = ctrler.Session.CurrentBlock.settings.GetFloat("per_block_timerTime");
-
-        timerIndicator.GetComponent<TimerIndicator>().BeginTimer();
-
-        if (ctrler.Session.CurrentBlock.settings.GetString("per_block_indicator_type") == "arc")
-        {
-            directionIndicator.GetComponent<MeshRenderer>().enabled = false;
-
-        }
-
-        if (ctrler.Session.CurrentBlock.settings.GetString("per_block_fire_mode") == "flick")
-        {
-            Cursor.visible = false;
-        }
-
-        // Start tracking hand pos
-        ctrler.AddTrackedPosition("hand", ctrler.CursorController.CurrentHand());
-        timeHandTrackingStarts = Time.time;
-
-        // set up surface materials for the plane
-        switch (Convert.ToString(ctrler.PollPseudorandomList("per_block_surface_materials")))
-        {
-            case "default":
-                // Default material in prefab
-                break;
-
-            case "brick":
-                base.SetSurfaceMaterial(ctrler.Materials["GrassMaterial"]);
-                pinballWall.GetComponent<MeshRenderer>().material = ctrler.Materials["BrickMat"];
-                break;
-        }
-
-        // Add Pinball to tracked objects
-        ctrler.AddTrackedPosition("pinball_path", pinball);
-        ctrler.AddTrackedRotation("surface_tilt", Surface.transform.parent.gameObject);
-
-        //VIBRATE
-        if (ctrler.Session.CurrentBlock.settings.GetString("per_block_hand") == "l")
-        {
-            UnityEngine.XR.InputDevices.GetDevicesWithRole(UnityEngine.XR.InputDeviceRole.LeftHanded, devices);
-            sound.clip = ctrler.AudioClips["left hand"];
-        }
-        else if (ctrler.Session.CurrentBlock.settings.GetString("per_block_hand") == "r")
-        {
-            UnityEngine.XR.InputDevices.GetDevicesWithRole(UnityEngine.XR.InputDeviceRole.RightHanded, devices);
-            sound.clip = ctrler.AudioClips["right hand"];
-        }
-
-
-        // play audio clip if first trial in block
-        if (ctrler.Session.CurrentTrial.numberInBlock == 1)
-        {
-            sound.Play();
-        }
-        // vibrate the controller
-        VibrateController(0, 0.9f, 0.25f, devices);
-
-    }
 
     private void SetTilt()
     {

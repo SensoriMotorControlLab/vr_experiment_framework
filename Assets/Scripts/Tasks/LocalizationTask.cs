@@ -10,7 +10,9 @@ public class LocalizationTask : BaseTask
 
     // dock distance from Home
     protected float dock_dist = 0.025f;
+    protected float req_targ_accuracy = 0.005f;
     private Trial trial;
+
 
     private GameObject localizationCam;
     private GameObject localizationSurface;
@@ -90,7 +92,7 @@ public class LocalizationTask : BaseTask
         // Use static camera for non-vr version of pinball
         if (ctrler.Session.settings.GetObjectList("optional_params").Contains("vr"))
         {
-            localizationSurface.SetActive(false);
+            localizationSurface.SetActive(true);
             localizationCam.SetActive(false);
             ctrler.CursorController.UseVR = true;
         }
@@ -115,7 +117,7 @@ public class LocalizationTask : BaseTask
                     // make the ball invisible
                     ctrler.CursorController.Model.GetComponent<Renderer>().enabled = false;
                 }
-                if (Mathf.Abs(targets[0].transform.localPosition.magnitude - ctrler.CursorController.transform.localPosition.magnitude) < 0.001f
+                if (Mathf.Abs(targets[0].transform.localPosition.magnitude - ctrler.CursorController.transform.localPosition.magnitude) < req_targ_accuracy
                                 && ctrler.CursorController.stillTime > 0.3f)
                 {
                     ctrler.CursorController.Model.GetComponent<Renderer>().enabled = true;
@@ -123,7 +125,7 @@ public class LocalizationTask : BaseTask
                 }
                 break;
             case 1:
-                if (Mathf.Abs(targets[1].transform.localPosition.magnitude - ctrler.CursorController.transform.localPosition.magnitude) < 0.001f
+                if (Mathf.Abs(targets[1].transform.localPosition.magnitude - ctrler.CursorController.transform.localPosition.magnitude) < req_targ_accuracy
                               && ctrler.CursorController.stillTime > 0.3f)
                 {
                     IncrementStep();

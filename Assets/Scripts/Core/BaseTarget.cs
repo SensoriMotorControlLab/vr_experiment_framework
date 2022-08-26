@@ -7,6 +7,8 @@ public class BaseTarget : MonoBehaviour
 {
     protected ExperimentController ctrler;
 
+    float hold_still_time = 0.3f;
+
     [SerializeField]
     public bool Collided { get; private set; }
     public Collider CollidedWith { get; private set; }
@@ -53,7 +55,8 @@ public class BaseTarget : MonoBehaviour
             switch (other.gameObject.tag)
             {
                 case "Hand":
-                    if(ctrler.CursorController.useHand == true){
+                    if(ctrler.CursorController.useHand == true)
+                    {
                         AdvanceStep();
                     }
                     break;

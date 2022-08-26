@@ -19,6 +19,7 @@ public class ReachToTargetTask : BaseTask
     protected List<GameObject> targets = new List<GameObject>();
     protected ExperimentController ctrler;
     protected Trial trial;
+    float hold_still_time = 0.3f;
 
     protected GameObject reachPrefab;
     protected GameObject reachCam;
@@ -51,7 +52,7 @@ public class ReachToTargetTask : BaseTask
 
         reachPrefab = Instantiate(ctrler.GetPrefab("ReachPrefab"));
         reachPrefab.transform.SetParent(ctrler.transform);
-        reachPrefab.transform.localPosition = new Vector3(0, -0.8f, 0);
+        reachPrefab.transform.localPosition = new Vector3(0, 0, 0);
 
         reachCam = GameObject.Find("ReachCam");
         reachSurface = GameObject.Find("Surface");
@@ -102,6 +103,8 @@ public class ReachToTargetTask : BaseTask
             //waterBowl.SetActive(false);
             water.SetActive(false);
         }
+
+        ctrler.CursorController.useHand = true;
     }
 
     public override void Update()
@@ -114,7 +117,7 @@ public class ReachToTargetTask : BaseTask
             IncrementStep();
 
         if (currentStep == 2 &&
-            ctrler.CursorController.stillTime > 0.5f &&
+            ctrler.CursorController.stillTime > hold_still_time &&
             ctrler.CursorController.DistanceFromHome > 0.05f &&
             trial.settings.GetString("per_block_type") == "nocursor")
             IncrementStep();
