@@ -168,6 +168,10 @@ public class ReachTrack : ReachToTargetTask
         Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
         //baseObject.transform.position = new Vector3(baseObject.transform.position.x, mousePoint.y, baseObject.transform.position.z);
         baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
+
+        //below is a hack and a waste of compute (see where this gets set earlier)
+        baseObject.transform.position = new Vector3(baseObject.transform.position.x, ctrler.transform.position.y, baseObject.transform.position.z);
+
         cur = baseObject.transform.localPosition;
         vel = (cur - prev) / Time.deltaTime;
         dist = vel.magnitude;
@@ -186,7 +190,7 @@ public class ReachTrack : ReachToTargetTask
                 if (!ctrler.Session.settings.GetObjectList("optional_params").Contains("return_visible"))
                 {
                     // make the ball invisible
-                    baseObject.GetComponent<Renderer>().enabled = false;   
+                    baseObject.GetComponent<Renderer>().enabled = false;
                 }
 
                 if (Mathf.Abs(targets[0].transform.localPosition.magnitude - baseObject.transform.localPosition.magnitude) < 0.001f
@@ -366,7 +370,7 @@ public class ReachTrack : ReachToTargetTask
     {
         //ToFix: can the below two be one function called point to planepoint?
 
-        Vector3 ctrl = new Vector3(ctrler.CursorController.GetHandPosition().x, 3, ctrler.CursorController.GetHandPosition().z);
+        Vector3 ctrl = new Vector3(ctrler.CursorController.GetHandPosition().x, ctrler.transform.position.y, ctrler.CursorController.GetHandPosition().z);
         return ctrler.CursorController.ControllerToPlanePoint(
                         reachSurface.transform.up * ball.position.y,
                         ball.position,
