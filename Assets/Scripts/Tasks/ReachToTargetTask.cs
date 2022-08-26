@@ -13,6 +13,9 @@ public class ReachToTargetTask : BaseTask
     // 3. User moves to TARGET with reachType[1]
 
     MovementType[] reachType;  // Reach type for current step
+
+    // Dock distance from Home
+    protected float dock_dist = 0.025f;
     protected List<GameObject> targets = new List<GameObject>();
     protected ExperimentController ctrler;
     protected Trial trial;
@@ -37,8 +40,74 @@ public class ReachToTargetTask : BaseTask
     protected string tintColur;
     public float rotation = 0;
 
-    public void Update()
+    public override void Setup()
     {
+        maxSteps = 3;
+        ctrler = ExperimentController.Instance();
+
+        trial = ctrler.Session.CurrentTrial;
+
+        Cursor.visible = false;
+
+        reachPrefab = Instantiate(ctrler.GetPrefab("ReachPrefab"));
+        reachPrefab.transform.SetParent(ctrler.transform);
+        reachPrefab.transform.localPosition = new Vector3(0, -0.8f, 0);
+
+        reachCam = GameObject.Find("ReachCam");
+        reachSurface = GameObject.Find("Surface");
+        water = GameObject.Find("Water");
+        timerIndicator = GameObject.Find("TimerIndicator").GetComponent<TimerIndicator>();
+        scoreboard = GameObject.Find("Scoreboard").GetComponent<Scoreboard>();
+        tint = GameObject.Find("Tint");
+
+        SetSetup();
+
+        // sets up the water in the level
+
+        if (ctrler.Session.CurrentBlock.settings.GetString("per_block_waterPresent") == "wp1")
+        {
+            float waterLevel = Convert.ToSingle(ctrler.PollPseudorandomList("per_block_waterPresent"));
+            //waterBowl.SetActive(true);
+            water.SetActive(true);
+
+            // If previous trial had a water level, animate water level rising/falling from that level
+            try
+            {
+                if (ctrler.Session.PrevTrial.result.ContainsKey("per_block_waterPresent"))
+                {
+                    water.transform.localPosition =
+                        new Vector3(0,
+                        Convert.ToSingle(ctrler.Session.PrevTrial.result["per_block_waterPresent"]) / 10,
+                        0);
+
+                    id = LeanTween.moveLocalY(water, waterLevel / 10, speed).id;
+                    d = LeanTween.descr(id);
+                }
+                else
+                {
+                    water.transform.localPosition = new Vector3(0, -0.03f, 0);
+                    id = LeanTween.moveLocalY(water, waterLevel / 10, speed).id;
+                    d = LeanTween.descr(id);
+                }
+            }
+            catch (NoSuchTrialException e)
+            {
+                water.transform.localPosition = new Vector3(0, -0.03f, 0);
+                id = LeanTween.moveLocalY(water, waterLevel / 10, speed).id;
+                d = LeanTween.descr(id);
+            }
+        }
+        else
+        {
+            //waterBowl.SetActive(false);
+            water.SetActive(false);
+        }
+    }
+
+    public override void Update()
+    {
+        base.Update();
+
         if (!trackScore) scoreboard.ManualScoreText = "Practice Round";
 
         if (Input.GetKeyDown(KeyCode.N))
@@ -67,14 +136,20 @@ public class ReachToTargetTask : BaseTask
             targets[1].SetActive(true);
         }
 
-        if (Input.GetKeyDown(KeyCode.C)){
+        if (Input.GetKeyDown(KeyCode.C))
+        {
             Centre();
         }
     }
 
-    protected void Centre(){
-        Vector3 pos = new Vector3 (ctrler.CursorController.transform.position.x, 0, ctrler.CursorController.transform.position.z);
-        ctrler.CentreExperiment(pos + ctrler.CursorController.transform.forward * 0.025f);
+    /// <summary>
+    /// Centres the experiment a little in front of the hand position
+    /// Distance forward is determined by the dock distance
+    /// </summary>
+    protected void Centre()
+    {
+        Vector3 pos = ctrler.CursorController.transform.position;
+        ctrler.CentreExperiment(pos + ctrler.transform.forward * dock_dist);
     }
 
     public override bool IncrementStep()
@@ -83,7 +158,6 @@ public class ReachToTargetTask : BaseTask
         {
             targets[currentStep].SetActive(false);
         }
-
 
         switch (currentStep)
         {
@@ -227,7 +301,7 @@ public class ReachToTargetTask : BaseTask
 
         // Set up the dock position
         targets.Add(GameObject.Find("Dock"));
-        targets[0].transform.localPosition = ctrler.TargetContainer.transform.localPosition - ctrler.transform.forward * 0.025f;
+        targets[0].transform.localPosition = ctrler.TargetContainer.transform.localPosition - ctrler.transform.forward * dock_dist;
 
         // Set up the home position
         targets.Add(GameObject.Find("Home"));
@@ -270,74 +344,6 @@ public class ReachToTargetTask : BaseTask
         {
             ctrler.CursorController.SetVRCamera(false);
         }
-
-    }
-    public override void Setup()
-    {
-        maxSteps = 3;
-        ctrler = ExperimentController.Instance();
-
-        trial = ctrler.Session.CurrentTrial;
-
-        Cursor.visible = false;
-
-        reachPrefab = Instantiate(ctrler.GetPrefab("ReachPrefab"));
-        reachPrefab.transform.SetParent(ctrler.transform);
-        reachPrefab.transform.localPosition = new Vector3(0, -0.8f, 0);
-
-        reachCam = GameObject.Find("ReachCam");
-        reachSurface = GameObject.Find("Surface");
-        water = GameObject.Find("Water");
-        timerIndicator = GameObject.Find("TimerIndicator").GetComponent<TimerIndicator>();
-        scoreboard = GameObject.Find("Scoreboard").GetComponent<Scoreboard>();
-        tint = GameObject.Find("Tint");
-
-        SetSetup();
-
-
-
-        // sets up the water in the level
-
-        if (ctrler.Session.CurrentBlock.settings.GetString("per_block_waterPresent") == "wp1")
-        {
-            float waterLevel = Convert.ToSingle(ctrler.PollPseudorandomList("per_block_waterPresent"));
-            //waterBowl.SetActive(true);
-            water.SetActive(true);
-
-
-            // If previous trial had a water level, animate water level rising/falling from that level
-            try
-            {
-                if (ctrler.Session.PrevTrial.result.ContainsKey("per_block_waterPresent"))
-                {
-                    water.transform.localPosition =
-                        new Vector3(0,
-                        Convert.ToSingle(ctrler.Session.PrevTrial.result["per_block_waterPresent"]) / 10,
-                        0);
-
-                    id = LeanTween.moveLocalY(water, waterLevel / 10, speed).id;
-                    d = LeanTween.descr(id);
-                }
-                else
-                {
-                    water.transform.localPosition = new Vector3(0, -0.03f, 0);
-                    id = LeanTween.moveLocalY(water, waterLevel / 10, speed).id;
-                    d = LeanTween.descr(id);
-                }
-            }
-            catch (NoSuchTrialException e)
-            {
-                water.transform.localPosition = new Vector3(0, -0.03f, 0);
-                id = LeanTween.moveLocalY(water, waterLevel / 10, speed).id;
-                d = LeanTween.descr(id);
-            }
-        }
-        else
-        {
-            //waterBowl.SetActive(false);
-            water.SetActive(false);
-        }
-
 
     }
 

@@ -128,7 +128,7 @@ public class ExperimentController : MonoBehaviour
     {
         CursorController.gameObject.SetActive(false);
 
-        yield return new WaitForSecondsRealtime(1f);
+        yield return new WaitForSecondsRealtime(0.5f);
 
         CursorController.gameObject.SetActive(true);
     }
@@ -183,7 +183,8 @@ public class ExperimentController : MonoBehaviour
         }
     }
 
-    public void CentreExperiment(Vector3 centre){
+    public void CentreExperiment(Vector3 centre)
+    {
         exp_centre_pos = centre;
         transform.position = exp_centre_pos;
         StartCoroutine(TempDisableCursor());
@@ -215,14 +216,6 @@ public class ExperimentController : MonoBehaviour
         // {
         //     isPaused = false;
         // }
-    }
-
-    public void CenterExperiment()
-    {
-        transform.position = new Vector3(Camera.main.transform.position.x, CursorController.GetHandPosition().y, CursorController.GetHandPosition().z)
-            - Vector3.up * .075f
-            + Vector3.left * 0f;
-        StartCoroutine(TempDisableCursor());
     }
 
     /// <summary>

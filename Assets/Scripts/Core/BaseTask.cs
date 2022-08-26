@@ -23,7 +23,8 @@ public abstract class BaseTask : MonoBehaviour
         return finished;
     }
 
-    public virtual float GetRotation(){
+    public virtual float GetRotation()
+    {
         return 0;
     }
 
@@ -49,7 +50,7 @@ public abstract class BaseTask : MonoBehaviour
 
     protected virtual void OnDestroy()
     {
-        
+
     }
 
     public int GetCurrentStep => currentStep;
@@ -69,17 +70,9 @@ public abstract class BaseTask : MonoBehaviour
     public abstract void Disable();
 
 
-    protected void Update()
+    public virtual void Update()
     {
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            CenterExperiment();
-        }
-    }
 
-    public void CenterExperiment()
-    {
-        ExperimentController.Instance().CenterExperiment();
     }
 
     /// <summary>

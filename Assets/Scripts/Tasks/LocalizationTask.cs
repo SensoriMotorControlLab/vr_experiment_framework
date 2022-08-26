@@ -8,6 +8,8 @@ public class LocalizationTask : BaseTask
     private GameObject[] targets = new GameObject[3];
     private GameObject localizer; // Cursor that indicates where the user's head is gazing
 
+    // dock distance from Home
+    protected float dock_dist = 0.025f;
     private Trial trial;
 
     private GameObject localizationCam;
@@ -25,9 +27,83 @@ public class LocalizationTask : BaseTask
 
     ExperimentController ctrler;
 
-    public void LateUpdate()
+    public override void Setup()
     {
-        ExperimentController ctrler = ExperimentController.Instance();
+
+        maxSteps = 4;
+        ctrler = ExperimentController.Instance();
+
+        ctrler.CursorController.SetHandVisibility(false);
+        Cursor.visible = false;
+        ctrler.CursorController.SetCursorVisibility(true);
+
+        localizationPrefab = Instantiate(ctrler.GetPrefab("LocalizationPrefab"));
+        localizationPrefab.transform.SetParent(ctrler.transform);
+        localizationPrefab.transform.localPosition = Vector3.zero;
+
+        localizationCam = GameObject.Find("LocalizationCamera");
+        localizationSurface = GameObject.Find("Surface");
+
+
+        // Set up the dock position
+        targets[0] = GameObject.Find("Dock");
+        targets[0].transform.localPosition = ctrler.TargetContainer.transform.localPosition - ctrler.transform.forward * dock_dist;
+        //targets[0].transform.position = new Vector3(ctrler.TargetContainer.transform.position.x, -0.250f, ctrler.TargetContainer.transform.position.z);
+
+        // Set up the home position
+        targets[1] = GameObject.Find("Home");
+        targets[1].transform.localPosition = ctrler.TargetContainer.transform.localPosition;
+        //targets[1].transform.position = new Vector3(ctrler.TargetContainer.transform.position.x, -0.250f, ctrler.TargetContainer.transform.position.z) + ctrler.transform.forward * 0.05f;
+        targets[1].SetActive(false);
+        Home = targets[1];
+
+        // Grab an angle from the list and then remove it
+        float targetAngle = Convert.ToSingle(ctrler.PollPseudorandomList("per_block_targetListToUse"));
+
+        // Set up the arc object
+        targets[2] = GameObject.Find("ArcTarget");
+        targets[2].transform.rotation = Quaternion.Euler(
+            0f,
+            -targetAngle + 90f,
+            0f);
+
+        targets[2].transform.position = targets[1].transform.position;
+
+        targets[2].GetComponent<ArcScript>().TargetDistance = ctrler.Session.CurrentTrial.settings.GetFloat("per_block_distance");
+        targets[2].GetComponent<ArcScript>().Angle = targets[2].transform.rotation.eulerAngles.y;
+        //targets[2].transform.localScale = Vector3.one;
+        Target = targets[2];
+        sound = targets[2].GetComponent<AudioSource>();
+
+        // Set up the GameObject that tracks the user's gaze
+        localizer = GameObject.Find("Localizer");
+        localizer.GetComponent<SphereCollider>().enabled = false;
+        localizer.GetComponent<BaseTarget>().enabled = false;
+        localizer.SetActive(false);
+
+
+        localizer.transform.SetParent(ctrler.TargetContainer.transform);
+        localizer.name = "Localizer";
+
+        Target.SetActive(false);
+
+        // Use static camera for non-vr version of pinball
+        if (ctrler.Session.settings.GetObjectList("optional_params").Contains("vr"))
+        {
+            localizationSurface.SetActive(false);
+            localizationCam.SetActive(false);
+            ctrler.CursorController.UseVR = true;
+        }
+        else
+        {
+            ctrler.CursorController.SetVRCamera(false);
+        }
+    }
+
+    public override void Update()
+    {
+        base.Update();
+
         // Debug.Log(ctrler.CursorController.transform.localPosition.z);
 
         switch (currentStep)
@@ -35,20 +111,20 @@ public class LocalizationTask : BaseTask
             case 0:
                 targets[0].SetActive(true);
                 if (!ctrler.Session.settings.GetObjectList("optional_params").Contains("return_visible"))
-                    {
-                        // make the ball invisible
-                        ctrler.CursorController.Model.GetComponent<Renderer>().enabled = false;   
-                    }
-                if(Mathf.Abs(targets[0].transform.localPosition.magnitude - ctrler.CursorController.transform.localPosition.magnitude) < 0.001f
+                {
+                    // make the ball invisible
+                    ctrler.CursorController.Model.GetComponent<Renderer>().enabled = false;
+                }
+                if (Mathf.Abs(targets[0].transform.localPosition.magnitude - ctrler.CursorController.transform.localPosition.magnitude) < 0.001f
                                 && ctrler.CursorController.stillTime > 0.3f)
                 {
                     ctrler.CursorController.Model.GetComponent<Renderer>().enabled = true;
                     IncrementStep();
-                }         
+                }
                 break;
             case 1:
-                  if(Mathf.Abs(targets[1].transform.localPosition.magnitude - ctrler.CursorController.transform.localPosition.magnitude) < 0.001f
-                                && ctrler.CursorController.stillTime > 0.3f)
+                if (Mathf.Abs(targets[1].transform.localPosition.magnitude - ctrler.CursorController.transform.localPosition.magnitude) < 0.001f
+                              && ctrler.CursorController.stillTime > 0.3f)
                 {
                     IncrementStep();
                 }
@@ -115,6 +191,21 @@ public class LocalizationTask : BaseTask
 
         if (Finished)
             ctrler.EndAndPrepare();
+
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            Centre();
+        }
+    }
+
+    /// <summary>
+    /// Centres the experiment a little in front of the hand position
+    /// Distance forward is determined by the dock distance
+    /// </summary>
+    protected void Centre()
+    {
+        Vector3 pos = ctrler.CursorController.transform.position;
+        ctrler.CentreExperiment(pos + ctrler.transform.forward * dock_dist);
     }
 
     public override bool IncrementStep()
@@ -172,82 +263,6 @@ public class LocalizationTask : BaseTask
     {
         // Store where they think their hand is
         ExperimentController.Instance().LogObjectPosition("loc", localizer.transform.localPosition);
-    }
-
-        
-    
-    public override void Setup()
-    {
-        ExperimentController ctrler = ExperimentController.Instance();
-
-        maxSteps = 4;
-
-        ctrler.CursorController.SetHandVisibility(false);
-        Cursor.visible = false;
-        ctrler.CursorController.SetCursorVisibility(true);
-
-        localizationPrefab = Instantiate(ctrler.GetPrefab("LocalizationPrefab"));
-        localizationPrefab.transform.SetParent(ctrler.transform);
-        localizationPrefab.transform.localPosition = Vector3.zero;
-
-        localizationCam = GameObject.Find("LocalizationCamera");
-        localizationSurface = GameObject.Find("Surface");
-
-
-        // Set up the dock position
-        targets[0] = GameObject.Find("Dock");
-        targets[0].transform.position = ctrler.TargetContainer.transform.position;
-        //targets[0].transform.position = new Vector3(ctrler.TargetContainer.transform.position.x, -0.250f, ctrler.TargetContainer.transform.position.z);
-
-        // Set up the home position
-        targets[1] = GameObject.Find("Home");
-        targets[1].transform.position = ctrler.TargetContainer.transform.position + ctrler.transform.forward * 0.05f;
-        //targets[1].transform.position = new Vector3(ctrler.TargetContainer.transform.position.x, -0.250f, ctrler.TargetContainer.transform.position.z) + ctrler.transform.forward * 0.05f;
-        targets[1].SetActive(false);
-        Home = targets[1];
-
-        // Grab an angle from the list and then remove it
-        float targetAngle = Convert.ToSingle(ctrler.PollPseudorandomList("per_block_targetListToUse"));
-
-        // Set up the arc object
-        targets[2] = GameObject.Find("ArcTarget");
-        targets[2].transform.rotation = Quaternion.Euler(
-            0f,
-            -targetAngle + 90f,
-            0f);
-
-        targets[2].transform.position = targets[1].transform.position;
-
-        targets[2].GetComponent<ArcScript>().TargetDistance = ctrler.Session.CurrentTrial.settings.GetFloat("per_block_distance");
-        targets[2].GetComponent<ArcScript>().Angle = targets[2].transform.rotation.eulerAngles.y;
-        //targets[2].transform.localScale = Vector3.one;
-        Target = targets[2];
-        sound = targets[2].GetComponent<AudioSource>();
-
-        // Set up the GameObject that tracks the user's gaze
-        localizer = GameObject.Find("Localizer");
-        localizer.GetComponent<SphereCollider>().enabled = false;
-        localizer.GetComponent<BaseTarget>().enabled = false;
-        localizer.SetActive(false);
-
-
-        localizer.transform.SetParent(ctrler.TargetContainer.transform);
-        localizer.name = "Localizer";
-
-        Target.SetActive(false);
-
-
-        // Use static camera for non-vr version of pinball
-        if (ctrler.Session.settings.GetObjectList("optional_params").Contains("vr"))
-        {
-            localizationSurface.SetActive(false);
-            localizationCam.SetActive(false);
-            ctrler.CursorController.UseVR = true;
-        }
-        else
-        {
-            ctrler.CursorController.SetVRCamera(false);
-        }
     }
 
     public override void Disable()
