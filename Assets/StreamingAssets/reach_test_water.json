@@ -1,7 +1,10 @@
 {
   "experiment_mode": "target2d",
-  "camera":"vr",
-  "optional_params": [],
+  "camera": "vr",
+  "optional_params": [
+    "return_visible",
+    "vr"
+  ],
   "track_score": true,
   "per_block_type": [
     "aligned",
@@ -93,15 +96,15 @@
     false
   ],
   "per_block_tintPresent": [
-    "tc1",
     null,
-    "tc1",
     null,
-    "tc1",
-    "tc1",
     null,
-    "tc1",
-    "tc1",
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
     null
   ],
   "per_block_timerTime": [
