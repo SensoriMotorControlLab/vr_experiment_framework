@@ -19,7 +19,7 @@ public abstract class BilliardsTask : BaseTask
 
     // Minimum distance to score any points. this is also the cutoff distance
     // for starting the miss timer
-    protected const float TARGET_DISTANCE = 0.85f; // Target distance from home
+    protected const float TARGET_DISTANCE = 1.2f; // Target distance from home
 
     public bool dynamicForce, dynamicTilt;
 
@@ -187,13 +187,13 @@ public abstract class BilliardsTask : BaseTask
     protected static void SetTilt(GameObject obj, Vector3 point, GameObject axis, float angle)
     {
         // Decouple object from parent
-                Transform parent = obj.transform.parent;
-                obj.transform.SetParent(null);
+        Transform parent = obj.transform.parent;
+        obj.transform.SetParent(null);
 
-                obj.transform.RotateAround(point, axis.transform.forward, angle);
+        obj.transform.RotateAround(point, axis.transform.forward, angle);
 
-                // Reparent obj
-                obj.transform.SetParent(parent);
+        // Reparent obj
+        obj.transform.SetParent(parent);
     }
 
     // Rather than using RotateAround to rotate objects around a certain position in SetTilt(), 
@@ -244,7 +244,7 @@ public abstract class BilliardsTask : BaseTask
     /// </summary>
     protected virtual void GetFinalScore()
     {
-        
+
     }
 
     /// <summary>
@@ -260,7 +260,7 @@ public abstract class BilliardsTask : BaseTask
                             Surface.transform.up * ball.position.y,
                             ball.position,
                             Camera.main);
-        }           
+        }
         else
         {
             Vector3 ctrl = new Vector3(ctrler.CursorController.GetHandPosition().x, 3, ctrler.CursorController.GetHandPosition().z);

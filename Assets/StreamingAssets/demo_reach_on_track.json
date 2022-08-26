@@ -9,7 +9,7 @@
     "localization",
     "aligned",
     "rotated",
-    "aligned",
+    "localization",
     "rotated",
     "rotated",
     "clamped",
@@ -28,15 +28,15 @@
     "br1"
   ],
   "per_block_distance": [
-    10,
-    15,
-    10,
-    15,
-    10,
-    15,
-    15,
-    10,
-    15
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12
   ],
   "per_block_n": [
     5,
