@@ -47,12 +47,12 @@ public class LocalizationTask : BaseTask
 
         // Set up the dock position
         targets[0] = GameObject.Find("Dock");
-        targets[0].transform.position = ctrler.TargetContainer.transform.localPosition - ctrler.transform.forward * dock_dist;
+        targets[0].transform.localPosition = ctrler.TargetContainer.transform.localPosition - ctrler.transform.forward * dock_dist;
         //targets[0].transform.position = new Vector3(ctrler.TargetContainer.transform.position.x, -0.250f, ctrler.TargetContainer.transform.position.z);
 
         // Set up the home position
         targets[1] = GameObject.Find("Home");
-        targets[1].transform.position = ctrler.TargetContainer.transform.localPosition;
+        targets[1].transform.localPosition = ctrler.TargetContainer.transform.localPosition;
         //targets[1].transform.position = new Vector3(ctrler.TargetContainer.transform.position.x, -0.250f, ctrler.TargetContainer.transform.position.z) + ctrler.transform.forward * 0.05f;
         targets[1].SetActive(false);
         Home = targets[1];
@@ -100,7 +100,7 @@ public class LocalizationTask : BaseTask
         }
     }
 
-    new void Update()
+    public override void Update()
     {
         base.Update();
 

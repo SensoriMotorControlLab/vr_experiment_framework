@@ -104,8 +104,10 @@ public class ReachToTargetTask : BaseTask
         }
     }
 
-    new void Update()
+    public override void Update()
     {
+        base.Update();
+
         if (!trackScore) scoreboard.ManualScoreText = "Practice Round";
 
         if (Input.GetKeyDown(KeyCode.N))
