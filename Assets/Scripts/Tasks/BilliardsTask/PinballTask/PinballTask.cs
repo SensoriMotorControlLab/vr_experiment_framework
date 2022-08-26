@@ -98,8 +98,8 @@ public class PinballTask : BilliardsTask
     private bool flickStarted = false;
     // The max distance before a VR flick automatically ends
     private float flickCutoff = 0.15f;
-    private const float VR_FLICK_FIRE_FORCE = 1.8f;
-    private const float MAX_MAGNITUDE = 2.2f;
+    private const float VR_FLICK_FIRE_FORCE = 2f;
+    private const float MAX_MAGNITUDE = 4f;
 
     private Vector3 initialVelocity;
 
@@ -514,13 +514,15 @@ public class PinballTask : BilliardsTask
 
         if (Finished) ctrler.EndAndPrepare();
 
-        if (Input.GetKeyDown(KeyCode.C)){
+        if (Input.GetKeyDown(KeyCode.C))
+        {
             Centre();
         }
     }
 
-    protected void Centre(){
-        Vector3 pos = new Vector3 (ctrler.CursorController.transform.position.x, table_height, ctrler.CursorController.transform.position.z);
+    protected void Centre()
+    {
+        Vector3 pos = new Vector3(ctrler.CursorController.transform.position.x, table_height, ctrler.CursorController.transform.position.z);
         ctrler.CentreExperiment(pos);
     }
 
