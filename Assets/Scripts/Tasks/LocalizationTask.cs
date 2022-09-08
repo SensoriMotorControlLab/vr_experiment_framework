@@ -6,8 +6,6 @@ using UXF;
 public class LocalizationTask : BaseTask
 {
     private GameObject[] targets = new GameObject[3];
-    private GameObject localizer; // Cursor that indicates where the user's head is gazing
-
     // dock distance from Home
     protected float dock_dist = 0.025f;
     protected float req_targ_accuracy = 0.005f;
@@ -17,6 +15,7 @@ public class LocalizationTask : BaseTask
     private GameObject localizationCam;
     private GameObject localizationSurface;
     private GameObject localizationPrefab;
+    private GameObject arcError;
     protected AudioSource sound;
 
     protected List<UnityEngine.XR.InputDevice> devices = new List<UnityEngine.XR.InputDevice>();
@@ -28,6 +27,8 @@ public class LocalizationTask : BaseTask
     private Vector3 localizerPos = new Vector3(0, 0, 0);
 
     ExperimentController ctrler;
+
+    private GameObject locAim; // Cursor that indicates where the user's head is gazing
 
     public override void Setup()
     {
@@ -45,6 +46,7 @@ public class LocalizationTask : BaseTask
 
         localizationCam = GameObject.Find("LocalizationCamera");
         localizationSurface = GameObject.Find("Surface");
+        arcError = GameObject.Find("ArcError");
 
 
         // Set up the dock position
@@ -78,14 +80,15 @@ public class LocalizationTask : BaseTask
         sound = targets[2].GetComponent<AudioSource>();
 
         // Set up the GameObject that tracks the user's gaze
-        localizer = GameObject.Find("Localizer");
-        localizer.GetComponent<SphereCollider>().enabled = false;
-        localizer.GetComponent<BaseTarget>().enabled = false;
-        localizer.SetActive(false);
+        locAim = GameObject.Find("Localizer");
+        
+        locAim.GetComponent<SphereCollider>().enabled = false;
+        locAim.GetComponent<BaseTarget>().enabled = false;
+        locAim.SetActive(false);
 
 
-        localizer.transform.SetParent(ctrler.TargetContainer.transform);
-        localizer.name = "Localizer";
+        locAim.transform.SetParent(ctrler.TargetContainer.transform);
+        locAim.transform.position =locAim.transform.position + Vector3.forward * 12.3f/100f;
 
         Target.SetActive(false);
 
@@ -100,10 +103,12 @@ public class LocalizationTask : BaseTask
         {
             ctrler.CursorController.SetVRCamera(false);
         }
+        arcError.SetActive(false);
     }
 
     public override void Update()
     {
+        
         base.Update();
 
         // Debug.Log(ctrler.CursorController.transform.localPosition.z);
@@ -132,10 +137,24 @@ public class LocalizationTask : BaseTask
                 }
                 break;
             // When the user holds their hand and they are outside the home, begin the next phase of localization
-            case 2 when ctrler.CursorController.stillTime > 0.5f &&
-                        ctrler.CursorController.DistanceFromHome > 0.1f && ctrler.CursorController.transform.localPosition.z > 0:
+            case 2:
+                if(ctrler.CursorController.stillTime > 0.5f &&
+                        ctrler.CursorController.DistanceFromHome > 0.1f && ctrler.CursorController.transform.localPosition.z > 0 
+                        && ctrler.CursorController.DistanceFromHome < 0.125f){
+                            IncrementStep();
+                        }
+                if(ctrler.CursorController.DistanceFromHome > 0.125f && ctrler.CursorController.transform.localPosition.z > 0){
+                    arcError.SetActive(true);
+                    arcError.GetComponent<ArcScript>().TargetDistance = ctrler.CursorController.DistanceFromHome * 100;
+                    arcError.GetComponent<ArcScript>().GenerateArc();
+                    
+                }
+                else{
+                    arcError.SetActive(false);
+                }
 
-                IncrementStep();
+                
+                
                 break;
             case 3:
                 // VR: User uses their head to localize their hand
@@ -149,37 +168,23 @@ public class LocalizationTask : BaseTask
                     if (ctrler.Session.settings.GetObjectList("optional_params").Contains("localize_via_gaze"))
                     {
                         if (plane.Raycast(r, out float hit))
-                            localizer.transform.position = r.GetPoint(hit);
+                            locAim.transform.position = r.GetPoint(hit);
                     }
                     else
                     {
                         if (ctrler.CursorController.Get2DAxis().magnitude > 0)
-                            locX += ctrler.CursorController.Get2DAxis().x * 0.002f;
-                        locZ += ctrler.CursorController.Get2DAxis().y * 0.002f;
-                        localizer.transform.position = new Vector3(locX, 0, locZ) + targets[2].transform.position;
+                            locX = ctrler.CursorController.Get2DAxis().x * 20;
+                            RotateLocalizer(locX);
+                        // locZ += ctrler.CursorController.Get2DAxis().y * 0.002f;
+                        // localizer.transform.position = new Vector3(locX, 0, locZ) + targets[2].transform.position;
                     }
                 }
                 else
                 {
-
                     // A/D keys, left/right arrow keys, or gamepad joystick as input
-                    locX += Input.GetAxisRaw("Horizontal") * localizerSpeed2D;
-                    locZ += Input.GetAxisRaw("Vertical") * localizerSpeed2D;
-                    locX = Mathf.Clamp(locX, -90f, 90f);
-
-                    float angle = locX * Mathf.Deg2Rad;
-
-                    // centre == centre of Arc == centre of Home
-                    Vector3 centre = Target.transform.position;
-
-                    // distance from home: copied from ArcTarget script, multiplied by the size of the arc
-                    float distance = (Target.GetComponent<ArcScript>().TargetDistance + centre.z) * Target.transform.localScale.x;
-
-                    // find position along arc
-                    Vector3 newPos = new Vector3(Mathf.Sin(angle), 0, Mathf.Cos(angle)) * distance;
-                    newPos += centre;
-
-                    localizer.transform.position = new Vector3(locX, 0, locZ) + newPos;
+                    locX = Input.GetAxisRaw("Horizontal") * 20;
+                    RotateLocalizer(locX);
+                    
                 }
 
                 // switch from click to enter or something? issue with clicking to refocus window
@@ -197,6 +202,22 @@ public class LocalizationTask : BaseTask
         if (Input.GetKeyDown(KeyCode.C))
         {
             Centre();
+        }
+    }
+
+    private void RotateLocalizer(float locX)
+    {
+        if(ctrler.TargetContainer.transform.rotation.eulerAngles.y < 90){
+            ctrler.TargetContainer.transform.Rotate(Vector3.up * locX * Time.deltaTime);
+        }
+        else if(ctrler.TargetContainer.transform.rotation.eulerAngles.y < 95 && locX < 0){
+            ctrler.TargetContainer.transform.Rotate(Vector3.up * locX * Time.deltaTime);
+        }
+        else if (ctrler.TargetContainer.transform.rotation.eulerAngles.y > 270){
+            ctrler.TargetContainer.transform.Rotate(Vector3.up * locX * Time.deltaTime);
+        }
+        else if (ctrler.TargetContainer.transform.rotation.eulerAngles.y > 265 && locX > 0){
+            ctrler.TargetContainer.transform.Rotate(Vector3.up * locX * Time.deltaTime);
         }
     }
 
@@ -240,8 +261,8 @@ public class LocalizationTask : BaseTask
 
                 break;
             case 2: // Pause in arc
-                localizer.SetActive(true);
-                Target.GetComponent<ArcScript>().Expand();
+                locAim.SetActive(true);
+                //Target.GetComponent<ArcScript>().Expand();
                 sound.Play();
                 if (ctrler.Session.settings.GetObjectList("optional_params").Contains("vr"))
                     VibrateController(0, 0.34f, 0.15f, devices);
@@ -264,7 +285,7 @@ public class LocalizationTask : BaseTask
     public override void LogParameters()
     {
         // Store where they think their hand is
-        ExperimentController.Instance().LogObjectPosition("loc", localizer.transform.localPosition);
+        ExperimentController.Instance().LogObjectPosition("loc", locAim.transform.localPosition);
     }
 
     public override void Disable()
@@ -274,7 +295,7 @@ public class LocalizationTask : BaseTask
         foreach (GameObject g in targets)
             g.SetActive(false);
 
-        localizer.SetActive(false);
+        locAim.SetActive(false);
     }
 
     protected override void OnDestroy()
@@ -282,7 +303,7 @@ public class LocalizationTask : BaseTask
         foreach (GameObject g in targets)
             Destroy(g);
 
-        Destroy(localizer);
+        Destroy(locAim);
 
         Destroy(localizationPrefab);
 
