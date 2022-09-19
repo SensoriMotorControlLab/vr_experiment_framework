@@ -9,6 +9,7 @@ public class CurlingToolTask : ToolTask
     Vector3 look = new Vector3();
     private LTDescr d;
     private int id;
+    bool toolGrabed = false;
 
     public override void Setup()
     {
@@ -30,6 +31,7 @@ public class CurlingToolTask : ToolTask
 
         baseObject.GetComponent<ToolObjectScript>().enabled = false;
         baseObject.SetActive(false);
+        toolObjects.transform.position = new Vector3(toolObjects.transform.position.x, toolObjects.transform.position.y, -0.4f);
     }
 
     public override bool IncrementStep()
@@ -58,10 +60,29 @@ public class CurlingToolTask : ToolTask
         {
             // initlize the scene 
             case 0:
-                ObjectFollowMouse(toolObjects, Vector3.zero);
-                ToolLookAtBall();
+                // ObjectFollowMouse(toolObjects, Vector3.zero);
+                // ToolLookAtBall();
 
                 baseObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
+
+                // when close to the tool the controller vibrates
+                if (Vector3.Distance(mousePoint, toolObjects.transform.position) <= 0.07f && !toolGrabed)
+                {
+                    // To Fix: the above positions are casted to the plane, y doesn't matter
+                    VibrateController(0, 0.2f, Time.deltaTime, devices);
+                }
+
+                // grab object
+                if (Vector3.Distance(mousePoint, toolObjects.transform.position) <= 0.07f && (Input.GetMouseButton(0) || ctrler.CursorController.IsTriggerDown()) && !toolGrabed)
+                {
+                    VibrateController(0, 0.34f, Time.deltaTime, devices);
+                    toolOffset = mousePoint - toolObjects.transform.position;
+                    toolGrabed = true;
+                }
+
+                if (toolGrabed){
+                    ObjectFollowMouse(toolObjects, Vector3.zero);
+                }
 
                 if (Vector3.Distance(mousePoint, ballObjects.transform.position) <= 0.01f)
                 {
@@ -82,7 +103,7 @@ public class CurlingToolTask : ToolTask
             case 1:
 
                 ObjectFollowMouse(toolObjects, Vector3.zero);
-                //Ball follows mouse
+                // Ball follows mouse
                 ObjectFollowMouse(baseObject, Vector3.zero);
 
                 d = LeanTween.descr(id);

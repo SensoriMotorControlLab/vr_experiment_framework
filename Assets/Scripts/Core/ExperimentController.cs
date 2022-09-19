@@ -26,6 +26,8 @@ public class ExperimentController : MonoBehaviour
     public GameObject TargetContainer; // Used as the center point for spawning targets.
 
     public BaseTask CurrentTask;
+    public GameObject floorPoint;
+    public GameObject dummyCamera;
 
     public GameObject[] PrefabList;
 
@@ -149,10 +151,12 @@ public class ExperimentController : MonoBehaviour
     void Start()
     {
         instance = this;
+        dummyCamera.transform.localPosition = transform.position;
     }
 
     void FixedUpdate()
     {
+        dummyCamera.transform.localPosition = transform.position;
         if (IsTracking && !isPaused)
         {
             //log positions
