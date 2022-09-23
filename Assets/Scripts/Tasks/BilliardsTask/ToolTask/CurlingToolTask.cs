@@ -106,11 +106,11 @@ public class CurlingToolTask : ToolTask
                 // Ball follows mouse
                 ObjectFollowMouse(baseObject, Vector3.zero);
 
-                d = LeanTween.descr(id);
-                if (d == null)
-                {
-                    toolObjects.transform.LookAt(look, toolSpace.transform.up);
-                }
+                // d = LeanTween.descr(id);
+                // if (d == null && curlingStone.transform.position.z > 0.01f)
+                // {
+                //     toolObjects.transform.LookAt(look, toolSpace.transform.up);
+                // }
 
                 pos = toolObjects.transform.position;
 
@@ -127,7 +127,7 @@ public class CurlingToolTask : ToolTask
                         startPos = mousePoint;
                     }
 
-                    if (Vector3.Distance(curlingStone.transform.position, Home.transform.position) > 0.2f)
+                    if (Vector3.Distance(curlingStone.transform.position, Home.transform.position) > 0.2f && curlingStone.transform.position.z > Home.transform.position.z)
                     {
                         shotDir = startPos - mousePoint;
                         shotDir /= time;
