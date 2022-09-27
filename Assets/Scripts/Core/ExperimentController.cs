@@ -190,7 +190,7 @@ public class ExperimentController : MonoBehaviour
     public void CentreExperiment(Vector3 centre)
     {
         exp_centre_pos = centre;
-        transform.position = exp_centre_pos;
+        transform.position = new Vector3(centre.x, transform.position.y, centre.z);
         StartCoroutine(TempDisableCursor());
     }
 

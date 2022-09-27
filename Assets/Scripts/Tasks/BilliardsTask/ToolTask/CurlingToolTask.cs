@@ -84,13 +84,13 @@ public class CurlingToolTask : ToolTask
                     ObjectFollowMouse(toolObjects, Vector3.zero);
                 }
 
-                if (Vector3.Distance(mousePoint, ballObjects.transform.position) <= 0.01f)
+                if (Vector3.Distance(mousePoint, ballObjects.transform.position) <= 0.015f)
                 {
                     Animate();
                     IncrementStep();
                     ToolLookAtBall();
                 }
-                else if (Vector3.Distance(ctrllerPoint, ballObjects.transform.position) <= 0.01f)
+                else if (Vector3.Distance(ctrllerPoint, ballObjects.transform.position) <= 0.015f)
                 {
                     Animate();
                     IncrementStep();

@@ -4,7 +4,7 @@
   ],
   "track_score": true,
   "per_block_type": [
-    "localization",
+    "aligned",
     "aligned",
     "rotated",
     "localization",

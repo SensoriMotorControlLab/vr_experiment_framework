@@ -142,6 +142,7 @@ public class ReachToTargetTask : BaseTask
         if (Input.GetKeyDown(KeyCode.C))
         {
             Centre();
+            
         }
     }
 
