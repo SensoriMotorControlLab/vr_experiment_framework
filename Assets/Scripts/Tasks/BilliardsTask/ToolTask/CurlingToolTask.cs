@@ -112,7 +112,7 @@ public class CurlingToolTask : ToolTask
                         //shotDir /= time;
                         shotDir = ctrler.CursorController.GetVelocity();
                         shotDir = new Vector3(shotDir.x, 0, shotDir.z);
-                        baseObject.GetComponent<Rigidbody>().AddForce(shotDir.normalized * 4);
+                        baseObject.GetComponent<Rigidbody>().AddForce(shotDir.normalized * 6);
                         pos = toolObjects.transform.position;
                         IncrementStep();
                     }
@@ -155,13 +155,13 @@ public class CurlingToolTask : ToolTask
                     ObjectFollowMouse(toolObjects, Vector3.zero);
                 }
 
-                if (Vector3.Distance(mousePoint, ballObjects.transform.position) <= 0.015f)
+                if (Vector3.Distance(mousePoint, ballObjects.transform.position) <= 0.02f)
                 {
                     Animate();
                     IncrementStep();
                     ToolLookAtBall();
                 }
-                else if (Vector3.Distance(ctrllerPoint, ballObjects.transform.position) <= 0.015f)
+                else if (Vector3.Distance(ctrllerPoint, ballObjects.transform.position) <= 0.02f)
                 {
                     Animate();
                     IncrementStep();
