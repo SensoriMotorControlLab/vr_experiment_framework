@@ -31,7 +31,7 @@ public class CurlingToolTask : ToolTask
 
         baseObject.GetComponent<ToolObjectScript>().enabled = false;
         baseObject.SetActive(false);
-        toolObjects.transform.position = new Vector3(toolObjects.transform.position.x, toolObjects.transform.position.y, -0.4f);
+        toolObjects.transform.position = new Vector3(toolObjects.transform.position.x, toolObjects.transform.position.y, -0.3f);
     }
 
     public override bool IncrementStep()
@@ -48,6 +48,77 @@ public class CurlingToolTask : ToolTask
     protected void Animate()
     {
         id = LeanTween.rotateY(toolObjects, 0, 0.3f).id;
+    }
+
+    void FixedUpdate(){
+         switch (currentStep)
+        {
+            case 0:   
+                break;
+
+            // the user triggers the object 
+            case 1:
+
+                ObjectFollowMouse(toolObjects, Vector3.zero);
+                // Ball follows mouse
+                ObjectFollowMouse(baseObject, Vector3.zero);
+
+                d = LeanTween.descr(id);
+                if (d == null )
+                {
+                    toolObjects.transform.LookAt(look, surfaceParent.transform.up);
+                }
+
+                pos = toolObjects.transform.position;
+
+                Vector3 startPos = new Vector3();
+                Vector3 shotDir = new Vector3();
+
+                float time = 0f;
+                //non vr and vr control of the curling
+                if (ctrler.Session.settings.GetString("experiment_mode") == "tool")
+                {
+                    if (Vector3.Distance(curlingStone.transform.position, Home.transform.position) > 0.12f)
+                    {
+                        time += Time.fixedDeltaTime;
+                        startPos = mousePoint;
+                    }
+
+                    if (Vector3.Distance(curlingStone.transform.position, Home.transform.position) > 0.2f && curlingStone.transform.position.z > Home.transform.position.z)
+                    {
+                        shotDir = startPos - mousePoint;
+                        shotDir /= time;
+                        baseObject.GetComponent<Rigidbody>().AddForce(-shotDir.normalized * FIRE_FORCE);
+                        pos = toolObjects.transform.position;
+                        IncrementStep();
+                    }
+                }
+                else
+                {
+                    if (Vector3.Distance(curlingStone.transform.position, Home.transform.position) > 0.12f)
+                    {
+                        time += Time.fixedDeltaTime;
+                        startPos = ctrllerPoint;
+                    }
+
+                    // Vibrate controller (scaled to velocity)
+                    if (toolObjects.GetComponent<Rigidbody>().velocity.magnitude > 0.01f)
+                        VibrateController(0, Mathf.Lerp(0.1f, 0.3f, toolObjects.GetComponent<Rigidbody>().velocity.magnitude / 10f), Time.deltaTime, devices);
+                    //VibrateController(0, 0.2f, Time.deltaTime, devices);
+
+                    if ((curlingStone.transform.position.z - Home.transform.position.z) > 0.1f)
+                    {
+                        //shotDir = startPos - ctrllerPoint;
+                        //shotDir /= time;
+                        shotDir = ctrler.CursorController.GetVelocity();
+                        shotDir = new Vector3(shotDir.x, 0, shotDir.z);
+                        baseObject.GetComponent<Rigidbody>().AddForce(shotDir.normalized * 4);
+                        pos = toolObjects.transform.position;
+                        IncrementStep();
+                    }
+                }
+                break;
+        }
     }
 
     // Update is called once per frame
@@ -97,67 +168,6 @@ public class CurlingToolTask : ToolTask
                     ToolLookAtBall();
                 }
 
-                break;
-
-            // the user triggers the object 
-            case 1:
-
-                ObjectFollowMouse(toolObjects, Vector3.zero);
-                // Ball follows mouse
-                ObjectFollowMouse(baseObject, Vector3.zero);
-
-                // d = LeanTween.descr(id);
-                // if (d == null && curlingStone.transform.position.z > 0.01f)
-                // {
-                //     toolObjects.transform.LookAt(look, toolSpace.transform.up);
-                // }
-
-                pos = toolObjects.transform.position;
-
-                Vector3 startPos = new Vector3();
-                Vector3 shotDir = new Vector3();
-
-                float time = 0f;
-                //non vr and vr control of the curling
-                if (ctrler.Session.settings.GetString("experiment_mode") == "tool")
-                {
-                    if (Vector3.Distance(curlingStone.transform.position, Home.transform.position) > 0.12f)
-                    {
-                        time += Time.fixedDeltaTime;
-                        startPos = mousePoint;
-                    }
-
-                    if (Vector3.Distance(curlingStone.transform.position, Home.transform.position) > 0.2f && curlingStone.transform.position.z > Home.transform.position.z)
-                    {
-                        shotDir = startPos - mousePoint;
-                        shotDir /= time;
-                        baseObject.GetComponent<Rigidbody>().AddForce(-shotDir.normalized * FIRE_FORCE);
-                        pos = toolObjects.transform.position;
-                        IncrementStep();
-                    }
-                }
-                else
-                {
-                    if (Vector3.Distance(curlingStone.transform.position, Home.transform.position) > 0.12f)
-                    {
-                        time += Time.fixedDeltaTime;
-                        startPos = ctrllerPoint;
-                    }
-
-                    // Vibrate controller (scaled to velocity)
-                    if (toolObjects.GetComponent<Rigidbody>().velocity.magnitude > 0.01f)
-                        VibrateController(0, Mathf.Lerp(0.1f, 0.3f, toolObjects.GetComponent<Rigidbody>().velocity.magnitude / 10f), Time.deltaTime, devices);
-                    //VibrateController(0, 0.2f, Time.deltaTime, devices);
-
-                    if (Vector3.Distance(curlingStone.transform.position, Home.transform.position) > 0.2f)
-                    {
-                        shotDir = startPos - ctrllerPoint;
-                        shotDir /= time;
-                        baseObject.GetComponent<Rigidbody>().AddForce(-shotDir.normalized * FIRE_FORCE);
-                        pos = toolObjects.transform.position;
-                        IncrementStep();
-                    }
-                }
                 break;
             case 2:
                 toolObjects.transform.position = pos;

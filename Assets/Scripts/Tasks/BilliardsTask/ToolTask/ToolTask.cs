@@ -89,6 +89,8 @@ public class ToolTask : BilliardsTask
     private float[] speed = new float[5];
     private int currIndex = 0;
 
+    protected GameObject surfaceParent;
+
     protected List<UnityEngine.XR.InputDevice> devices = new List<UnityEngine.XR.InputDevice>();
 
     protected Vector3 toolOffset = new Vector3();
@@ -456,6 +458,7 @@ public class ToolTask : BilliardsTask
         XRRig = GameObject.Find("XR Rig");
         XRPosLock = GameObject.Find("XRPosLock");
         centre = GameObject.Find("centre");
+        surfaceParent = GameObject.Find("SurfaceParent");
 
         bonusText = GameObject.Find("BonusText");
 
