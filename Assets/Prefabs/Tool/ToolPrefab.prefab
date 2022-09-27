@@ -1216,6 +1216,7 @@ Transform:
   - {fileID: 2182118872614687025}
   - {fileID: 68188136191809411}
   - {fileID: 7605637980029468199}
+  - {fileID: 8300692380020648617}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1521,7 +1522,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4667220273999324845}
   m_LocalRotation: {x: 0.30070576, y: -0, z: -0, w: 0.953717}
-  m_LocalPosition: {x: 0, y: 0.65000004, z: -0.535}
+  m_LocalPosition: {x: 0, y: 0.65000004, z: -0.85}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2998,6 +2999,37 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!1 &8891559134186600527
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8300692380020648617}
+  m_Layer: 0
+  m_Name: centre
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8300692380020648617
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8891559134186600527}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.047, z: -0.429}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3880917273283088886}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &504932497254899313
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3463,7 +3495,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 0c943bbc7be79b346bb8fe5744888b5d,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.035000026
+      value: -0.0366
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0c943bbc7be79b346bb8fe5744888b5d,
         type: 3}

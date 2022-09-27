@@ -9,6 +9,7 @@ public class CurlingToolTask : ToolTask
     Vector3 look = new Vector3();
     private LTDescr d;
     private int id;
+    bool toolGrabed = false;
 
     public override void Setup()
     {
@@ -30,6 +31,7 @@ public class CurlingToolTask : ToolTask
 
         baseObject.GetComponent<ToolObjectScript>().enabled = false;
         baseObject.SetActive(false);
+        toolObjects.transform.position = new Vector3(toolObjects.transform.position.x, toolObjects.transform.position.y, -0.3f);
     }
 
     public override bool IncrementStep()
@@ -48,47 +50,23 @@ public class CurlingToolTask : ToolTask
         id = LeanTween.rotateY(toolObjects, 0, 0.3f).id;
     }
 
-    // Update is called once per frame
-    protected override void Update()
-    {
-        base.Update();
-
-
-        switch (currentStep)
+    void FixedUpdate(){
+         switch (currentStep)
         {
-            // initlize the scene 
-            case 0:
-                ObjectFollowMouse(toolObjects, Vector3.zero);
-                ToolLookAtBall();
-
-                baseObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
-
-                if (Vector3.Distance(mousePoint, ballObjects.transform.position) <= 0.01f)
-                {
-                    Animate();
-                    IncrementStep();
-                    ToolLookAtBall();
-                }
-                else if (Vector3.Distance(ctrllerPoint, ballObjects.transform.position) <= 0.01f)
-                {
-                    Animate();
-                    IncrementStep();
-                    ToolLookAtBall();
-                }
-
+            case 0:   
                 break;
 
             // the user triggers the object 
             case 1:
 
                 ObjectFollowMouse(toolObjects, Vector3.zero);
-                //Ball follows mouse
+                // Ball follows mouse
                 ObjectFollowMouse(baseObject, Vector3.zero);
 
                 d = LeanTween.descr(id);
-                if (d == null)
+                if (d == null )
                 {
-                    toolObjects.transform.LookAt(look, toolSpace.transform.up);
+                    toolObjects.transform.LookAt(look, surfaceParent.transform.up);
                 }
 
                 pos = toolObjects.transform.position;
@@ -106,7 +84,7 @@ public class CurlingToolTask : ToolTask
                         startPos = mousePoint;
                     }
 
-                    if (Vector3.Distance(curlingStone.transform.position, Home.transform.position) > 0.2f)
+                    if (Vector3.Distance(curlingStone.transform.position, Home.transform.position) > 0.2f && curlingStone.transform.position.z > Home.transform.position.z)
                     {
                         shotDir = startPos - mousePoint;
                         shotDir /= time;
@@ -128,15 +106,68 @@ public class CurlingToolTask : ToolTask
                         VibrateController(0, Mathf.Lerp(0.1f, 0.3f, toolObjects.GetComponent<Rigidbody>().velocity.magnitude / 10f), Time.deltaTime, devices);
                     //VibrateController(0, 0.2f, Time.deltaTime, devices);
 
-                    if (Vector3.Distance(curlingStone.transform.position, Home.transform.position) > 0.2f)
+                    if ((curlingStone.transform.position.z - Home.transform.position.z) > 0.1f)
                     {
-                        shotDir = startPos - ctrllerPoint;
-                        shotDir /= time;
-                        baseObject.GetComponent<Rigidbody>().AddForce(-shotDir.normalized * FIRE_FORCE);
+                        //shotDir = startPos - ctrllerPoint;
+                        //shotDir /= time;
+                        shotDir = ctrler.CursorController.GetVelocity();
+                        shotDir = new Vector3(shotDir.x, 0, shotDir.z);
+                        baseObject.GetComponent<Rigidbody>().AddForce(shotDir.normalized * 6);
                         pos = toolObjects.transform.position;
                         IncrementStep();
                     }
                 }
+                break;
+        }
+    }
+
+    // Update is called once per frame
+    protected override void Update()
+    {
+        base.Update();
+
+
+        switch (currentStep)
+        {
+            // initlize the scene 
+            case 0:
+                // ObjectFollowMouse(toolObjects, Vector3.zero);
+                // ToolLookAtBall();
+
+                baseObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
+
+                // when close to the tool the controller vibrates
+                if (Vector3.Distance(mousePoint, toolObjects.transform.position) <= 0.07f && !toolGrabed)
+                {
+                    // To Fix: the above positions are casted to the plane, y doesn't matter
+                    VibrateController(0, 0.2f, Time.deltaTime, devices);
+                }
+
+                // grab object
+                if (Vector3.Distance(mousePoint, toolObjects.transform.position) <= 0.07f && (Input.GetMouseButton(0) || ctrler.CursorController.IsTriggerDown()) && !toolGrabed)
+                {
+                    VibrateController(0, 0.34f, Time.deltaTime, devices);
+                    toolOffset = mousePoint - toolObjects.transform.position;
+                    toolGrabed = true;
+                }
+
+                if (toolGrabed){
+                    ObjectFollowMouse(toolObjects, Vector3.zero);
+                }
+
+                if (Vector3.Distance(mousePoint, ballObjects.transform.position) <= 0.02f)
+                {
+                    Animate();
+                    IncrementStep();
+                    ToolLookAtBall();
+                }
+                else if (Vector3.Distance(ctrllerPoint, ballObjects.transform.position) <= 0.02f)
+                {
+                    Animate();
+                    IncrementStep();
+                    ToolLookAtBall();
+                }
+
                 break;
             case 2:
                 toolObjects.transform.position = pos;

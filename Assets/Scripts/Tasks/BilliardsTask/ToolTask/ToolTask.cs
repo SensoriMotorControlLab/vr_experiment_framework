@@ -14,6 +14,8 @@ public class ToolTask : BilliardsTask
     protected GameObject toolSpace;
     protected GameObject toolCamera;
 
+    public float table_height = 0;
+
     private GameObject currentHand;
     private GameObject handL, handR;
     private GameObject XRRig;
@@ -37,6 +39,8 @@ public class ToolTask : BilliardsTask
     protected GameObject puckobj;
     protected GameObject curlingStone;
     protected GameObject slingShotBall;
+
+    protected GameObject centre;
 
     protected LineRenderer elasticR;
     protected LineRenderer elasticL;
@@ -85,6 +89,8 @@ public class ToolTask : BilliardsTask
     private float[] speed = new float[5];
     private int currIndex = 0;
 
+    protected GameObject surfaceParent;
+
     protected List<UnityEngine.XR.InputDevice> devices = new List<UnityEngine.XR.InputDevice>();
 
     protected Vector3 toolOffset = new Vector3();
@@ -118,6 +124,11 @@ public class ToolTask : BilliardsTask
 
     protected virtual void Update()
     {
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            Centre();
+            Debug.Log("Centre");
+        }
         UnityEngine.XR.InputDevices.GetDevicesWithRole(UnityEngine.XR.InputDeviceRole.RightHanded, devices);
 
         //gets the mouse point relative to the surface
@@ -385,9 +396,16 @@ public class ToolTask : BilliardsTask
                 break;
         }
 
+        
 
         if (Finished)
             ctrler.EndAndPrepare();
+    }
+
+    protected void Centre()
+    {
+        Vector3 pos = new Vector3(ctrler.CursorController.transform.position.x, ctrler.CursorController.transform.position.y, ctrler.CursorController.transform.position.z);
+        ctrler.CentreExperiment(centre.transform.position);
     }
 
     public override bool IncrementStep()
@@ -439,6 +457,8 @@ public class ToolTask : BilliardsTask
         handR = GameObject.Find("handR");
         XRRig = GameObject.Find("XR Rig");
         XRPosLock = GameObject.Find("XRPosLock");
+        centre = GameObject.Find("centre");
+        surfaceParent = GameObject.Find("SurfaceParent");
 
         bonusText = GameObject.Find("BonusText");
 

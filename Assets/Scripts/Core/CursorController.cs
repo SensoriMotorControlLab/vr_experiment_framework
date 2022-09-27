@@ -52,6 +52,8 @@ public class CursorController : MonoBehaviour
     public bool UseVR;
     public bool useHand = true;
 
+    private Rigidbody rb;
+
     public enum MovementType
     {
         aligned,
@@ -61,6 +63,10 @@ public class CursorController : MonoBehaviour
 
     public MovementType MoveType { get; private set; }
 
+    public Vector3 GetHandVelocity(){
+        return rb.velocity;
+    }
+
     void Start()
     {
         // For oculus
@@ -69,6 +75,7 @@ public class CursorController : MonoBehaviour
 
         leftHandCollider = LeftHand.transform.Find("LeftHandCollider").gameObject;
         rightHandCollider = RightHand.transform.Find("RightHandCollider").gameObject;
+        rb = rightHandCollider.GetComponent<Rigidbody>();
 
         List<InputDevice> devices = new List<InputDevice>();
         //InputDevices.GetDevices(devices);
