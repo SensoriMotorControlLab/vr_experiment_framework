@@ -427,7 +427,7 @@ public class ToolTask : BilliardsTask
 
                 baseObject.GetComponent<Rigidbody>().useGravity = true;
 
-                
+
 
                 break;
         }

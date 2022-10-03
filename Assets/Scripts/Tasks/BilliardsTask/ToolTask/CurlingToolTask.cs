@@ -7,6 +7,7 @@ public class CurlingToolTask : ToolTask
     
     Vector3 pos = new Vector3();
     Vector3 look = new Vector3();
+    //private Vector3 shotDir;
     private LTDescr d;
     private int id;
     bool toolGrabed = false;
@@ -42,6 +43,13 @@ public class CurlingToolTask : ToolTask
             toolObjects.transform.rotation = toolSpace.transform.rotation;
         }
 
+        switch (currentStep)
+        {
+            case 1:
+                break;
+        }
+            
+      
         return base.IncrementStep();
     }
 
@@ -60,11 +68,11 @@ public class CurlingToolTask : ToolTask
             case 1:
 
                 ObjectFollowMouse(toolObjects, Vector3.zero);
-                // Ball follows mouse
+                //// Ball follows mouse
                 ObjectFollowMouse(baseObject, Vector3.zero);
 
                 d = LeanTween.descr(id);
-                if (d == null )
+                if (d == null)
                 {
                     toolObjects.transform.LookAt(look, surfaceParent.transform.up);
                 }
@@ -81,41 +89,52 @@ public class CurlingToolTask : ToolTask
                     if (Vector3.Distance(curlingStone.transform.position, Home.transform.position) > 0.12f)
                     {
                         time += Time.fixedDeltaTime;
-                        startPos = mousePoint;
+                        //startPos = mousePoint;
                     }
 
                     if (Vector3.Distance(curlingStone.transform.position, Home.transform.position) > 0.2f && curlingStone.transform.position.z > Home.transform.position.z)
                     {
+                        
                         shotDir = startPos - mousePoint;
                         shotDir /= time;
-                        baseObject.GetComponent<Rigidbody>().AddForce(-shotDir.normalized * FIRE_FORCE);
+                        if (ctrler.Session.CurrentBlock.settings.GetString("per_block_type") == "rotated")
+                        {
+                            shotDir = RotateShot(shotDir);
+                        }
+                        shotDir = new Vector3(shotDir.x, 0, shotDir.z);
+                        baseObject.GetComponent<BilliardsBallBehaviour>().FireBilliardsBall(-shotDir, 0.5f);
                         pos = toolObjects.transform.position;
                         IncrementStep();
                     }
                 }
                 else
                 {
-                    if (Vector3.Distance(curlingStone.transform.position, Home.transform.position) > 0.12f)
-                    {
-                        time += Time.fixedDeltaTime;
-                        startPos = ctrllerPoint;
-                    }
+                   if (Vector3.Distance(curlingStone.transform.position, Home.transform.position) > 0.12f)
+                   {
+                       time += Time.fixedDeltaTime;
+                       //startPos = ctrllerPoint;
+                   }
 
-                    // Vibrate controller (scaled to velocity)
-                    if (toolObjects.GetComponent<Rigidbody>().velocity.magnitude > 0.01f)
-                        VibrateController(0, Mathf.Lerp(0.1f, 0.3f, toolObjects.GetComponent<Rigidbody>().velocity.magnitude / 10f), Time.deltaTime, devices);
-                    //VibrateController(0, 0.2f, Time.deltaTime, devices);
+                   // Vibrate controller (scaled to velocity)
+                   if (toolObjects.GetComponent<Rigidbody>().velocity.magnitude > 0.02f)
+                       VibrateController(0, Mathf.Lerp(0.1f, 0.3f, toolObjects.GetComponent<Rigidbody>().velocity.magnitude / 10f), Time.deltaTime, devices);
+                   //VibrateController(0, 0.2f, Time.deltaTime, devices);
 
-                    if ((curlingStone.transform.position.z - Home.transform.position.z) > 0.1f)
-                    {
-                        //shotDir = startPos - ctrllerPoint;
-                        //shotDir /= time;
-                        shotDir = ctrler.CursorController.GetVelocity();
+                   if ((curlingStone.transform.position.z - Home.transform.position.z) > 0.1f)
+                   {
+                       
+                       shotDir = ctrler.CursorController.GetVelocity();
+                       if (ctrler.Session.CurrentBlock.settings.GetString("per_block_type") == "rotated")
+                        {
+                            shotDir = RotateShot(shotDir);
+                        }
+  
                         shotDir = new Vector3(shotDir.x, 0, shotDir.z);
-                        baseObject.GetComponent<Rigidbody>().AddForce(shotDir.normalized * 6);
+                        baseObject.GetComponent<BilliardsBallBehaviour>().FireBilliardsBall(shotDir, 2f);
+                        Debug.Log(shotDir);
                         pos = toolObjects.transform.position;
                         IncrementStep();
-                    }
+                   }
                 }
                 break;
         }
@@ -155,13 +174,13 @@ public class CurlingToolTask : ToolTask
                     ObjectFollowMouse(toolObjects, Vector3.zero);
                 }
 
-                if (Vector3.Distance(mousePoint, ballObjects.transform.position) <= 0.02f)
+                if (Vector3.Distance(mousePoint, ballObjects.transform.position) <= 0.02f && toolGrabed)
                 {
                     Animate();
                     IncrementStep();
                     ToolLookAtBall();
                 }
-                else if (Vector3.Distance(ctrllerPoint, ballObjects.transform.position) <= 0.02f)
+                else if (Vector3.Distance(ctrllerPoint, ballObjects.transform.position) <= 0.02f && toolGrabed)
                 {
                     Animate();
                     IncrementStep();

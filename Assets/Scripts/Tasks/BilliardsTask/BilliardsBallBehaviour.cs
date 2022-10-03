@@ -6,7 +6,7 @@ using UnityEngine;
 // This script is attached to the BallObjects GameObject -- the parent of the ball/puck meshes
 public class BilliardsBallBehaviour : MonoBehaviour
 {
-    public void FireBilliardsBall(Vector3 shotDir, float forceMultiplier = 1f)
+    public void FireBilliardsBall(Vector3 shotDir, float forceMultiplier)
     {
         // set the velocity of the ball to the shotDir
         GetComponent<Rigidbody>().velocity = shotDir * forceMultiplier;
@@ -18,6 +18,6 @@ public class BilliardsBallBehaviour : MonoBehaviour
     [ContextMenu("FireTest")]
     public void FireTest()
     {
-        FireBilliardsBall(new Vector3(0, 0, 5));
+        FireBilliardsBall(new Vector3(0, 0, 5), 1);
     }
 }
