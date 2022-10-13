@@ -338,7 +338,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1019957432490625252}
   m_LocalRotation: {x: 0.9999619, y: 0.0031131948, z: 0.0000073367355, w: -0.00815365}
-  m_LocalPosition: {x: -1.2434499e-12, y: -0.38199994, z: 5.031531e-12}
+  m_LocalPosition: {x: -1.2434499e-12, y: -0.382, z: 5.031531e-12}
   m_LocalScale: {x: 1, y: 0.1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -373,7 +373,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 210829b4ca97bfa4c962f3c00c4b6e86, type: 2}
+  - {fileID: 2100000, guid: 2408c7077c3256541945bfb35ac03ca5, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2610,7 +2610,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: c0d18cefc611a964eaaeec6b48640e57, type: 2}
+  - {fileID: 2100000, guid: 2408c7077c3256541945bfb35ac03ca5, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3779,17 +3779,22 @@ PrefabInstance:
     - target: {fileID: 8742538545776668643, guid: 70e99dcdf0ab35b4eb61a80b547d42c9,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.8
+      value: 0.33
       objectReference: {fileID: 0}
     - target: {fileID: 8742538545776668643, guid: 70e99dcdf0ab35b4eb61a80b547d42c9,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.8
+      value: 0.33
       objectReference: {fileID: 0}
     - target: {fileID: 8742538545776668643, guid: 70e99dcdf0ab35b4eb61a80b547d42c9,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.8
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8742538545776668643, guid: 70e99dcdf0ab35b4eb61a80b547d42c9,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.269
       objectReference: {fileID: 0}
     - target: {fileID: 8742538545776668643, guid: 70e99dcdf0ab35b4eb61a80b547d42c9,
         type: 3}
@@ -3809,7 +3814,7 @@ PrefabInstance:
     - target: {fileID: 8742538545776668643, guid: 70e99dcdf0ab35b4eb61a80b547d42c9,
         type: 3}
       propertyPath: m_ConstrainProportionsScale
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 7243324766535440047, guid: 70e99dcdf0ab35b4eb61a80b547d42c9,
