@@ -595,6 +595,7 @@ public class ToolTask : BilliardsTask
         ctrler.AddTrackedPosition("ball_path", baseObject);
 
         ctrler.CursorController.SetHandVisibility(false);
+        ctrler.CursorController.SetCursorVisibility(false);
     }
 
     public override void LogParameters()
