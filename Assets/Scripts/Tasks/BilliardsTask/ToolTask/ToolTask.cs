@@ -443,6 +443,7 @@ public class ToolTask : BilliardsTask
 
     public override void Setup()
     {
+        
         maxSteps = 4;
 
         ctrler = ExperimentController.Instance();
@@ -592,6 +593,9 @@ public class ToolTask : BilliardsTask
 
         // Add ball to tracked objects
         ctrler.AddTrackedPosition("ball_path", baseObject);
+
+        ctrler.CursorController.SetHandVisibility(false);
+        ctrler.CursorController.SetCursorVisibility(false);
     }
 
     public override void LogParameters()

@@ -132,6 +132,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 641553107}
     m_Modifications:
+    - target: {fileID: 100016, guid: 1bf8f52eeebe8e149b9d6e3477251532, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 100018, guid: 1bf8f52eeebe8e149b9d6e3477251532, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 100036, guid: 1bf8f52eeebe8e149b9d6e3477251532, type: 3}
       propertyPath: m_Name
       value: left_touch_controller_model_skel
@@ -146,15 +154,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400036, guid: 1bf8f52eeebe8e149b9d6e3477251532, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 0.0036
       objectReference: {fileID: 0}
     - target: {fileID: 400036, guid: 1bf8f52eeebe8e149b9d6e3477251532, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.0062
       objectReference: {fileID: 0}
     - target: {fileID: 400036, guid: 1bf8f52eeebe8e149b9d6e3477251532, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0.0482
       objectReference: {fileID: 0}
     - target: {fileID: 400036, guid: 1bf8f52eeebe8e149b9d6e3477251532, type: 3}
       propertyPath: m_LocalRotation.w
@@ -916,7 +924,7 @@ MonoBehaviour:
     m_Bits: 4294967295
   m_InteractionLayers:
     m_Bits: 4294967295
-  m_AttachTransform: {fileID: 0}
+  m_AttachTransform: {fileID: 783915198}
   m_KeepSelectedTargetValid: 1
   m_StartingSelectedInteractable: {fileID: 0}
   m_HoverEntered:
@@ -1599,6 +1607,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 5af672584fe86624185c4b403aca7163, type: 2}
   - {fileID: 2100000, guid: 0c1a0b9acb480184fbe1df2bb7eed345, type: 2}
   - {fileID: 2100000, guid: e317ea3e4e4d3f04998f89ed7699e9a4, type: 2}
+  CursorController: {fileID: 693741413}
   Score: 0
   IsTracking: 1
   StepTimer: []
@@ -1836,15 +1845,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400036, guid: 270ca9aaa39af4d4bb26754fdce0c971, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -0.0036
       objectReference: {fileID: 0}
     - target: {fileID: 400036, guid: 270ca9aaa39af4d4bb26754fdce0c971, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.0062
       objectReference: {fileID: 0}
     - target: {fileID: 400036, guid: 270ca9aaa39af4d4bb26754fdce0c971, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0.0482
       objectReference: {fileID: 0}
     - target: {fileID: 400036, guid: 270ca9aaa39af4d4bb26754fdce0c971, type: 3}
       propertyPath: m_LocalRotation.w
@@ -3291,7 +3300,7 @@ MonoBehaviour:
     m_Bits: 4294967295
   m_InteractionLayers:
     m_Bits: 4294967295
-  m_AttachTransform: {fileID: 0}
+  m_AttachTransform: {fileID: 1166201195}
   m_KeepSelectedTargetValid: 1
   m_StartingSelectedInteractable: {fileID: 0}
   m_HoverEntered:
