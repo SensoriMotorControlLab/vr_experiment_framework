@@ -70,7 +70,7 @@ public class ImpactToolTask : ToolTask
                 // record and apply shotDir
                 launchAngle = Vector2.SignedAngle(new Vector2(1f, 0f), new Vector2(shotDir.x, shotDir.z));
                 // run the FireBilliardsBall function from the BilliardsBallBehaviour script
-                baseObject.GetComponent<BilliardsBallBehaviour>().FireBilliardsBall(shotDir);
+                baseObject.GetComponent<BilliardsBallBehaviour>().FireBilliardsBall(shotDir, 1);
 
 
                 toolObjects.transform.rotation = toolSpace.transform.rotation;

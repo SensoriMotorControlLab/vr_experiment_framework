@@ -1,5 +1,5 @@
 {
-  "experiment_mode": "tool_vr",
+  "experiment_mode": "tool",
 
   "optional_params": [],
 
@@ -9,7 +9,7 @@
 
   "per_block_rotation": [ 0, 0, 30 ],
 
-  "per_block_n": [ 12, 12, 3 ],
+  "per_block_n": [ 1, 1, 12 ],
 
   "per_block_hand": [ "r", "r", "r" ],
 

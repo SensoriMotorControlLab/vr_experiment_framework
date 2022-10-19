@@ -39,7 +39,7 @@ public class ExperimentController : MonoBehaviour
     public Dictionary<string, AudioClip> AudioClips = new Dictionary<string, AudioClip>();
     public Dictionary<string, Material> Materials = new Dictionary<string, Material>();
 
-    public CursorController CursorController { get; private set; }
+    public CursorController CursorController;
 
     // Reference to the UXF Session object
     public Session Session { get; private set; }
@@ -191,7 +191,7 @@ public class ExperimentController : MonoBehaviour
     {
         exp_centre_pos = centre;
         transform.position = new Vector3(centre.x, transform.position.y, centre.z);
-        StartCoroutine(TempDisableCursor());
+        //StartCoroutine(TempDisableCursor());
     }
 
     // Update is called once per frame
@@ -377,9 +377,9 @@ public class ExperimentController : MonoBehaviour
                 CurrentTask = gameObject.AddComponent<Trails>();
 
                 break;
-            //case "target2d":
-            //    InitializePseudorandomList(trial, "per_block_waterPresent");
-            //    break;
+            case "virtual_hand":
+                //CurrentTask = gameObject.AddComponent<VirtualHandTask>;
+                break;
             default:
                 Debug.LogWarning("Experiment Type not implemented: " +
                                     Session.settings.GetString("experiment_mode"));

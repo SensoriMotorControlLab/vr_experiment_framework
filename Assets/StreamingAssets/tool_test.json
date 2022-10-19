@@ -7,7 +7,7 @@
 
   "per_block_type": [ "aligned", "aligned", "aligned" ],
 
-  "per_block_rotation": [ 0, 0, 0 ],
+  "per_block_rotation": [ 45, 45, 45 ],
 
   "per_block_n": [ 3, 3, 3 ],
 
@@ -24,7 +24,7 @@
 
   "per_block_list_triggerType": [ "tt1", "tt1", "tt1" ],
 
-  "tt1": [ "curling", "curling", "curling" ],
+  "tt1": [ "impact", "curling", "curling" ],
 
   "per_block_list_puck_type": [ "pt1", "pt1", "pt1" ],
 
@@ -32,7 +32,7 @@
 
   "per_block_list_tool_type": [ "tT", "tT", "tT" ],
 
-  "tT": [ "squeegee", "squeegee", "squeegee" ],
+  "tT": [ "paddle", "squeegee", "squeegee" ],
 
   "per_block_surface_dynamic_friction": [ 0.1, 0.1, 0.1 ],
   "per_block_surface_static_friction": [ 0.1, 0.1, 0.1 ],
@@ -49,7 +49,7 @@
 
   "ct1": [ -2, 0, 2],
   "ct2": [ 0 ],
-  "st1": [ -15, -15, -15],
+  "st1": [ 0, 0, 0],
 
   "per_block_curve_type": [ "sin", "cos", "linear" ],
   "per_trial_dynamic_tilt": [ 1, 1, 1, 1, 1, 1, 1, 1, 1 ]

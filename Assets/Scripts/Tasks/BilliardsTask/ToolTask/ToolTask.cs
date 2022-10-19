@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 using UXF;
 using MovementType = CursorController.MovementType;
 
@@ -252,7 +253,7 @@ public class ToolTask : BilliardsTask
                 }
 
                 // disbale tool object aft 50ms
-                if (distanceToTarget < 0.05f)
+                if (distanceToTarget < 0.025f)
                 {
                     enteredTarget = true;
                 }
@@ -273,7 +274,7 @@ public class ToolTask : BilliardsTask
 
                     // if ball is within the target radius
                     float CurrentDistanceToTarget = Vector3.Distance(previousPosition, Target.transform.position);
-                    if (CurrentDistanceToTarget < 0.05f)
+                    if (CurrentDistanceToTarget < 0.025f)
                     {
                         if (ctrler.Session.CurrentTrial.settings.GetBool("per_block_visual_feedback"))
                         {
@@ -390,16 +391,22 @@ public class ToolTask : BilliardsTask
                 else
                 {
                     LogParameters();
-                    IncrementStep();
+                    StartCoroutine(Wait());
+                    
                 }
 
                 break;
         }
 
-        
-
         if (Finished)
             ctrler.EndAndPrepare();
+    }
+
+    IEnumerator Wait()
+    {
+        yield return new WaitForSeconds(1f);
+        IncrementStep();
+        // Code to execute after the delay
     }
 
     protected void Centre()
@@ -427,7 +434,7 @@ public class ToolTask : BilliardsTask
 
                 baseObject.GetComponent<Rigidbody>().useGravity = true;
 
-                
+
 
                 break;
         }
@@ -443,6 +450,7 @@ public class ToolTask : BilliardsTask
 
     public override void Setup()
     {
+        
         maxSteps = 4;
 
         ctrler = ExperimentController.Instance();
@@ -592,6 +600,9 @@ public class ToolTask : BilliardsTask
 
         // Add ball to tracked objects
         ctrler.AddTrackedPosition("ball_path", baseObject);
+
+        ctrler.CursorController.SetHandVisibility(false);
+        ctrler.CursorController.SetCursorVisibility(false);
     }
 
     public override void LogParameters()

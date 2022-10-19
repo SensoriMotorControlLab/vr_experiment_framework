@@ -143,7 +143,7 @@ public class CursorController : MonoBehaviour
             }
             else
             {
-                Debug.Log("Right device not detected.");
+                // Debug.Log("Right device not detected.");
             }
 
         }
@@ -162,7 +162,7 @@ public class CursorController : MonoBehaviour
             }
             else
             {
-                Debug.Log("Left device not detected.");
+                // Debug.Log("Left device not detected.");
             }
         }
     }
@@ -305,7 +305,7 @@ public class CursorController : MonoBehaviour
     {
         leftHandModel.SetActive(visible);
         rightHandModel.SetActive(visible);
-        LeftHandVisible = RightHandVisible = visible;
+        LeftHandVisible = RightHandVisible = false;
     }
 
     // Update is called once per frame
