@@ -5,7 +5,7 @@
 
   "exp_record_score": true,
 
-  "per_block_type": [ "rotated", "aligned", "aligned" ],
+  "per_block_type": [ "aligned", "aligned", "aligned" ],
 
   "per_block_rotation": [ 45, 45, 45 ],
 

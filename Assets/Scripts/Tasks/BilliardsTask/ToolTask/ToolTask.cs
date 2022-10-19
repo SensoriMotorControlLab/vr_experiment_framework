@@ -314,11 +314,11 @@ public class ToolTask : BilliardsTask
                     // If the participant fired the pinball within the allowed time & score tracking is enabled in json
                     if (!missed && timerIndicator.GetComponent<TimerIndicator>().Timer >= 0.0f)
                     {
-                        toolSpace.GetComponent<AudioSource>().Play();
 
                         // Scoring. Note that running out of time yields no points
                         if (Target.GetComponent<BaseTarget>().Collided)
                         {
+                            toolSpace.GetComponent<AudioSource>().clip = ctrler.AudioClips["correct"];
                             if (trackScore) ctrler.Score += MAX_POINTS + BONUS_POINTS;
                             bonusText.GetComponentInChildren<Text>().color = Color.green;
 
@@ -332,6 +332,7 @@ public class ToolTask : BilliardsTask
                             bonusText.GetComponentInChildren<Text>().text = score + "pts";
                             bonusText.GetComponentInChildren<Text>().color = score == 0 ? Color.red : Color.white;
                         }
+                        toolSpace.GetComponent<AudioSource>().Play();
                     }
                     else // missed
                     {
