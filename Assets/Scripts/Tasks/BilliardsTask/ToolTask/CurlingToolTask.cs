@@ -61,9 +61,6 @@ public class CurlingToolTask : ToolTask
     void FixedUpdate(){
          switch (currentStep)
         {
-            case 0:   
-                break;
-
             // the user triggers the object 
             case 1:
 
