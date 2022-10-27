@@ -101,7 +101,8 @@ public class CurlingToolTask : ToolTask
                         shotDir = new Vector3(shotDir.x, 0, shotDir.z);
                         baseObject.GetComponent<BilliardsBallBehaviour>().FireBilliardsBall(-shotDir, 0.5f);
                         pos = toolObjects.transform.position;
-                        IncrementStep();
+                        launchAngle = Vector3.Angle(shotDir, transform.right);
+                        IncrementStep(); 
                     }
                 }
                 else
@@ -130,6 +131,8 @@ public class CurlingToolTask : ToolTask
                         baseObject.GetComponent<BilliardsBallBehaviour>().FireBilliardsBall(shotDir, 2f);
                         Debug.Log(shotDir);
                         pos = toolObjects.transform.position;
+                        launchAngle = Vector3.Angle(shotDir, -transform.right);
+                        Debug.Log(launchAngle);
                         IncrementStep();
                    }
                 }

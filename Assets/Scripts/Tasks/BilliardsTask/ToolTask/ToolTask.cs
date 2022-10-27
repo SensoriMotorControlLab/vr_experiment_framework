@@ -253,7 +253,7 @@ public class ToolTask : BilliardsTask
                 }
 
                 // disbale tool object aft 50ms
-                if (distanceToTarget < 0.025f)
+                if (distanceToTarget < 0.05f)
                 {
                     enteredTarget = true;
                 }
@@ -274,7 +274,7 @@ public class ToolTask : BilliardsTask
 
                     // if ball is within the target radius
                     float CurrentDistanceToTarget = Vector3.Distance(previousPosition, Target.transform.position);
-                    if (CurrentDistanceToTarget < 0.025f)
+                    if (CurrentDistanceToTarget < 0.05f)
                     {
                         if (ctrler.Session.CurrentTrial.settings.GetBool("per_block_visual_feedback"))
                         {
@@ -314,11 +314,11 @@ public class ToolTask : BilliardsTask
                     // If the participant fired the pinball within the allowed time & score tracking is enabled in json
                     if (!missed && timerIndicator.GetComponent<TimerIndicator>().Timer >= 0.0f)
                     {
-                        toolSpace.GetComponent<AudioSource>().Play();
 
                         // Scoring. Note that running out of time yields no points
                         if (Target.GetComponent<BaseTarget>().Collided)
                         {
+                            toolSpace.GetComponent<AudioSource>().clip = ctrler.AudioClips["correct"];
                             if (trackScore) ctrler.Score += MAX_POINTS + BONUS_POINTS;
                             bonusText.GetComponentInChildren<Text>().color = Color.green;
 
@@ -332,6 +332,7 @@ public class ToolTask : BilliardsTask
                             bonusText.GetComponentInChildren<Text>().text = score + "pts";
                             bonusText.GetComponentInChildren<Text>().color = score == 0 ? Color.red : Color.white;
                         }
+                        toolSpace.GetComponent<AudioSource>().Play();
                     }
                     else // missed
                     {
@@ -391,7 +392,7 @@ public class ToolTask : BilliardsTask
                 else
                 {
                     LogParameters();
-                    StartCoroutine(Wait());
+                    IncrementStep();
                     
                 }
 
@@ -400,13 +401,6 @@ public class ToolTask : BilliardsTask
 
         if (Finished)
             ctrler.EndAndPrepare();
-    }
-
-    IEnumerator Wait()
-    {
-        yield return new WaitForSeconds(1f);
-        IncrementStep();
-        // Code to execute after the delay
     }
 
     protected void Centre()
