@@ -9,7 +9,7 @@
 
   "per_block_rotation": [ 45, 45, 45 ],
 
-  "per_block_n": [ 3, 3, 3 ],
+  "per_block_n": [ 1, 1, 1 ],
 
   "per_block_hand": [ "r", "r", "r" ],
 
@@ -18,21 +18,23 @@
   "tl2": [ 80, 90, 100 ],
   "tl1": [ 30, 45, 60 ],
 
+  "per_block_colour": [ "r", "b", "r" ],
+
   "per_block_visual_feedback": [ true, true, true ],
 
   "per_block_surface_materials": [ "fabric", "default", "ice" ],
 
   "per_block_list_triggerType": [ "tt1", "tt1", "tt1" ],
 
-  "tt1": [ "curling", "curling", "curling" ],
+  "tt1": [ "impact", "impact", "impact" ],
 
   "per_block_list_puck_type": [ "pt1", "pt1", "pt1" ],
 
-  "pt1": [ "ball", "ball", "ball"],
+  "pt1": [ "puck", "puck", "puck"],
 
   "per_block_list_tool_type": [ "tT", "tT", "tT" ],
 
-  "tT": [ "squeegee", "squeegee", "squeegee" ],
+  "tT": [ "paddle", "paddle", "paddle" ],
 
   "per_block_surface_dynamic_friction": [ 0.1, 0.1, 0.1 ],
   "per_block_surface_static_friction": [ 0.1, 0.1, 0.1 ],
@@ -44,8 +46,8 @@
   "per_block_timerTime": [ 2, 2, 2 ],
 
   "per_block_tilt_after_fire": [ false, false, false],
-  "per_block_list_camera_tilt": [ null, "st1", "st1"],
-  "per_block_list_surface_tilt": [ "st1", null, "st1"],
+  "per_block_list_camera_tilt": [ null, null, null],
+  "per_block_list_surface_tilt": [ null, null, null],
 
   "ct1": [ -2, 0, 2],
   "ct2": [ 0 ],

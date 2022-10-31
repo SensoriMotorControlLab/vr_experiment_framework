@@ -11,6 +11,7 @@ public class ImpactToolTask : ToolTask
     private Vector3 shotDir;
     private Vector3 lastForward_toolDir;
     private Vector3 toolDir;
+    Renderer rend;
 
     private const float MAX_MAGNITUDE = 6f;
 
@@ -20,6 +21,16 @@ public class ImpactToolTask : ToolTask
 
         toolObjects.GetComponentInChildren<Collider>().material.bounciness = 1f;
         toolObjects.GetComponentInChildren<Collider>().enabled = false;
+        rend = toolBox.GetComponent<Renderer>();
+
+        if (ctrler.Session.CurrentBlock.settings.GetString("per_block_colour") == "r")
+        {
+            rend.material.SetTexture("_BaseMap", ctrler.textures[0]);
+        }
+        else
+        {
+            rend.material.SetTexture("_BaseMap", ctrler.textures[1]);
+        }
 
         string puck_type = Convert.ToString(ctrler.PollPseudorandomList("per_block_list_puck_type"));
 

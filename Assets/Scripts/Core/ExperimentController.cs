@@ -23,6 +23,8 @@ public class ExperimentController : MonoBehaviour
 {
     private static ExperimentController instance;
 
+    public Texture2D[] textures;
+
     public GameObject TargetContainer; // Used as the center point for spawning targets.
 
     public BaseTask CurrentTask;
