@@ -118,7 +118,7 @@ public class CurlingToolTask : ToolTask
                        VibrateController(0, Mathf.Lerp(0.1f, 0.3f, toolObjects.GetComponent<Rigidbody>().velocity.magnitude / 10f), Time.deltaTime, devices);
                    //VibrateController(0, 0.2f, Time.deltaTime, devices);
 
-                   if ((curlingStone.transform.position.z - Home.transform.position.z) > 0.1f)
+                   if ((curlingStone.transform.position.z - Home.transform.position.z) > 0.2f)
                    {
                        
                        shotDir = ctrler.CursorController.GetVelocity();
