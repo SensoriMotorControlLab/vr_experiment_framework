@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit;
 using UXF;
 
 public class LocalizationTask : BaseTask
@@ -227,8 +228,8 @@ public class LocalizationTask : BaseTask
     /// </summary>
     protected void Centre()
     {
-        Vector3 pos = ctrler.CursorController.transform.position;
-        ctrler.CentreExperiment(pos + ctrler.transform.forward * dock_dist);
+        Vector3 pos = targets[0].transform.position;
+        ctrler.dummyCamera.transform.parent.transform.position = pos - ctrler.transform.forward * 0.75f;
     }
 
     public override bool IncrementStep()
