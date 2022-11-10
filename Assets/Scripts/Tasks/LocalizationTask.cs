@@ -30,6 +30,7 @@ public class LocalizationTask : BaseTask
     ExperimentController ctrler;
 
     private GameObject locAim; // Cursor that indicates where the user's head is gazing
+    private GameObject locAngle;
 
     public override void Setup()
     {
@@ -42,8 +43,7 @@ public class LocalizationTask : BaseTask
         ctrler.CursorController.SetCursorVisibility(true);
 
         localizationPrefab = Instantiate(ctrler.GetPrefab("LocalizationPrefab"));
-        localizationPrefab.transform.SetParent(ctrler.transform);
-        localizationPrefab.transform.localPosition = Vector3.zero;
+        localizationPrefab.transform.position = Vector3.zero;
 
         localizationCam = GameObject.Find("LocalizationCamera");
         localizationSurface = GameObject.Find("Surface");
@@ -82,13 +82,12 @@ public class LocalizationTask : BaseTask
 
         // Set up the GameObject that tracks the user's gaze
         locAim = GameObject.Find("Localizer");
+        locAngle = GameObject.Find("locAngle");
         
         locAim.GetComponent<SphereCollider>().enabled = false;
         locAim.GetComponent<BaseTarget>().enabled = false;
         locAim.SetActive(false);
 
-
-        locAim.transform.SetParent(ctrler.TargetContainer.transform);
         locAim.transform.position =locAim.transform.position + Vector3.forward * 12.3f/100f;
 
         Target.SetActive(false);
@@ -123,15 +122,15 @@ public class LocalizationTask : BaseTask
                     // make the ball invisible
                     ctrler.CursorController.Model.GetComponent<Renderer>().enabled = false;
                 }
-                if (Mathf.Abs(targets[0].transform.localPosition.magnitude - ctrler.CursorController.transform.localPosition.magnitude) < req_targ_accuracy
-                                && ctrler.CursorController.stillTime > 0.3f)
+                if (Mathf.Abs(targets[0].transform.position.magnitude - ctrler.CursorController.transform.position.magnitude) < req_targ_accuracy
+                                && ctrler.CursorController.stillTime > 0.1f)
                 {
                     ctrler.CursorController.Model.GetComponent<Renderer>().enabled = true;
                     IncrementStep();
                 }
                 break;
             case 1:
-                if (Mathf.Abs(targets[1].transform.localPosition.magnitude - ctrler.CursorController.transform.localPosition.magnitude) < req_targ_accuracy
+                if (Mathf.Abs(targets[1].transform.position.magnitude - ctrler.CursorController.transform.position.magnitude) < req_targ_accuracy
                               && ctrler.CursorController.stillTime > 0.3f)
                 {
                     IncrementStep();
@@ -140,11 +139,11 @@ public class LocalizationTask : BaseTask
             // When the user holds their hand and they are outside the home, begin the next phase of localization
             case 2:
                 if(ctrler.CursorController.stillTime > 0.5f &&
-                        ctrler.CursorController.DistanceFromHome > 0.1f && ctrler.CursorController.transform.localPosition.z > 0 
+                        ctrler.CursorController.DistanceFromHome > 0.1f && ctrler.CursorController.transform.position.z > 0 
                         && ctrler.CursorController.DistanceFromHome < 0.125f){
                             IncrementStep();
                         }
-                if(ctrler.CursorController.DistanceFromHome > 0.125f && ctrler.CursorController.transform.localPosition.z > 0){
+                if(ctrler.CursorController.DistanceFromHome > 0.125f && ctrler.CursorController.transform.position.z > 0){
                     arcError.SetActive(true);
                     arcError.GetComponent<ArcScript>().TargetDistance = ctrler.CursorController.DistanceFromHome * 100;
                     arcError.GetComponent<ArcScript>().GenerateArc();
@@ -208,17 +207,17 @@ public class LocalizationTask : BaseTask
 
     private void RotateLocalizer(float locX)
     {
-        if(ctrler.TargetContainer.transform.rotation.eulerAngles.y < 90){
-            ctrler.TargetContainer.transform.Rotate(Vector3.up * locX * Time.deltaTime);
+        if(locAngle.transform.rotation.eulerAngles.y < 90){
+            locAngle.transform.Rotate(Vector3.up * locX * Time.deltaTime);
         }
-        else if(ctrler.TargetContainer.transform.rotation.eulerAngles.y < 95 && locX < 0){
-            ctrler.TargetContainer.transform.Rotate(Vector3.up * locX * Time.deltaTime);
+        else if(locAngle.transform.rotation.eulerAngles.y < 95 && locX < 0){
+            locAngle.transform.Rotate(Vector3.up * locX * Time.deltaTime);
         }
-        else if (ctrler.TargetContainer.transform.rotation.eulerAngles.y > 270){
-            ctrler.TargetContainer.transform.Rotate(Vector3.up * locX * Time.deltaTime);
+        else if (locAngle.transform.rotation.eulerAngles.y > 270){
+            locAngle.transform.Rotate(Vector3.up * locX * Time.deltaTime);
         }
-        else if (ctrler.TargetContainer.transform.rotation.eulerAngles.y > 265 && locX > 0){
-            ctrler.TargetContainer.transform.Rotate(Vector3.up * locX * Time.deltaTime);
+        else if (locAngle.transform.rotation.eulerAngles.y > 265 && locX > 0){
+            locAngle.transform.Rotate(Vector3.up * locX * Time.deltaTime);
         }
     }
 
@@ -229,7 +228,7 @@ public class LocalizationTask : BaseTask
     protected void Centre()
     {
         Vector3 pos = targets[0].transform.position;
-        ctrler.dummyCamera.transform.parent.transform.position = pos - ctrler.transform.forward * 0.75f;
+        ctrler.dummyCamera.transform.parent.transform.position = pos - ctrler.transform.forward * 0.25f;
     }
 
     public override bool IncrementStep()

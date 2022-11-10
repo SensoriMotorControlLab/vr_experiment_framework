@@ -288,7 +288,7 @@ public class ExperimentController : MonoBehaviour
                         CurrentTask = gameObject.AddComponent<ReachToTargetTask>();
                         break;
                     case "localization":
-                        CurrentTask = gameObject.AddComponent<LocalizationTask>();
+                        //CurrentTask = gameObject.AddComponent<LocalizationTask>();
                         break;
                     default:
                         Debug.LogWarning("Task not implemented: " + per_block_type);
@@ -307,7 +307,7 @@ public class ExperimentController : MonoBehaviour
                         CurrentTask = gameObject.AddComponent<ReachTrack>();
                         break;
                     case "localization":
-                        CurrentTask = gameObject.AddComponent<LocalizationTask>();
+                        //CurrentTask = gameObject.AddComponent<LocalizationTask>();
                         break;
                     default:
                         Debug.LogWarning("Task not implemented: " + per_block_type);
@@ -326,7 +326,7 @@ public class ExperimentController : MonoBehaviour
                         CurrentTask = gameObject.AddComponent<ReachToTargetTask>();
                         break;
                     case "localization":
-                        CurrentTask = gameObject.AddComponent<LocalizationTask>();
+                        //CurrentTask = gameObject.AddComponent<LocalizationTask>();
                         break;
                     default:
                         Debug.LogWarning("Task not implemented: " + per_block_type);
