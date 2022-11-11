@@ -43,7 +43,10 @@ public class LocalizationTask : BaseTask
         ctrler.CursorController.SetCursorVisibility(true);
 
         localizationPrefab = Instantiate(ctrler.GetPrefab("LocalizationPrefab"));
+        localizationPrefab.transform.parent = ctrler.transform;
         localizationPrefab.transform.position = Vector3.zero;
+        ctrler.TargetContainer.transform.localPosition = Vector3.zero;
+        
 
         localizationCam = GameObject.Find("LocalizationCamera");
         localizationSurface = GameObject.Find("Surface");
@@ -82,13 +85,14 @@ public class LocalizationTask : BaseTask
 
         // Set up the GameObject that tracks the user's gaze
         locAim = GameObject.Find("Localizer");
-        locAngle = GameObject.Find("locAngle");
         
         locAim.GetComponent<SphereCollider>().enabled = false;
         locAim.GetComponent<BaseTarget>().enabled = false;
         locAim.SetActive(false);
 
         locAim.transform.position =locAim.transform.position + Vector3.forward * 12.3f/100f;
+        locAim.transform.parent = ctrler.TargetContainer.transform;
+        //ctrler.TargetContainer.transform.position = targets[1].transform.position;
 
         Target.SetActive(false);
 
@@ -207,17 +211,18 @@ public class LocalizationTask : BaseTask
 
     private void RotateLocalizer(float locX)
     {
-        if(locAngle.transform.rotation.eulerAngles.y < 90){
-            locAngle.transform.Rotate(Vector3.up * locX * Time.deltaTime);
+        ctrler.TargetContainer.transform.position =new Vector3 (targets[1].transform.position.x, ctrler.TargetContainer.transform.position.y, targets[1].transform.position.z);
+        if (ctrler.TargetContainer.transform.rotation.eulerAngles.y < 90){
+            ctrler.TargetContainer.transform.Rotate(Vector3.up * locX * Time.deltaTime);
         }
-        else if(locAngle.transform.rotation.eulerAngles.y < 95 && locX < 0){
-            locAngle.transform.Rotate(Vector3.up * locX * Time.deltaTime);
+        else if(ctrler.TargetContainer.transform.rotation.eulerAngles.y < 95 && locX < 0){
+            ctrler.TargetContainer.transform.Rotate(Vector3.up * locX * Time.deltaTime);
         }
-        else if (locAngle.transform.rotation.eulerAngles.y > 270){
-            locAngle.transform.Rotate(Vector3.up * locX * Time.deltaTime);
+        else if (ctrler.TargetContainer.transform.rotation.eulerAngles.y > 270){
+            ctrler.TargetContainer.transform.Rotate(Vector3.up * locX * Time.deltaTime);
         }
-        else if (locAngle.transform.rotation.eulerAngles.y > 265 && locX > 0){
-            locAngle.transform.Rotate(Vector3.up * locX * Time.deltaTime);
+        else if (ctrler.TargetContainer.transform.rotation.eulerAngles.y > 265 && locX > 0){
+            ctrler.TargetContainer.transform.Rotate(Vector3.up * locX * Time.deltaTime);
         }
     }
 
@@ -227,8 +232,10 @@ public class LocalizationTask : BaseTask
     /// </summary>
     protected void Centre()
     {
+        ctrler.TargetContainer.transform.localPosition = Vector3.zero;
         Vector3 pos = targets[0].transform.position;
-        ctrler.dummyCamera.transform.parent.transform.position = pos - ctrler.transform.forward * 0.25f;
+        Vector3 centre = pos - ctrler.transform.forward * 0.1f;
+        ctrler.CentreExperiment(centre);
     }
 
     public override bool IncrementStep()
