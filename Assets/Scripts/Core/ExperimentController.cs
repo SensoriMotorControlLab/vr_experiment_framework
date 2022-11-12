@@ -379,9 +379,6 @@ public class ExperimentController : MonoBehaviour
                 CurrentTask = gameObject.AddComponent<Trails>();
 
                 break;
-            case "virtual_hand":
-                //CurrentTask = gameObject.AddComponent<VirtualHandTask>;
-                break;
             default:
                 Debug.LogWarning("Experiment Type not implemented: " +
                                     Session.settings.GetString("experiment_mode"));
