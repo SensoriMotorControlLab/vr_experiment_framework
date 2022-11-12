@@ -380,7 +380,7 @@ public class ExperimentController : MonoBehaviour
 
                 break;
             case "virtual_hand":
-                //CurrentTask = gameObject.AddComponent<VirtualHandTask>;
+                CurrentTask = gameObject.AddComponent<VirtualHandTask>();
                 break;
             default:
                 Debug.LogWarning("Experiment Type not implemented: " +
