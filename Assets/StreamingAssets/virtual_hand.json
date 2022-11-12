@@ -1,5 +1,6 @@
 {
-    "experiment_mode": "virtual_hand",
-
-    "optional_params": [],
+ "experiment_mode" : "virtual_hand",
+ "optional_params": [ ],
+ "per_block_handPosition" : [160, 0, -160],
+ "per_block_n" : [1, 1, 1]
 }
