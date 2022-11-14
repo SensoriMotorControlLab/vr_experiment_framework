@@ -52,7 +52,7 @@ public class ReachToTargetTask : BaseTask
 
         reachPrefab = Instantiate(ctrler.GetPrefab("ReachPrefab"));
         reachPrefab.transform.SetParent(ctrler.transform);
-        reachPrefab.transform.localPosition = new Vector3(0, 0, 0);
+        reachPrefab.transform.position = Vector3.zero;
 
         reachCam = GameObject.Find("ReachCam");
         reachSurface = GameObject.Find("Surface");
@@ -152,8 +152,8 @@ public class ReachToTargetTask : BaseTask
     /// </summary>
     protected void Centre()
     {
-        Vector3 pos = ctrler.CursorController.transform.position;
-        ctrler.CentreExperiment(pos + ctrler.transform.forward * dock_dist);
+        Vector3 pos = targets[0].transform.position;
+        ctrler.CentreExperiment(pos - ctrler.transform.forward * dock_dist);
     }
 
     public override bool IncrementStep()

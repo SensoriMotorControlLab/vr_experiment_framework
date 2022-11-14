@@ -28,6 +28,7 @@ public class ReachTrack : ReachToTargetTask
     float hold_still_time = 0.3f;
     protected float req_targ_accuracy = 0.005f;
 
+
     float maxVel = 0;
     Vector3 newPos;
     Vector3 prevPos;
@@ -61,8 +62,9 @@ public class ReachTrack : ReachToTargetTask
         Cursor.visible = false;
 
         reachPrefab = Instantiate(ctrler.GetPrefab("ReachTrack"));
-        reachPrefab.transform.SetParent(ctrler.transform);
-        reachPrefab.transform.localPosition = new Vector3(0, 0, 0);
+        //reachPrefab.transform.SetParent(ctrler.transform);
+        reachPrefab.transform.position = Vector3.zero;
+        ctrler.TargetContainer.transform.localPosition = Vector3.zero;
 
         reachCam = GameObject.Find("ReachCam");
         reachSurface = GameObject.Find("Surface");
@@ -173,9 +175,6 @@ public class ReachTrack : ReachToTargetTask
         Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
         //baseObject.transform.position = new Vector3(baseObject.transform.position.x, mousePoint.y, baseObject.transform.position.z);
         baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
-
-        //below is a hack and a waste of compute (see where this gets set earlier)
-        baseObject.transform.position = new Vector3(baseObject.transform.position.x, ctrler.transform.position.y, baseObject.transform.position.z);
 
         cur = baseObject.transform.localPosition;
         vel = (cur - prev) / Time.deltaTime;
@@ -312,6 +311,7 @@ public class ReachTrack : ReachToTargetTask
             //symbols.GetComponent<Animator>().SetTrigger("rot");
             StartCoroutine(Wait());
         }
+        
     }
 
     IEnumerator Wait()
@@ -374,12 +374,14 @@ public class ReachTrack : ReachToTargetTask
     protected virtual Vector3 GetMousePoint(Transform ball)
     {
         //ToFix: can the below two be one function called point to planepoint?
+        Vector3 ctrl = new Vector3(ctrler.CursorController.GetHandPosition().x, 0, ctrler.CursorController.GetHandPosition().z);
+        reachSurface = GameObject.Find("Surface");
 
-        Vector3 ctrl = new Vector3(ctrler.CursorController.GetHandPosition().x, ctrler.transform.position.y, ctrler.CursorController.GetHandPosition().z);
-        return ctrler.CursorController.ControllerToPlanePoint(
+            return ctrler.CursorController.ControllerToPlanePoint(
                         reachSurface.transform.up * ball.position.y,
                         ball.position,
                         ctrl);
+        
 
 
 
@@ -393,7 +395,6 @@ public class ReachTrack : ReachToTargetTask
         ctrler.Session.CurrentTrial.result["score"] = scoreTrack;
         ctrler.Session.CurrentTrial.result["velocity_result"] = velResult;
         ctrler.Session.CurrentTrial.result["tint_colour"] = tintColur;
-        //ctrler.Session.CurrentTrial.result["was_outside"] = wasOutside;
         ctrler.Session.CurrentTrial.result["per_block_type"] = trial.settings.GetString("per_block_type");
         ctrler.Session.CurrentTrial.result["per_block_surface_materials"] = ctrler.Session.CurrentBlock.settings.GetString("per_block_surface_materials");
         ctrler.Session.CurrentTrial.result["per_block_width"] = ctrler.Session.CurrentBlock.settings.GetFloat("per_block_width");
