@@ -15,7 +15,7 @@ public class ToolTask : BilliardsTask
     protected GameObject toolSpace;
     protected GameObject toolCamera;
 
-    public float table_height = 0;
+    public float table_height = 0.7f;
 
     private GameObject currentHand;
     private GameObject handL, handR;
@@ -40,7 +40,7 @@ public class ToolTask : BilliardsTask
     protected GameObject puckobj;
     protected GameObject curlingStone;
     protected GameObject slingShotBall;
-
+     
     protected GameObject centre;
 
     protected LineRenderer elasticR;
@@ -405,8 +405,8 @@ public class ToolTask : BilliardsTask
 
     protected void Centre()
     {
-        Vector3 pos = new Vector3(ctrler.CursorController.transform.position.x, ctrler.CursorController.transform.position.y, ctrler.CursorController.transform.position.z);
-        ctrler.CentreExperiment(centre.transform.position);
+        Vector3 pos = new Vector3(centre.transform.position.x, table_height, centre.transform.position.z);
+        ctrler.CentreExperiment(pos);
     }
 
     public override bool IncrementStep()
@@ -422,7 +422,10 @@ public class ToolTask : BilliardsTask
             case 1:
                 if (ctrler.Session.CurrentBlock.settings.GetBool("per_block_tilt_after_fire")
                     && !dynamicTilt)
+                {
                     SetTilt();
+                }
+                    
 
                 timerIndicator.Cancel();
 
@@ -497,7 +500,10 @@ public class ToolTask : BilliardsTask
         // Should the tilt be shown to the participant before they release the pinball?
         if (!ctrler.Session.CurrentBlock.settings.GetBool("per_block_tilt_after_fire")
             && !dynamicTilt)
+        {
             SetTilt();
+        }
+            
 
         // Disable all balls/puck (to be enabled in child classes)
         puckobj.SetActive(false);

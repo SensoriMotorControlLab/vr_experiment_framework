@@ -30,6 +30,7 @@ public class ExperimentController : MonoBehaviour
     public BaseTask CurrentTask;
     public GameObject floorPoint;
     public GameObject dummyCamera;
+    public GameObject cameraOffset;
 
     public GameObject[] PrefabList;
 
@@ -153,12 +154,13 @@ public class ExperimentController : MonoBehaviour
     void Start()
     {
         instance = this;
-        dummyCamera.transform.localPosition = transform.position;
+        //dummyCamera.transform.localPosition = CursorController.transform.
     }
 
     void FixedUpdate()
     {
-        dummyCamera.transform.localPosition = transform.position;
+        dummyCamera.transform.position = CursorController.GetHandPosition();
+        //dummyCamera.transform.position = new Vector3 (CursorController.GetHandPosition().x, dummyCamera.transform.position.y, CursorController.GetHandPosition().z);
         if (IsTracking && !isPaused)
         {
             //log positions
@@ -192,7 +194,11 @@ public class ExperimentController : MonoBehaviour
     public void CentreExperiment(Vector3 centre)
     {
         exp_centre_pos = centre;
-        transform.position = new Vector3(centre.x, transform.position.y, centre.z);
+        Transform temp = cameraOffset.transform.parent;
+        cameraOffset.transform.parent = dummyCamera.transform;
+        dummyCamera.transform.position = new Vector3(centre.x, 0, centre.z);
+        cameraOffset.transform.parent = null;
+        cameraOffset.transform.parent = temp;
         //StartCoroutine(TempDisableCursor());
     }
 
@@ -288,7 +294,7 @@ public class ExperimentController : MonoBehaviour
                         CurrentTask = gameObject.AddComponent<ReachToTargetTask>();
                         break;
                     case "localization":
-                        CurrentTask = gameObject.AddComponent<LocalizationTask>();
+                        //CurrentTask = gameObject.AddComponent<LocalizationTask>();
                         break;
                     default:
                         Debug.LogWarning("Task not implemented: " + per_block_type);
@@ -307,7 +313,7 @@ public class ExperimentController : MonoBehaviour
                         CurrentTask = gameObject.AddComponent<ReachTrack>();
                         break;
                     case "localization":
-                        CurrentTask = gameObject.AddComponent<LocalizationTask>();
+                        //CurrentTask = gameObject.AddComponent<LocalizationTask>();
                         break;
                     default:
                         Debug.LogWarning("Task not implemented: " + per_block_type);
@@ -326,7 +332,7 @@ public class ExperimentController : MonoBehaviour
                         CurrentTask = gameObject.AddComponent<ReachToTargetTask>();
                         break;
                     case "localization":
-                        CurrentTask = gameObject.AddComponent<LocalizationTask>();
+                        //CurrentTask = gameObject.AddComponent<LocalizationTask>();
                         break;
                     default:
                         Debug.LogWarning("Task not implemented: " + per_block_type);

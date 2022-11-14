@@ -44,8 +44,8 @@
   "per_block_timerTime": [ 2, 2, 2 ],
 
   "per_block_tilt_after_fire": [ false, false, false],
-  "per_block_list_camera_tilt": [ null, "st1", "st1"],
-  "per_block_list_surface_tilt": [ "st1", null, "st1"],
+  "per_block_list_camera_tilt": [ null, null, null],
+  "per_block_list_surface_tilt": [ null, null, null],
 
   "ct1": [ -2, 0, 2],
   "ct2": [ 0 ],
