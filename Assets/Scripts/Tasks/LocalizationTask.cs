@@ -315,6 +315,6 @@ public class LocalizationTask : BaseTask
 
         Destroy(localizationPrefab);
 
-        //base.OnDestroy();
+        base.OnDestroy();
     }
 }

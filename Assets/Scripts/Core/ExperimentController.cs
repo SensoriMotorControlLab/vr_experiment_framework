@@ -154,13 +154,13 @@ public class ExperimentController : MonoBehaviour
     void Start()
     {
         instance = this;
-        //dummyCamera.transform.localPosition = CursorController.transform.
+
     }
 
     void FixedUpdate()
     {
         dummyCamera.transform.position = CursorController.GetHandPosition();
-        //dummyCamera.transform.position = new Vector3 (CursorController.GetHandPosition().x, dummyCamera.transform.position.y, CursorController.GetHandPosition().z);
+        
         if (IsTracking && !isPaused)
         {
             //log positions
