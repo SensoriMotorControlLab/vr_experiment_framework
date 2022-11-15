@@ -2,5 +2,7 @@
  "experiment_mode" : "virtual_hand",
  "optional_params": [ ],
  "per_block_handPosition" : [0.16, 0, -0.16],
- "per_block_n" : [1, 1, 1]
+ "per_block_n" : [1, 1, 1],
+ "per_block_hand": [ "r","r","r"],
+ "per_block_type": ["virtual_hand", "virtual_hand", "virtual_hand"]
 }
