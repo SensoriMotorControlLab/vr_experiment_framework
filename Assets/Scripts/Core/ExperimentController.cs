@@ -256,7 +256,7 @@ public class ExperimentController : MonoBehaviour
             trial.settings.SetValue(block_key, per_trial_x[trial.number - 1]);
         }
 
-        InitializePseudorandomList(trial, "per_block_targetListToUse");
+        //InitializePseudorandomList(trial, "per_block_targetListToUse");
 
         string per_block_type = trial.settings.GetString("per_block_type");
         if (per_block_type == "instruction")
@@ -283,8 +283,8 @@ public class ExperimentController : MonoBehaviour
         switch (Session.settings.GetString("experiment_mode"))
         {
             case "target2d":
-                InitializePseudorandomList(trial, "per_block_waterPresent");
-                InitializePseudorandomList(trial, "per_block_tintPresent");
+                //InitializePseudorandomList(trial, "per_block_waterPresent");
+                //InitializePseudorandomList(trial, "per_block_tintPresent");
                 switch (per_block_type)
                 {
                     case "aligned":
@@ -294,7 +294,7 @@ public class ExperimentController : MonoBehaviour
                         CurrentTask = gameObject.AddComponent<ReachToTargetTask>();
                         break;
                     case "localization":
-                        //CurrentTask = gameObject.AddComponent<LocalizationTask>();
+                        CurrentTask = gameObject.AddComponent<LocalizationTask>();
                         break;
                     default:
                         Debug.LogWarning("Task not implemented: " + per_block_type);
@@ -313,7 +313,7 @@ public class ExperimentController : MonoBehaviour
                         CurrentTask = gameObject.AddComponent<ReachTrack>();
                         break;
                     case "localization":
-                        //CurrentTask = gameObject.AddComponent<LocalizationTask>();
+                        CurrentTask = gameObject.AddComponent<LocalizationTask>();
                         break;
                     default:
                         Debug.LogWarning("Task not implemented: " + per_block_type);
@@ -332,7 +332,7 @@ public class ExperimentController : MonoBehaviour
                         CurrentTask = gameObject.AddComponent<ReachToTargetTask>();
                         break;
                     case "localization":
-                        //CurrentTask = gameObject.AddComponent<LocalizationTask>();
+                        CurrentTask = gameObject.AddComponent<LocalizationTask>();
                         break;
                     default:
                         Debug.LogWarning("Task not implemented: " + per_block_type);

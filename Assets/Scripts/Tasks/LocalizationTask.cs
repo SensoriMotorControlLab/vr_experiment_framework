@@ -66,7 +66,7 @@ public class LocalizationTask : BaseTask
         Home = targets[1];
 
         // Grab an angle from the list and then remove it
-        float targetAngle = Convert.ToSingle(ctrler.PollPseudorandomList("per_block_targetListToUse"));
+        float targetAngle = Convert.ToSingle(ctrler.PseudoRandom("per_block_targetListToUse"));
 
         // Set up the arc object
         targets[2] = GameObject.Find("ArcTarget");
@@ -92,7 +92,7 @@ public class LocalizationTask : BaseTask
         locAim.SetActive(false);
 
         locAim.transform.position =locAim.transform.position + Vector3.forward * 12.3f/100f;
-        
+        ctrler.TargetContainer.transform.rotation = Quaternion.Euler(0, 0, 0);       
         locAim.transform.SetParent(ctrler.TargetContainer.transform);
 
         Target.SetActive(false);
@@ -107,6 +107,9 @@ public class LocalizationTask : BaseTask
         else
         {
             ctrler.CursorController.SetVRCamera(false);
+            localizationPrefab.transform.localPosition = Vector3.zero;
+            ctrler.TargetContainer.transform.localPosition = Vector3.zero;
+
         }
         arcError.SetActive(false);
     }

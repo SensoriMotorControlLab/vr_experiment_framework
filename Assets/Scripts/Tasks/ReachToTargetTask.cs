@@ -67,7 +67,7 @@ public class ReachToTargetTask : BaseTask
 
         if (ctrler.Session.CurrentBlock.settings.GetString("per_block_waterPresent") == "wp1")
         {
-            float waterLevel = Convert.ToSingle(ctrler.PollPseudorandomList("per_block_waterPresent"));
+            float waterLevel = Convert.ToSingle(ctrler.PseudoRandom("per_block_waterPresent"));
             //waterBowl.SetActive(true);
             water.SetActive(true);
 

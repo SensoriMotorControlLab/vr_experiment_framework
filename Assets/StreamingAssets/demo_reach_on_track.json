@@ -1,6 +1,6 @@
 {
   "experiment_mode": "targetTrack",
-  "optional_params": ["return_visible","vr"
+  "optional_params": ["return_visible", "vr"
   ],
   "track_score": true,
   "per_block_type": [
@@ -37,15 +37,15 @@
     12
   ],
   "per_block_n": [
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1
+    8,
+    8,
+    8,
+    8,
+    8,
+    8,
+    8,
+    8,
+    8
   ],
   "per_block_hand": [
     "r",
