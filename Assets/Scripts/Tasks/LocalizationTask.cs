@@ -147,11 +147,14 @@ public class LocalizationTask : BaseTask
             // When the user holds their hand and they are outside the home, begin the next phase of localization
             case 2:
                 if(ctrler.CursorController.stillTime > 0.5f &&
-                        ctrler.CursorController.DistanceFromHome > 0.1f && ctrler.CursorController.transform.position.z > 0 
+                        ctrler.CursorController.DistanceFromHome > 0.1f && ctrler.CursorController.transform.localPosition.z > 0 
                         && ctrler.CursorController.DistanceFromHome < 0.125f){
                             IncrementStep();
+                            ctrler.TargetContainer.transform.rotation = Quaternion.Euler(0, -90, 0);
                         }
-                if(ctrler.CursorController.DistanceFromHome > 0.125f && ctrler.CursorController.transform.position.z > 0){
+
+                if(((ctrler.CursorController.DistanceFromHome > 0.005f && ctrler.CursorController.DistanceFromHome < 0.12f) || (ctrler.CursorController.DistanceFromHome > 0.125f)) && ctrler.CursorController.transform.localPosition.z > 0){
+                    
                     arcError.SetActive(true);
                     arcError.GetComponent<ArcScript>().TargetDistance = ctrler.CursorController.DistanceFromHome * 100;
                     arcError.GetComponent<ArcScript>().GenerateArc();
@@ -167,6 +170,7 @@ public class LocalizationTask : BaseTask
             case 3:
                 // VR: User uses their head to localize their hand
                 // Non-VR: User uses horizontal axis to localize their mouse
+                arcError.SetActive(false);
 
                 if (ctrler.Session.settings.GetObjectList("optional_params").Contains("vr")) // if in vr
                 {

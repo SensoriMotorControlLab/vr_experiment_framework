@@ -1,6 +1,6 @@
 {
   "experiment_mode": "targetTrack",
-  "optional_params": ["return_visible", "vr"
+  "optional_params": ["return_visible"
   ],
   "track_score": true,
   "per_block_type": [
@@ -141,7 +141,7 @@
     80,
     100,
     120,
-    60
+    140
   ],
   "tl1": [
     30,
