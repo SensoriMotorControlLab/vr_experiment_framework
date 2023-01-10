@@ -35,6 +35,7 @@ public class LocalizationTask : BaseTask
 
     private GameObject locAim; // Cursor that indicates where the user's head is gazing
     private GameObject locAngle;
+    private float minZ = 0;
 
     public override void Setup()
     {
@@ -168,19 +169,26 @@ public class LocalizationTask : BaseTask
                 break;
             // When the user holds their hand and they are outside the home, begin the next phase of localization
             case 2:
+            
+                if(ctrler.CursorController.DistanceFromHome > 0.005f && ctrler.CursorController.DistanceFromHome < 0.12f){
+                    Debug.Log(ctrler.CursorController.transform.localPosition.z + " " + minZ);
+                }
                 if(ctrler.CursorController.stillTime > 0.5f &&
-                        ctrler.CursorController.DistanceFromHome > 0.1f && ctrler.CursorController.transform.localPosition.z > 0 
-                        && ctrler.CursorController.DistanceFromHome < 0.125f){
+                        ctrler.CursorController.DistanceFromHome > 0.1f && ctrler.CursorController.transform.position.z > targets[1].transform.position.z
+                        && ctrler.CursorController.DistanceFromHome < 0.125f)
+                        {
 
                             IncrementStep();
 
                         }
 
-                if(((ctrler.CursorController.DistanceFromHome > 0.005f && ctrler.CursorController.DistanceFromHome < 0.12f) || (ctrler.CursorController.DistanceFromHome > 0.125f)) && ctrler.CursorController.transform.localPosition.z > 0){
+                if(((ctrler.CursorController.DistanceFromHome > 0.005f && ctrler.CursorController.DistanceFromHome < 0.12f) || (ctrler.CursorController.DistanceFromHome > 0.125f)) 
+                    && ctrler.CursorController.transform.position.z > targets[1].transform.position.z){
                     
                     arcError.SetActive(true);
                     arcError.GetComponent<ArcScript>().TargetDistance = ctrler.CursorController.DistanceFromHome * 100;
                     arcError.GetComponent<ArcScript>().GenerateArc();
+                    
                     
                 }
                 else{

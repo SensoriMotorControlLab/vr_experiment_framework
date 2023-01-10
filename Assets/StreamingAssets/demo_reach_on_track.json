@@ -1,6 +1,6 @@
 {
   "experiment_mode": "targetTrack",
-  "optional_params": ["return_visible"
+  "optional_params": ["return_visible", "vr"
   ],
   "track_score": true,
   "per_block_type": [
@@ -37,11 +37,11 @@
     12
   ],
   "per_block_n": [
-    8,
-    8,
-    8,
-    8,
-    8,
+    4,
+    4,
+    4,
+    4,
+    4,
     8,
     8,
     8,
@@ -93,11 +93,11 @@
     false
   ],
   "per_block_tintPresent": [
-    "tc1",
     null,
-    "tc1",
     null,
-    "tc1",
+    null,
+    null,
+    null,
     "tc1",
     null,
     "tc1",
@@ -160,9 +160,9 @@
   ],
   "as1":[
     45,
-    90,
-    135,
-    180
+    90, 
+    20,
+    135
   ],
   "ll1":[
     -90,
@@ -170,49 +170,36 @@
   ],
   "tl2": [
     60,
-    80,
-    100,
-    120
+    80, 
+    30,
+    90
   ],
   "tl1": [
     30,
-    45,
-    60,
-    75,
-    30
+    45
   ],
   "ct1": [
     20,
-    10,
-    0
+    10
   ],
   "ct2": [
     15,
-    0
+    15
   ],
   "st1": [
     20,
-    10,
-    0
+    10
   ],
   "wp1": [
     0,
-    1,
-    0.5,
-    0
+    1
   ],
   "tc1": [
     0,
-    1,
-    2,
-    3,
-    4
+    1
   ],
   "br1": [
     -30,
-    -15,
-    0,
-    15,
-    30
+    -15
   ]
 }
