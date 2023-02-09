@@ -17,7 +17,11 @@ public class LocalizationTask : BaseTask
     private GameObject localizationSurface;
     private GameObject localizationPrefab;
     private GameObject arcError;
+    private GameObject arcRotation;
     protected AudioSource sound;
+    float localizerLoc = 0;
+    int arcSpan = 0;
+    float ArcRot = 0;
 
     protected List<UnityEngine.XR.InputDevice> devices = new List<UnityEngine.XR.InputDevice>();
     float locZ;
@@ -31,6 +35,7 @@ public class LocalizationTask : BaseTask
 
     private GameObject locAim; // Cursor that indicates where the user's head is gazing
     private GameObject locAngle;
+    private float minZ = 0;
 
     public override void Setup()
     {
@@ -66,9 +71,10 @@ public class LocalizationTask : BaseTask
         Home = targets[1];
 
         // Grab an angle from the list and then remove it
-        float targetAngle = Convert.ToSingle(ctrler.PollPseudorandomList("per_block_targetListToUse"));
+        float targetAngle = Convert.ToSingle(ctrler.PseudoRandom("per_block_targetListToUse"));
 
         // Set up the arc object
+        
         targets[2] = GameObject.Find("ArcTarget");
         targets[2].transform.rotation = Quaternion.Euler(
             0f,
@@ -92,7 +98,7 @@ public class LocalizationTask : BaseTask
         locAim.SetActive(false);
 
         locAim.transform.position =locAim.transform.position + Vector3.forward * 12.3f/100f;
-        
+        ctrler.TargetContainer.transform.rotation = Quaternion.Euler(0, 0, 0);       
         locAim.transform.SetParent(ctrler.TargetContainer.transform);
 
         Target.SetActive(false);
@@ -107,6 +113,9 @@ public class LocalizationTask : BaseTask
         else
         {
             ctrler.CursorController.SetVRCamera(false);
+            localizationPrefab.transform.localPosition = Vector3.zero;
+            ctrler.TargetContainer.transform.localPosition = Vector3.zero;
+
         }
         arcError.SetActive(false);
     }
@@ -139,19 +148,47 @@ public class LocalizationTask : BaseTask
                               && ctrler.CursorController.stillTime > 0.3f)
                 {
                     IncrementStep();
+                    arcRotation = GameObject.Find("ArcRotation");
+
+                    localizerLoc = Convert.ToSingle(ctrler.PseudoRandom("per_block_localizer_location"));
+                    ctrler.TargetContainer.transform.rotation = Quaternion.Euler(0, localizerLoc, 0);
+
+                    arcSpan = Convert.ToInt32(ctrler.PseudoRandom("per_block_arc_span"));
+                    targets[2].GetComponent<ArcScript>().arcSpan = arcSpan;
+
+                    ArcRot = 0.5f * (180 - arcSpan);
+
+                    if(localizerLoc < 0){
+                        ArcRot = -ArcRot;
+                    }
+
+                    arcRotation.transform.rotation = Quaternion.Euler(0, ArcRot, 0);
+                    targets[2].GetComponent<ArcScript>().GenerateArc();
+
                 }
                 break;
             // When the user holds their hand and they are outside the home, begin the next phase of localization
             case 2:
+            
+                if(ctrler.CursorController.DistanceFromHome > 0.005f && ctrler.CursorController.DistanceFromHome < 0.12f){
+                    Debug.Log(ctrler.CursorController.transform.localPosition.z + " " + minZ);
+                }
                 if(ctrler.CursorController.stillTime > 0.5f &&
-                        ctrler.CursorController.DistanceFromHome > 0.1f && ctrler.CursorController.transform.position.z > 0 
-                        && ctrler.CursorController.DistanceFromHome < 0.125f){
+                        ctrler.CursorController.DistanceFromHome > 0.1f && ctrler.CursorController.transform.position.z > targets[1].transform.position.z
+                        && ctrler.CursorController.DistanceFromHome < 0.125f)
+                        {
+
                             IncrementStep();
+
                         }
-                if(ctrler.CursorController.DistanceFromHome > 0.125f && ctrler.CursorController.transform.position.z > 0){
+
+                if(((ctrler.CursorController.DistanceFromHome > 0.005f && ctrler.CursorController.DistanceFromHome < 0.12f) || (ctrler.CursorController.DistanceFromHome > 0.125f)) 
+                    && ctrler.CursorController.transform.position.z > targets[1].transform.position.z){
+                    
                     arcError.SetActive(true);
                     arcError.GetComponent<ArcScript>().TargetDistance = ctrler.CursorController.DistanceFromHome * 100;
                     arcError.GetComponent<ArcScript>().GenerateArc();
+                    
                     
                 }
                 else{
@@ -164,6 +201,7 @@ public class LocalizationTask : BaseTask
             case 3:
                 // VR: User uses their head to localize their hand
                 // Non-VR: User uses horizontal axis to localize their mouse
+                arcError.SetActive(false);
 
                 if (ctrler.Session.settings.GetObjectList("optional_params").Contains("vr")) // if in vr
                 {

@@ -256,7 +256,7 @@ public class ExperimentController : MonoBehaviour
             trial.settings.SetValue(block_key, per_trial_x[trial.number - 1]);
         }
 
-        InitializePseudorandomList(trial, "per_block_targetListToUse");
+        //InitializePseudorandomList(trial, "per_block_targetListToUse");
 
         string per_block_type = trial.settings.GetString("per_block_type");
         if (per_block_type == "instruction")
@@ -283,8 +283,8 @@ public class ExperimentController : MonoBehaviour
         switch (Session.settings.GetString("experiment_mode"))
         {
             case "target2d":
-                InitializePseudorandomList(trial, "per_block_waterPresent");
-                InitializePseudorandomList(trial, "per_block_tintPresent");
+                //InitializePseudorandomList(trial, "per_block_waterPresent");
+                //InitializePseudorandomList(trial, "per_block_tintPresent");
                 switch (per_block_type)
                 {
                     case "aligned":
@@ -294,7 +294,7 @@ public class ExperimentController : MonoBehaviour
                         CurrentTask = gameObject.AddComponent<ReachToTargetTask>();
                         break;
                     case "localization":
-                        //CurrentTask = gameObject.AddComponent<LocalizationTask>();
+                        CurrentTask = gameObject.AddComponent<LocalizationTask>();
                         break;
                     default:
                         Debug.LogWarning("Task not implemented: " + per_block_type);
@@ -313,7 +313,7 @@ public class ExperimentController : MonoBehaviour
                         CurrentTask = gameObject.AddComponent<ReachTrack>();
                         break;
                     case "localization":
-                        //CurrentTask = gameObject.AddComponent<LocalizationTask>();
+                        CurrentTask = gameObject.AddComponent<LocalizationTask>();
                         break;
                     default:
                         Debug.LogWarning("Task not implemented: " + per_block_type);
@@ -332,7 +332,7 @@ public class ExperimentController : MonoBehaviour
                         CurrentTask = gameObject.AddComponent<ReachToTargetTask>();
                         break;
                     case "localization":
-                        //CurrentTask = gameObject.AddComponent<LocalizationTask>();
+                        CurrentTask = gameObject.AddComponent<LocalizationTask>();
                         break;
                     default:
                         Debug.LogWarning("Task not implemented: " + per_block_type);
@@ -625,6 +625,7 @@ public class ExperimentController : MonoBehaviour
     {
         int curBlock = Session.currentBlockNum;
         String listk = Session.CurrentBlock.settings.GetString(key, "");
+        
 
         if (curBlock != block)
         {
@@ -636,6 +637,15 @@ public class ExperimentController : MonoBehaviour
         {
             lists[listk] = new List<object>();
             List<object> list = Session.settings.GetObjectList(listk);
+            List<int> perBlockN = Session.settings.GetIntList("per_block_n");
+            int blockN = perBlockN[curBlock - 1];
+
+            if(blockN % list.Count != 0)
+            {
+                Debug.LogError("per_block_n is not divisible by the number of elements in: " + key);
+                throw new NullReferenceException();
+            }
+
             if (list.Count == 1)
             {
                 return lists[listk][0];
@@ -646,6 +656,21 @@ public class ExperimentController : MonoBehaviour
                 Debug.LogError(key +
                              " contains no elements. Not possible to select");
                 throw new NullReferenceException();
+            }
+            for (int i = 0; i < list.Count; i++)
+            {
+                lists[listk].Add(list[i]);
+            }
+        }
+
+        if (lists[listk].Count == 0)
+        {
+            List<object> list = Session.settings.GetObjectList(listk);
+
+            if (list.Count == 1)
+            {
+                return lists[listk][0];
+
             }
             for (int i = 0; i < list.Count; i++)
             {
@@ -668,10 +693,12 @@ public class ExperimentController : MonoBehaviour
     public object PairPseudoRandom(string key, string key2, object obj)
     {
         String listk = Session.CurrentBlock.settings.GetString(key, "");
-        Debug.Log(listk);
+
         if (listk == null || listk == "")
         {
-            return 0;
+            Debug.LogError(key +
+                             " is either null or an empty string");
+            throw new NullReferenceException();
         }
 
         String listk2 = Session.CurrentBlock.settings.GetString(key2, "");
