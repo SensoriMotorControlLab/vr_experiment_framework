@@ -36,7 +36,8 @@ public class LocalizationTask : BaseTask
     private GameObject locAim; // Cursor that indicates where the user's head is gazing
     private GameObject locAngle;
     private float minZ = 0;
-
+    Vector3 homePos = new Vector3(0, 0, 0);
+    List<Vector3> handPos = new List<Vector3>();
     public override void Setup()
     {
 
@@ -69,6 +70,7 @@ public class LocalizationTask : BaseTask
         //targets[1].transform.position = new Vector3(ctrler.TargetContainer.transform.position.x, -0.250f, ctrler.TargetContainer.transform.position.z) + ctrler.transform.forward * 0.05f;
         targets[1].SetActive(false);
         Home = targets[1];
+        homePos = targets[1].transform.position;
 
         // Grab an angle from the list and then remove it
         float targetAngle = Convert.ToSingle(ctrler.PseudoRandom("per_block_targetListToUse"));
@@ -122,7 +124,7 @@ public class LocalizationTask : BaseTask
 
     public override void Update()
     {
-        
+        handPos.Add(ctrler.CursorController.transform.position);
         base.Update();
 
         // Debug.Log(ctrler.CursorController.transform.localPosition.z);
@@ -274,6 +276,7 @@ public class LocalizationTask : BaseTask
         //ctrler.TargetContainer.transform.localPosition = Vector3.zero;
         Vector3 pos = targets[0].transform.position;
         Vector3 centre = pos - ctrler.transform.forward * 0.1f;
+        centre.y = ctrler.CursorController.GetHandPosition().y;
         ctrler.CentreExperiment(centre);
     }
 
@@ -331,7 +334,14 @@ public class LocalizationTask : BaseTask
     public override void LogParameters()
     {
         // Store where they think their hand is
-        ExperimentController.Instance().LogObjectPosition("loc", locAim.transform.localPosition);
+        Session session = ctrler.Session;
+        
+        
+        ctrler.LogObjectPosition("Hand guess position", locAim.transform.position);
+        session.CurrentTrial.result["home_x"] = homePos.x;
+        session.CurrentTrial.result["home_y"] = homePos.y;
+        session.CurrentTrial.result["home_z"] = homePos.z;
+        ctrler.LogVector3List("Hand position", handPos);
     }
 
     public override void Disable()
