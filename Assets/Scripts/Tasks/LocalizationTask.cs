@@ -124,7 +124,7 @@ public class LocalizationTask : BaseTask
 
     public override void Update()
     {
-        handPos.Add(ctrler.CursorController.transform.position);
+        handPos.Add(ctrler.CursorController.GetHandPosition());
         base.Update();
 
         // Debug.Log(ctrler.CursorController.transform.localPosition.z);
@@ -146,6 +146,7 @@ public class LocalizationTask : BaseTask
                 }
                 break;
             case 1:
+            
                 if (Mathf.Abs(targets[1].transform.position.magnitude - ctrler.CursorController.transform.position.magnitude) < req_targ_accuracy
                               && ctrler.CursorController.stillTime > 0.3f)
                 {
@@ -276,7 +277,7 @@ public class LocalizationTask : BaseTask
         //ctrler.TargetContainer.transform.localPosition = Vector3.zero;
         Vector3 pos = targets[0].transform.position;
         Vector3 centre = pos - ctrler.transform.forward * 0.1f;
-        centre.y = ctrler.CursorController.GetHandPosition().y;
+        centre.y = ctrler.CursorController.transform.position.y;
         ctrler.CentreExperiment(centre);
     }
 
