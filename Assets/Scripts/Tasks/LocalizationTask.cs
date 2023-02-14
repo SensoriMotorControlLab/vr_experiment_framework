@@ -219,7 +219,7 @@ public class LocalizationTask : BaseTask
                     else
                     {
                         if (ctrler.CursorController.Get2DAxis().magnitude > 0)
-                            locX = ctrler.CursorController.Get2DAxis().x * 20;
+                            locX = ctrler.CursorController.Get2DAxis().x *100;
                             RotateLocalizer(locX);
                         // locZ += ctrler.CursorController.Get2DAxis().y * 0.002f;
                         // localizer.transform.position = new Vector3(locX, 0, locZ) + targets[2].transform.position;
