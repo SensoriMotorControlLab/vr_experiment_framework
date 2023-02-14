@@ -15,7 +15,7 @@ public class ToolTask : BilliardsTask
     protected GameObject toolSpace;
     protected GameObject toolCamera;
 
-    public float table_height = 0.7f;
+    public float table_height = 2f;
 
     private GameObject currentHand;
     private GameObject handL, handR;
@@ -125,6 +125,12 @@ public class ToolTask : BilliardsTask
 
     protected virtual void Update()
     {
+        if (Input.GetKeyDown(KeyCode.P)){
+            table_height -= 0.1f;
+            Debug.Log(table_height);
+            Centre();
+        }
+
         if (Input.GetKeyDown(KeyCode.C))
         {
             Centre();
