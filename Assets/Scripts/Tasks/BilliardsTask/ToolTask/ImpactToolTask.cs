@@ -121,7 +121,6 @@ public class ImpactToolTask : ToolTask
 
                 break;
 
-            // the user triggers the object 
             case 1:
                 // Tool follows mouse
                 ObjectFollowMouse(toolObjects, toolOffset);
