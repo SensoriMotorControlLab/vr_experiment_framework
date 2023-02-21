@@ -92,60 +92,7 @@ public class ImpactToolTask : ToolTask
 
         return base.IncrementStep();
     }
-    // void FixedUpdate(){
-    //     switch (currentStep)
-    //     {
-    //         // initlize the scene 
-    //         case 0:
-    //             toolObjects.GetComponent<Rigidbody>().velocity = Vector3.zero;
 
-    //             // when close to the tool the controller vibrates
-    //             if (Vector3.Distance(mousePoint, toolObjects.transform.position) <= 0.07f)
-    //             {
-    //                 // To Fix: the above positions are casted to the plane, y doesn't matter
-    //                 VibrateController(0, 0.2f, Time.deltaTime, devices);
-    //             }
-
-    //             // grab object
-    //             if (Vector3.Distance(mousePoint, toolObjects.transform.position) <= 0.07f && (Input.GetMouseButton(0) || ctrler.CursorController.IsTriggerDown()))
-    //             {
-    //                 VibrateController(0, 0.34f, Time.deltaTime, devices);
-    //                 toolOffset = mousePoint - toolObjects.transform.position;
-    //                 IncrementStep();
-    //             }
-
-    //             break;
-
-    //         case 1:
-    //             // Tool follows mouse
-    //             ObjectFollowMouse(toolObjects, toolOffset);
-
-    //             // Vibrate controller scaled to velocity
-    //             if (toolObjects.GetComponent<Rigidbody>().velocity.magnitude > 0.5f)
-    //                 VibrateController(0, Mathf.Lerp(0.1f, 0.2f, toolObjects.GetComponent<Rigidbody>().velocity.magnitude / 10f), Time.deltaTime, devices);
-
-    //             ToolLookAtBall();
-
-    //             toolDir = toolObjects.GetComponent<Rigidbody>().velocity;
-
-    //             // also get distance
-    //             float ball_tool_distance = Vector3.Magnitude(toolObjects.transform.position - ballObjects.transform.position);
-
-    //             // only update this if moving forward
-    //             if (toolDir.z > 0.1f && Vector3.Magnitude(toolDir) > Vector3.Magnitude(lastForward_toolDir) && ball_tool_distance < 0.1f)
-    //             {
-    //                 lastForward_toolDir = toolDir;
-    //                 IncrementStep();
-    //             }
-
-    //             // non vr and vr turning on the collider on the tool
-    //             // CHECK IF THIS IS STILL NECESSARY
-    //             //toolObjects.GetComponentInChildren<Collider>().enabled = mousePoint.z <= 0.05f;
-
-    //             pos = toolObjects.transform.position;
-    //             break;
-    // }
-    // }
     // Update is called once per frame
     protected override void Update()
     {
@@ -187,7 +134,7 @@ public class ImpactToolTask : ToolTask
                 toolDir = toolObjects.GetComponent<Rigidbody>().velocity;
 
                 // also get distance
-                float ball_tool_distance = Vector3.Magnitude(toolObjects.transform.position - ballObjects.transform.position);
+                float ball_tool_distance = Vector3.Magnitude(toolObjects.transform.position - fireLocation.transform.position);
 
                 // only update this if moving forward
                 if (toolDir.z > 0.1f && Vector3.Magnitude(toolDir) > Vector3.Magnitude(lastForward_toolDir) && ball_tool_distance < 0.07f)

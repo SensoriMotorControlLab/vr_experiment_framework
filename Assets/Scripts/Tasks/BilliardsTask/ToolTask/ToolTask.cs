@@ -100,6 +100,7 @@ public class ToolTask : BilliardsTask
     private GameObject bonusText;
 
     public LineRenderer line;
+    protected GameObject fireLocation;
     // Used to keep track of the rotation of the surface, when using dynamic tilt
     private List<float> dynamicTiltRotations = new List<float>();
 
@@ -489,6 +490,7 @@ public class ToolTask : BilliardsTask
         baseObject = GameObject.Find("BaseObject");
 
         ballObjects = GameObject.Find("BallObjects");
+        fireLocation = GameObject.Find("fireLocation");
 
         // Set up home position
         Home = GameObject.Find("HomePosition");
