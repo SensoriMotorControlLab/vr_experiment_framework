@@ -434,8 +434,7 @@ public class ExperimentController : MonoBehaviour
     {
         CurrentTask.LogParameters();
 
-        Session.CurrentTrial.result["type"] = Session.CurrentTrial.settings.GetString("per_block_type");
-        Session.CurrentTrial.result["hand"] = Session.CurrentTrial.settings.GetString("per_block_hand");
+        
 
         // Track score if score tracking is enabled in the JSON
         // Defaults to disabled if property does not exist in JSON
@@ -470,8 +469,8 @@ public class ExperimentController : MonoBehaviour
         }
 
         // Timestamps for tracked objects
-        Session.CurrentTrial.result["tracking_timestamp"] =
-            string.Join(",", trackingTimestamps.Select(i => string.Format($"{i:F6}")));
+        // Session.CurrentTrial.result["tracking_timestamp"] =
+        //     string.Join(",", trackingTimestamps.Select(i => string.Format($"{i:F6}")));
 
         // Timestamps for when a step is incremented
         Session.CurrentTrial.result["step_timestamp"] =
@@ -846,12 +845,15 @@ public class ExperimentController : MonoBehaviour
         Session.CurrentTrial.result[key + "_z"] = position.z;
     }
 
+    
+
     public void LogVector3List(string key, List<Vector3> positions)
     {
         var list = positions;
 
         // For each element (Select), remove scientific notation and round to 6 decimal places.
         // Then join all these numbers separated by a comma
+
         Session.CurrentTrial.result[key + "_x"] =
             string.Join(",", list.Select(i => string.Format($"{i.x:F6}")));
 
@@ -860,6 +862,27 @@ public class ExperimentController : MonoBehaviour
 
         Session.CurrentTrial.result[key + "_z"] =
             string.Join(",", list.Select(i => string.Format($"{i.z:F6}")));
+    }
+
+    public void LogVector4List(string key, List<Vector4> positions)
+    {
+        var list = positions;
+
+        // For each element (Select), remove scientific notation and round to 6 decimal places.
+        // Then join all these numbers separated by a comma
+        
+
+        Session.CurrentTrial.result[key + "_x"] =
+            string.Join(",", list.Select(i => string.Format($"{i.x:F6}")));
+
+        Session.CurrentTrial.result[key + "_y"] =
+            string.Join(",", list.Select(i => string.Format($"{i.y:F6}")));
+
+        Session.CurrentTrial.result[key + "_z"] =
+            string.Join(",", list.Select(i => string.Format($"{i.z:F6}")));
+
+        Session.CurrentTrial.result[key + "_time_stamp"] =
+            string.Join(",", list.Select(i => string.Format($"{i.w:F6}")));
     }
 
     public void LogBoolList(string key, List<bool> positions)

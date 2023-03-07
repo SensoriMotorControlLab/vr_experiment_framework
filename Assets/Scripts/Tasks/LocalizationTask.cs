@@ -37,7 +37,14 @@ public class LocalizationTask : BaseTask
     private GameObject locAngle;
     private float minZ = 0;
     Vector3 homePos = new Vector3(0, 0, 0);
-    List<Vector3> handPos = new List<Vector3>();
+    List<Vector4> handPos = new List<Vector4>();
+    Vector4 tempHandPos = new Vector4(0, 0, 0, 0);
+    List<Vector4> indicatorPos = new List<Vector4>();
+    Vector4 tempIndicatorPos = new Vector4(0, 0, 0, 0);
+    Vector2 pos_3cm_out = new Vector2(0, 0);
+    Vector2 arcAquired = new Vector2(0, 0);
+    Vector2 localizingEvent = new Vector2(0, 0);
+    bool outEvent = true;
     public override void Setup()
     {
 
@@ -124,11 +131,10 @@ public class LocalizationTask : BaseTask
 
     public override void Update()
     {
-        handPos.Add(ctrler.CursorController.GetHandPosition());
+        
         base.Update();
-
-        // Debug.Log(ctrler.CursorController.transform.localPosition.z);
-
+        
+        
         switch (currentStep)
         {
             case 0:
@@ -139,16 +145,16 @@ public class LocalizationTask : BaseTask
                     ctrler.CursorController.Model.GetComponent<Renderer>().enabled = false;
                 }
                 if (Mathf.Abs(targets[0].transform.position.magnitude - ctrler.CursorController.transform.position.magnitude) < req_targ_accuracy
-                                && ctrler.CursorController.stillTime > 0.1f)
+                                && ctrler.CursorController.stillTime > 0.1f && ctrler.CursorController.transform.position.z > targets[0].transform.position.z)
                 {
                     ctrler.CursorController.Model.GetComponent<Renderer>().enabled = true;
                     IncrementStep();
                 }
                 break;
             case 1:
-            
-                if (Mathf.Abs(targets[1].transform.position.magnitude - ctrler.CursorController.transform.position.magnitude) < req_targ_accuracy
-                              && ctrler.CursorController.stillTime > 0.3f)
+
+                if ((ctrler.CursorController.DistanceFromHome > - 0.005f && ctrler.CursorController.DistanceFromHome < 0.005f) 
+                    && ctrler.CursorController.transform.position.z > targets[1].transform.position.z)
                 {
                     IncrementStep();
                     arcRotation = GameObject.Find("ArcRotation");
@@ -172,9 +178,16 @@ public class LocalizationTask : BaseTask
                 break;
             // When the user holds their hand and they are outside the home, begin the next phase of localization
             case 2:
-            
+                if(outEvent){
+                    if(ctrler.CursorController.DistanceFromHome > 0.03){
+                        pos_3cm_out = new Vector2(Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized), Time.time);
+                        outEvent = false;
+                    }
+                }
+                tempHandPos = ctrler.CursorController.transform.position;
+                handPos.Add(new Vector4(tempHandPos.x, tempHandPos.y, tempHandPos.z, Time.time));
                 if(ctrler.CursorController.DistanceFromHome > 0.005f && ctrler.CursorController.DistanceFromHome < 0.12f){
-                    Debug.Log(ctrler.CursorController.transform.localPosition.z + " " + minZ);
+                    // Debug.Log(ctrler.CursorController.transform.localPosition.z + " " + minZ);
                 }
                 if(ctrler.CursorController.stillTime > 0.5f &&
                         ctrler.CursorController.DistanceFromHome > 0.1f && ctrler.CursorController.transform.position.z > targets[1].transform.position.z
@@ -182,6 +195,7 @@ public class LocalizationTask : BaseTask
                         {
 
                             IncrementStep();
+                            arcAquired = new Vector2(Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized), Time.time);
 
                         }
 
@@ -205,6 +219,12 @@ public class LocalizationTask : BaseTask
                 // VR: User uses their head to localize their hand
                 // Non-VR: User uses horizontal axis to localize their mouse
                 arcError.SetActive(false);
+                
+                //logging params for cvs file
+                tempHandPos = ctrler.CursorController.transform.position;
+                handPos.Add(new Vector4(tempHandPos.x, tempHandPos.y, tempHandPos.z, Time.time));
+                tempIndicatorPos = locAim.transform.position;
+                indicatorPos.Add(new Vector4(tempIndicatorPos.x, tempIndicatorPos.y, tempIndicatorPos.z, Time.time));
 
                 if (ctrler.Session.settings.GetObjectList("optional_params").Contains("vr")) // if in vr
                 {
@@ -238,6 +258,7 @@ public class LocalizationTask : BaseTask
                 // If the user presses the trigger associated with the hand, we end the trial
                 if (ctrler.CursorController.IsTriggerDown("l") || Input.GetKeyDown(KeyCode.N) || Input.GetKeyDown(KeyCode.Space))
                     IncrementStep();
+                    localizingEvent = new Vector2(Vector3.Angle(targets[1].transform.right, (locAim.transform.position - targets[1].transform.position).normalized), Time.time);
 
                 break;
         }
@@ -268,6 +289,9 @@ public class LocalizationTask : BaseTask
         }
     }
 
+    public float getTime(){
+        return Time.realtimeSinceStartup;
+    }
     /// <summary>
     /// Centres the experiment a little in front of the hand position
     /// Distance forward is determined by the dock distance
@@ -296,14 +320,6 @@ public class LocalizationTask : BaseTask
                 Home.SetActive(false);
 
                 ctrler.StartTimer();
-
-                // Create tracker objects
-                ctrler.AddTrackedPosition("hand_path",
-                    ctrler.Session.CurrentTrial.settings.GetString("per_block_hand") == "l"
-                        ? ctrler.CursorController.LeftHand
-                        : ctrler.CursorController.RightHand);
-
-                ctrler.AddTrackedPosition("cursor_path", ctrler.CursorController.gameObject);
 
                 Target.SetActive(true);
 
@@ -337,12 +353,26 @@ public class LocalizationTask : BaseTask
         // Store where they think their hand is
         Session session = ctrler.Session;
         
+        session.CurrentTrial.result["type"] = session.CurrentTrial.settings.GetString("per_block_type");
+        session.CurrentTrial.result["hand"] = session.CurrentTrial.settings.GetString("per_block_hand");
+        session.CurrentTrial.result["home_x"] = targets[1].transform.position.x;
+        session.CurrentTrial.result["home_y"] = targets[1].transform.position.y;
+        session.CurrentTrial.result["home_z"] = targets[1].transform.position.z;
+        session.CurrentTrial.result["target_angle"] = "";
+        session.CurrentTrial.result["target_size_m"] = "";
+        session.CurrentTrial.result["rotation_size"] = "";
+        session.CurrentTrial.result["cursor_size_m"] = ctrler.CursorController.Model.transform.localScale.x;
+        session.CurrentTrial.result["arc_radius_or_target_distance_m"] = targets[2].GetComponent<ArcScript>().TargetDistance / 100;
+        ctrler.LogVector4List("hand_pos", handPos);
+        session.CurrentTrial.result["pos_3cm_out_angle"] = pos_3cm_out.x;
+        session.CurrentTrial.result["pos_3cm_out_time"] = pos_3cm_out.y;
+        session.CurrentTrial.result["arc_aquired_angle"] = arcAquired.x;
+        session.CurrentTrial.result["arc_aquired_time"] = arcAquired.y;
+        ctrler.LogVector4List("Indicator_position", indicatorPos);
+        session.CurrentTrial.result["localizing_angle"] = localizingEvent.x;
+        session.CurrentTrial.result["localizing_time"] = localizingEvent.y;
         
-        ctrler.LogObjectPosition("Hand guess position", locAim.transform.position);
-        session.CurrentTrial.result["home_x"] = homePos.x;
-        session.CurrentTrial.result["home_y"] = homePos.y;
-        session.CurrentTrial.result["home_z"] = homePos.z;
-        ctrler.LogVector3List("Hand position", handPos);
+
     }
 
     public override void Disable()

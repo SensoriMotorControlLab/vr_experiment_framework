@@ -180,13 +180,7 @@ public class ReachToTargetTask : BaseTask
                 if (trial.settings.GetString("per_block_type") == "nocursor")
                     ctrler.CursorController.SetCursorVisibility(false);
 
-                // Add trackers: current hand position, cursor position
-                ctrler.AddTrackedPosition("hand_path",
-                    ctrler.Session.CurrentTrial.settings.GetString("per_block_hand") == "l"
-                        ? ctrler.CursorController.LeftHand
-                        : ctrler.CursorController.RightHand);
-
-                ctrler.AddTrackedPosition("cursor_path", ctrler.CursorController.gameObject);
+            
 
                 break;
             case 2:
@@ -226,7 +220,8 @@ public class ReachToTargetTask : BaseTask
         {
             object obj = ctrler.PseudoRandom("per_block_tintPresent");
             float curTint = Convert.ToSingle(obj);
-            rotation = Convert.ToSingle(ctrler.PairPseudoRandom("per_block_rotation", "per_block_tintPresent", obj));
+            rotation = Convert.ToSingle(ctrler.PseudoRandom("per_block_rotation"));
+            
             tint.SetActive(true);
 
             tint.transform.parent = Camera.main.transform;
@@ -354,14 +349,6 @@ public class ReachToTargetTask : BaseTask
     public override void LogParameters()
     {
         Session session = ctrler.Session;
-
-        session.CurrentTrial.result["home_x"] = Home.transform.localPosition.x;
-        session.CurrentTrial.result["home_y"] = Home.transform.localPosition.y;
-        session.CurrentTrial.result["home_z"] = Home.transform.localPosition.z;
-
-        session.CurrentTrial.result["target_x"] = Target.transform.localPosition.x;
-        session.CurrentTrial.result["target_y"] = Target.transform.localPosition.y;
-        session.CurrentTrial.result["target_z"] = Target.transform.localPosition.z;
     }
 
     public override void Disable()
