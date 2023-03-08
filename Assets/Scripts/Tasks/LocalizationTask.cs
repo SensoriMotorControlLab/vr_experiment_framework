@@ -45,6 +45,7 @@ public class LocalizationTask : BaseTask
     Vector2 arcAquired = new Vector2(0, 0);
     Vector2 localizingEvent = new Vector2(0, 0);
     bool outEvent = true;
+    float targetAngle = 0;
     public override void Setup()
     {
 
@@ -80,14 +81,15 @@ public class LocalizationTask : BaseTask
         homePos = targets[1].transform.position;
 
         // Grab an angle from the list and then remove it
-        float targetAngle = Convert.ToSingle(ctrler.PseudoRandom("per_block_targetListToUse"));
+        targetAngle = Convert.ToSingle(ctrler.PseudoRandom("per_block_targetListToUse"));
+        
 
         // Set up the arc object
-        
+        arcRotation = GameObject.Find("ArcRotation");
         targets[2] = GameObject.Find("ArcTarget");
-        targets[2].transform.rotation = Quaternion.Euler(
+        arcRotation.transform.rotation = Quaternion.Euler(
             0f,
-            -targetAngle + 90f,
+            targetAngle,
             0f);
 
         targets[2].transform.position = targets[1].transform.position;
@@ -157,7 +159,7 @@ public class LocalizationTask : BaseTask
                     && ctrler.CursorController.transform.position.z > targets[1].transform.position.z)
                 {
                     IncrementStep();
-                    arcRotation = GameObject.Find("ArcRotation");
+                    
 
                     localizerLoc = Convert.ToSingle(ctrler.PseudoRandom("per_block_localizer_location"));
                     ctrler.TargetContainer.transform.rotation = Quaternion.Euler(0, localizerLoc, 0);
@@ -165,13 +167,6 @@ public class LocalizationTask : BaseTask
                     arcSpan = Convert.ToInt32(ctrler.PseudoRandom("per_block_arc_span"));
                     targets[2].GetComponent<ArcScript>().arcSpan = arcSpan;
 
-                    ArcRot = 0.5f * (180 - arcSpan);
-
-                    if(localizerLoc < 0){
-                        ArcRot = -ArcRot;
-                    }
-
-                    arcRotation.transform.rotation = Quaternion.Euler(0, ArcRot, 0);
                     targets[2].GetComponent<ArcScript>().GenerateArc();
 
                 }
@@ -219,7 +214,8 @@ public class LocalizationTask : BaseTask
                 // VR: User uses their head to localize their hand
                 // Non-VR: User uses horizontal axis to localize their mouse
                 arcError.SetActive(false);
-                
+                targets[2].GetComponent<ArcScript>().arcSpan = 180;
+                targets[2].GetComponent<ArcScript>().GenerateArc();
                 //logging params for cvs file
                 tempHandPos = ctrler.CursorController.transform.position;
                 handPos.Add(new Vector4(tempHandPos.x, tempHandPos.y, tempHandPos.z, Time.time));
@@ -275,16 +271,16 @@ public class LocalizationTask : BaseTask
     private void RotateLocalizer(float locX)
     {
         //ctrler.TargetContainer.transform.position =new Vector3 (targets[1].transform.position.x, ctrler.TargetContainer.transform.position.y, targets[1].transform.position.z);
-        if (ctrler.TargetContainer.transform.rotation.eulerAngles.y < 90){
+        if (ctrler.TargetContainer.transform.rotation.eulerAngles.y < 100){
             ctrler.TargetContainer.transform.Rotate(Vector3.up * locX * Time.deltaTime);
         }
-        else if(ctrler.TargetContainer.transform.rotation.eulerAngles.y < 95 && locX < 0){
+        else if(ctrler.TargetContainer.transform.rotation.eulerAngles.y < 105 && locX < 0){
             ctrler.TargetContainer.transform.Rotate(Vector3.up * locX * Time.deltaTime);
         }
-        else if (ctrler.TargetContainer.transform.rotation.eulerAngles.y > 270){
+        else if (ctrler.TargetContainer.transform.rotation.eulerAngles.y > 260){
             ctrler.TargetContainer.transform.Rotate(Vector3.up * locX * Time.deltaTime);
         }
-        else if (ctrler.TargetContainer.transform.rotation.eulerAngles.y > 265 && locX > 0){
+        else if (ctrler.TargetContainer.transform.rotation.eulerAngles.y > 255 && locX > 0){
             ctrler.TargetContainer.transform.Rotate(Vector3.up * locX * Time.deltaTime);
         }
     }
@@ -358,9 +354,9 @@ public class LocalizationTask : BaseTask
         session.CurrentTrial.result["home_x"] = targets[1].transform.position.x;
         session.CurrentTrial.result["home_y"] = targets[1].transform.position.y;
         session.CurrentTrial.result["home_z"] = targets[1].transform.position.z;
-        session.CurrentTrial.result["target_angle"] = "";
         session.CurrentTrial.result["target_size_m"] = "";
         session.CurrentTrial.result["rotation_size"] = "";
+        session.CurrentTrial.result["target_angle"] = targetAngle;
         session.CurrentTrial.result["cursor_size_m"] = ctrler.CursorController.Model.transform.localScale.x;
         session.CurrentTrial.result["arc_radius_or_target_distance_m"] = targets[2].GetComponent<ArcScript>().TargetDistance / 100;
         ctrler.LogVector4List("hand_pos", handPos);

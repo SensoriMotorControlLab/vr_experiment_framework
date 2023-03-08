@@ -310,7 +310,7 @@ public class ExperimentController : MonoBehaviour
                     case "rotated":
                     case "clamped":
                     case "nocursor":
-                        CurrentTask = gameObject.AddComponent<ReachTrack>();
+                        CurrentTask = gameObject.AddComponent<ReachToTargetTask>();
                         break;
                     case "localization":
                         CurrentTask = gameObject.AddComponent<LocalizationTask>();

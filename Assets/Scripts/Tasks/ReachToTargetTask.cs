@@ -40,6 +40,10 @@ public class ReachToTargetTask : BaseTask
 
     protected string tintColur;
     public float rotation = 0;
+    List<Vector4> handPos = new List<Vector4>();
+    Vector4 tempHandPos = new Vector4(0, 0, 0, 0);
+    Vector2 pos_3cm_out = new Vector2(0, 0);
+    bool outEvent = true;
 
     public override void Setup()
     {
@@ -60,8 +64,13 @@ public class ReachToTargetTask : BaseTask
         timerIndicator = GameObject.Find("TimerIndicator").GetComponent<TimerIndicator>();
         scoreboard = GameObject.Find("Scoreboard").GetComponent<Scoreboard>();
         tint = GameObject.Find("Tint");
-
+        waterBowl = GameObject.Find("waterBasin");
+        waterBowl.SetActive(false);
         SetSetup();
+
+        if (trial.settings.GetString("per_block_type") == "rotated"){
+            rotation = Convert.ToSingle(ctrler.PseudoRandom("per_block_rotation"));
+        }
 
         // sets up the water in the level
 
@@ -143,6 +152,19 @@ public class ReachToTargetTask : BaseTask
         {
             Centre();
             
+        }
+        switch(currentStep)
+        {
+            case 2:
+                if(outEvent){
+                    if(ctrler.CursorController.DistanceFromHome > 0.03){
+                        pos_3cm_out = new Vector2(Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized), Time.time);
+                        outEvent = false;
+                    }
+                }
+                tempHandPos = ctrler.CursorController.transform.position;
+                handPos.Add(new Vector4(tempHandPos.x, tempHandPos.y, tempHandPos.z, Time.time));
+                break;
         }
     }
 
@@ -349,6 +371,24 @@ public class ReachToTargetTask : BaseTask
     public override void LogParameters()
     {
         Session session = ctrler.Session;
+
+        session.CurrentTrial.result["type"] = session.CurrentTrial.settings.GetString("per_block_type");
+        session.CurrentTrial.result["hand"] = session.CurrentTrial.settings.GetString("per_block_hand");
+        session.CurrentTrial.result["home_x"] = targets[1].transform.position.x;
+        session.CurrentTrial.result["home_y"] = targets[1].transform.position.y;
+        session.CurrentTrial.result["home_z"] = targets[1].transform.position.z;
+        session.CurrentTrial.result["target_angle"] = targetAngle;
+        session.CurrentTrial.result["target_size_m"] = targets[2].transform.localScale.x;
+        session.CurrentTrial.result["rotation_size"] = rotation;
+        session.CurrentTrial.result["cursor_size_m"] = ctrler.CursorController.Model.transform.localScale.x;
+        session.CurrentTrial.result["arc_radius_or_target_distance_m"] = ctrler.Session.CurrentBlock.settings.GetFloat("per_block_distance") / 100;
+        ctrler.LogVector4List("hand_pos", handPos);
+        session.CurrentTrial.result["pos_3cm_out_angle"] = pos_3cm_out.x;
+        session.CurrentTrial.result["pos_3cm_out_time"] = pos_3cm_out.y;
+        session.CurrentTrial.result["arc_aquired_angle"] = "";
+        session.CurrentTrial.result["arc_aquired_time"] = "";
+        session.CurrentTrial.result["localizing_angle"] = "";
+        session.CurrentTrial.result["localizing_time"] = "";
     }
 
     public override void Disable()

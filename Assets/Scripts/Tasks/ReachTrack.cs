@@ -55,6 +55,7 @@ public class ReachTrack : ReachToTargetTask
     public float rotation = 0;
     Vector2 pos_3cm_out = new Vector2(0, 0);
     bool outEvent = true;
+    protected List<GameObject> targets = new List<GameObject>();
 
 
     // Start is called before the first frame update
@@ -67,7 +68,7 @@ public class ReachTrack : ReachToTargetTask
 
         Cursor.visible = false;
 
-        reachPrefab = Instantiate(ctrler.GetPrefab("ReachTrack"));
+        reachPrefab = Instantiate(ctrler.GetPrefab("ReachPrefab"));
         //reachPrefab.transform.SetParent(ctrler.transform);
         reachPrefab.transform.position = Vector3.zero;
         ctrler.TargetContainer.transform.localPosition = Vector3.zero;
@@ -85,11 +86,29 @@ public class ReachTrack : ReachToTargetTask
         speedometer.transform.parent = field.transform;
 
 
-        if (trial.settings.GetString("per_block_type") == "rotated"){
-            rotation = Convert.ToSingle(ctrler.PseudoRandom("per_block_rotation"));
-        }
         
+        
+        // Set up hand and cursor
+        ctrler.CursorController.SetHandVisibility(false);
+        ctrler.CursorController.SetCursorVisibility(true);
 
+        // Set up the dock position
+        targets.Add(GameObject.Find("Dock"));
+        targets[0].transform.localPosition = ctrler.TargetContainer.transform.localPosition - ctrler.transform.forward * dock_dist;
+
+        // Set up the home position
+        targets.Add(GameObject.Find("Home"));
+        targets[1].transform.localPosition = ctrler.TargetContainer.transform.localPosition;
+        targets[1].SetActive(false);
+        Home = targets[1];
+
+        targets.Add(GameObject.Find("Target"));
+        targets[2].transform.rotation = Quaternion.Euler(
+            0f, -targetAngle + 90f, 0f);
+
+        targets[2].transform.localPosition = targets[1].transform.localPosition +
+                                        targets[2].transform.forward.normalized *
+                                        (trial.settings.GetFloat("per_block_distance") / 100f);
 
         newPos = base.transform.position;
         prevPos = base.transform.position;
@@ -102,7 +121,7 @@ public class ReachTrack : ReachToTargetTask
 
         field.SetActive(false);
 
-        SetSetup();
+        //SetSetup();
 
         field.transform.position = new Vector3(targets[1].transform.position.x, field.transform.position.y, targets[1].transform.position.z);
 
@@ -163,17 +182,13 @@ public class ReachTrack : ReachToTargetTask
 
     }
 
-    void FixedUpdate()
-    {
-        // set boolean in the dict in ctler to wasOutside
-        //ctrler.trackedBools["is_ball_outside"] = wasOutside;
-    }
+
 
     // Update is called once per frame
     public override void Update()
     {
         base.Update();
-        // Debug.Log("wasoutside: " + wasOutside);
+
         UnityEngine.XR.InputDevices.GetDevicesWithRole(UnityEngine.XR.InputDeviceRole.RightHanded, devices);
         if (currentStep > 1)
         {

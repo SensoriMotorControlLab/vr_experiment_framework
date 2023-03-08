@@ -44,7 +44,7 @@ public class ArcScript : MonoBehaviour
 
         float delta = Mathf.Deg2Rad * arcSpan / arcSpan;
 
-        float angle = 0f;
+        float angle = 0;
 
         int length = (arcSpan * 4) + 4;
 
