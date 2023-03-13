@@ -61,7 +61,7 @@ public class ReachToTargetTask : BaseTask
         reachCam = GameObject.Find("ReachCam");
         reachSurface = GameObject.Find("Surface");
         water = GameObject.Find("Water");
-        timerIndicator = GameObject.Find("TimerIndicator").GetComponent<TimerIndicator>();
+        // timerIndicator = GameObject.Find("TimerIndicator").GetComponent<TimerIndicator>();
         scoreboard = GameObject.Find("Scoreboard").GetComponent<Scoreboard>();
         tint = GameObject.Find("Tint");
         waterBowl = GameObject.Find("waterBasin");

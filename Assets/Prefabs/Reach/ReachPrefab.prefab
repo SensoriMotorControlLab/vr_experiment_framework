@@ -497,6 +497,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: TimerBar
       objectReference: {fileID: 0}
+    - target: {fileID: 5915511159554755466, guid: 79b7ab47b5f7b314f9a7a54bba9e08c6,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6442353579374108886, guid: 79b7ab47b5f7b314f9a7a54bba9e08c6,
         type: 3}
       propertyPath: m_Color.a
@@ -515,12 +520,12 @@ PrefabInstance:
     - target: {fileID: 8734947491063370320, guid: 79b7ab47b5f7b314f9a7a54bba9e08c6,
         type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8734947491063370320, guid: 79b7ab47b5f7b314f9a7a54bba9e08c6,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 79b7ab47b5f7b314f9a7a54bba9e08c6, type: 3}
@@ -580,17 +585,17 @@ PrefabInstance:
     - target: {fileID: 4080104870188603689, guid: 58eaa6eaddb506c48ac20629e050cd57,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.0959
+      value: 0.004
       objectReference: {fileID: 0}
     - target: {fileID: 4080104870188603689, guid: 58eaa6eaddb506c48ac20629e050cd57,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.3432
+      value: 0.343
       objectReference: {fileID: 0}
     - target: {fileID: 4080104870188603689, guid: 58eaa6eaddb506c48ac20629e050cd57,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.0034
+      value: -0.624
       objectReference: {fileID: 0}
     - target: {fileID: 4080104870188603689, guid: 58eaa6eaddb506c48ac20629e050cd57,
         type: 3}
