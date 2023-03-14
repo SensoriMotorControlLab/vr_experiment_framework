@@ -146,8 +146,11 @@ public class LocalizationTask : BaseTask
                     // make the ball invisible
                     ctrler.CursorController.Model.GetComponent<Renderer>().enabled = false;
                 }
-                if (Mathf.Abs(targets[0].transform.position.magnitude - ctrler.CursorController.transform.position.magnitude) < req_targ_accuracy
-                                && ctrler.CursorController.stillTime > 0.1f && ctrler.CursorController.transform.position.z > targets[0].transform.position.z)
+                // check distrance from dock, increment step
+                // if (Mathf.Abs(targets[0].transform.position.magnitude - ctrler.CursorController.transform.position.magnitude) < req_targ_accuracy
+                //                 && ctrler.CursorController.stillTime > 0.1f && ctrler.CursorController.transform.position.z > targets[0].transform.position.z)
+                if ((Mathf.Abs(targets[0].transform.position.magnitude - ctrler.CursorController.transform.position.magnitude) < 0.005f) 
+                    && ctrler.CursorController.transform.position.z > targets[0].transform.position.z)
                 {
                     ctrler.CursorController.Model.GetComponent<Renderer>().enabled = true;
                     IncrementStep();
@@ -163,7 +166,8 @@ public class LocalizationTask : BaseTask
 
                     localizerLoc = Convert.ToSingle(ctrler.PseudoRandom("per_block_localizer_location"));
                     ctrler.TargetContainer.transform.rotation = Quaternion.Euler(0, localizerLoc, 0);
-
+                    
+                    // generating the arc
                     arcSpan = Convert.ToInt32(ctrler.PseudoRandom("per_block_arc_span"));
                     targets[2].GetComponent<ArcScript>().arcSpan = arcSpan;
 
