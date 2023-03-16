@@ -193,7 +193,6 @@ public class ExperimentController : MonoBehaviour
 
     public void CentreExperiment(Vector3 centre)
     {
-        exp_centre_pos = centre;
         Transform temp = cameraOffset.transform.parent;
         cameraOffset.transform.parent = dummyCamera.transform;
         dummyCamera.transform.position = new Vector3(centre.x, 0, centre.z);

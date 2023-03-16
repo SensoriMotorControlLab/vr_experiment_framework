@@ -87,11 +87,8 @@ public class LocalizationTask : BaseTask
         // Set up the arc object
         arcRotation = GameObject.Find("ArcRotation");
         targets[2] = GameObject.Find("ArcTarget");
-        arcRotation.transform.rotation = Quaternion.Euler(
-            0f,
-            targetAngle,
-            0f);
-
+        
+        Debug.Log("Target Angle: " + targetAngle);
         targets[2].transform.position = targets[1].transform.position;
 
         targets[2].GetComponent<ArcScript>().TargetDistance = ctrler.Session.CurrentTrial.settings.GetFloat("per_block_distance");
@@ -146,8 +143,8 @@ public class LocalizationTask : BaseTask
                     // make the ball invisible
                     ctrler.CursorController.Model.GetComponent<Renderer>().enabled = false;
                 }
-                if (Mathf.Abs(targets[0].transform.position.magnitude - ctrler.CursorController.transform.position.magnitude) < req_targ_accuracy
-                                && ctrler.CursorController.stillTime > 0.1f && ctrler.CursorController.transform.position.z > targets[0].transform.position.z)
+                if (Mathf.Abs(targets[0].transform.position.magnitude - ctrler.CursorController.transform.position.magnitude) < 0.005f
+                                && ctrler.CursorController.stillTime > 0.3f)
                 {
                     ctrler.CursorController.Model.GetComponent<Renderer>().enabled = true;
                     IncrementStep();
@@ -163,7 +160,8 @@ public class LocalizationTask : BaseTask
 
                     localizerLoc = Convert.ToSingle(ctrler.PseudoRandom("per_block_localizer_location"));
                     ctrler.TargetContainer.transform.rotation = Quaternion.Euler(0, localizerLoc, 0);
-
+                    arcRotation = GameObject.Find("ArcRotation");
+                    arcRotation.transform.rotation = Quaternion.Euler(Vector3.up * (90 - targetAngle));
                     arcSpan = Convert.ToInt32(ctrler.PseudoRandom("per_block_arc_span"));
                     targets[2].GetComponent<ArcScript>().arcSpan = arcSpan;
 
@@ -216,6 +214,7 @@ public class LocalizationTask : BaseTask
                 arcError.SetActive(false);
                 targets[2].GetComponent<ArcScript>().arcSpan = 180;
                 targets[2].GetComponent<ArcScript>().GenerateArc();
+                arcRotation.transform.rotation = Quaternion.Euler(Vector3.up * (90 - 90));
                 //logging params for cvs file
                 tempHandPos = ctrler.CursorController.transform.position;
                 handPos.Add(new Vector4(tempHandPos.x, tempHandPos.y, tempHandPos.z, Time.time));
@@ -234,11 +233,14 @@ public class LocalizationTask : BaseTask
                     }
                     else
                     {
-                        if (ctrler.CursorController.Get2DAxis().magnitude > 0)
+                        if (ctrler.CursorController.Get2DAxis().magnitude > 0.1f){
                             locX = ctrler.CursorController.Get2DAxis().x *100;
                             RotateLocalizer(locX);
-                        // locZ += ctrler.CursorController.Get2DAxis().y * 0.002f;
-                        // localizer.transform.position = new Vector3(locX, 0, locZ) + targets[2].transform.position;
+                        }
+                        else{
+                            RotateLocalizer(0);
+                        }   
+
                     }
                 }
                 else
@@ -298,7 +300,7 @@ public class LocalizationTask : BaseTask
         Vector3 pos = targets[0].transform.position;
         Vector3 centre = pos - ctrler.transform.forward * 0.1f;
         centre.y = ctrler.CursorController.transform.position.y;
-        ctrler.CentreExperiment(centre);
+        ctrler.CentreExperiment(targets[0].transform.position);
     }
 
     public override bool IncrementStep()

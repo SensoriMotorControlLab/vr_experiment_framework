@@ -1,6 +1,6 @@
 {
   "experiment_mode": "targetTrack",
-  "optional_params": [ "return_visible"
+  "optional_params": [ "return_visible", "vr"
   ],
   "track_score": true,
   "per_block_type": [
@@ -114,7 +114,7 @@ null,
   
   ],
   "per_block_targetListToUse": [
-    "tl1",
+    "tl2",
     "tl2",
 "tl2",
 "tl2",
@@ -262,7 +262,7 @@ null
 "as1",
 "as1",
 "as1",
-"as1",
+"as1"
     
   ],
   "as1":[
@@ -282,8 +282,8 @@ null
     130
   ],
   "tl1": [
-    0,
-    0
+    100,
+    100
   ],
   "ct1": [
     20,
