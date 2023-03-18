@@ -13,6 +13,7 @@ public class ReachToTargetTask : BaseTask
     // 3. User moves to TARGET with reachType[1]
 
     MovementType[] reachType;  // Reach type for current step
+    protected List<UnityEngine.XR.InputDevice> devices = new List<UnityEngine.XR.InputDevice>();
 
     // Dock distance from Home
     protected float dock_dist = 0.025f;
@@ -44,6 +45,7 @@ public class ReachToTargetTask : BaseTask
     Vector4 tempHandPos = new Vector4(0, 0, 0, 0);
     Vector2 pos_3cm_out = new Vector2(0, 0);
     bool outEvent = true;
+    GameObject baseObject;
 
     public override void Setup()
     {
@@ -66,12 +68,19 @@ public class ReachToTargetTask : BaseTask
         tint = GameObject.Find("Tint");
         waterBowl = GameObject.Find("waterBasin");
         waterBowl.SetActive(false);
+        baseObject = GameObject.Find("BaseObject");
         SetSetup();
 
+        ctrler.CursorController.Model.GetComponent<Renderer>().enabled = false;
+        baseObject.GetComponent<Renderer>().enabled = false;
+        
         if (trial.settings.GetString("per_block_type") == "rotated"){
             rotation = Convert.ToSingle(ctrler.PseudoRandom("per_block_rotation"));
+            reachSurface.GetComponent<Renderer>().material.color = new Color(0f, 0f, 0.33f, 1f);
         }
-
+        else{
+            reachSurface.GetComponent<Renderer>().material.color = new Color(0f, 0f, 0f, 1f);
+        }
         // sets up the water in the level
 
         if (ctrler.Session.CurrentBlock.settings.GetString("per_block_waterPresent") == "wp1")
@@ -116,9 +125,53 @@ public class ReachToTargetTask : BaseTask
         ctrler.CursorController.useHand = true;
     }
 
+        protected virtual Vector3 GetMousePoint(Transform ball)
+    {
+        //ToFix: can the below two be one function called point to planepoint?
+        Vector3 ctrl = new Vector3(ctrler.CursorController.GetHandPosition().x, 0, ctrler.CursorController.GetHandPosition().z);
+        reachSurface = GameObject.Find("Surface");
+
+            return ctrler.CursorController.ControllerToPlanePoint(
+                        reachSurface.transform.up * ball.position.y,
+                        ball.position,
+                        ctrl);
+    }
+
     public override void Update()
     {
         base.Update();
+
+        baseObject = GameObject.Find("BaseObject");
+        Vector3 mousePoint = GetMousePoint(baseObject.transform);
+        Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
+        baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
+
+        switch (currentStep)
+        {
+            case 0:
+                if (!ctrler.Session.settings.GetObjectList("optional_params").Contains("return_visible"))
+                {
+                    // make the ball invisible
+                    baseObject.GetComponent<Renderer>().enabled = false;
+                }
+                else
+                {
+                    baseObject.GetComponent<Renderer>().enabled = true;
+                }
+                break;
+            case 1:
+                baseObject.GetComponent<Renderer>().enabled = true;
+                break;
+        }
+
+        if (trial.settings.GetString("per_block_type") == "rotated"){
+            reachSurface = GameObject.Find("Surface");
+            reachSurface.GetComponent<Renderer>().material.color = new Color(0f, 0f, 0.33f, 1f);
+        }
+        else{
+            reachSurface = GameObject.Find("Surface");
+            reachSurface.GetComponent<Renderer>().material.color = new Color(0f, 0f, 0f, 1f);
+        }
 
         if (!trackScore) scoreboard.ManualScoreText = "Practice Round";
 
@@ -174,12 +227,13 @@ public class ReachToTargetTask : BaseTask
     /// </summary>
     protected void Centre()
     {
-        Vector3 pos = targets[0].transform.position;
-        ctrler.CentreExperiment(pos - ctrler.transform.forward * dock_dist);
+        ctrler.CentreExperiment(targets[0].transform.position);
     }
 
     public override bool IncrementStep()
     {
+        ExperimentController ctrler = ExperimentController.Instance();
+        UnityEngine.XR.InputDevices.GetDevicesWithRole(UnityEngine.XR.InputDeviceRole.RightHanded, devices);
         if (currentStep < 3)
         {
             targets[currentStep].SetActive(false);
@@ -188,6 +242,9 @@ public class ReachToTargetTask : BaseTask
         switch (currentStep)
         {
             // If the user enters the home, start tracking time
+            case 0:
+                VibrateController(0, 0.34f, 0.15f, devices);
+                break;
             case 1:
                 ctrler.StartTimer();
                 ctrler.CursorController.SetMovementType(reachType[2]);
@@ -322,7 +379,7 @@ public class ReachToTargetTask : BaseTask
 
         // Set up the dock position
         targets.Add(GameObject.Find("Dock"));
-        targets[0].transform.localPosition = ctrler.TargetContainer.transform.localPosition - ctrler.transform.forward * dock_dist;
+        targets[0].transform.position = ctrler.TargetContainer.transform.localPosition - ctrler.transform.forward * dock_dist;
 
         // Set up the home position
         targets.Add(GameObject.Find("Home"));

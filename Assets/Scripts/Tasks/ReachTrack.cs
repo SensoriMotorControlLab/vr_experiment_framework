@@ -197,10 +197,7 @@ public class ReachTrack : ReachToTargetTask
         }
 
         Vector3 mousePoint = GetMousePoint(baseObject.transform);
-
-        //ctrler.CursorController.Model.transform.position = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
         Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
-        //baseObject.transform.position = new Vector3(baseObject.transform.position.x, mousePoint.y, baseObject.transform.position.z);
         baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
 
         cur = baseObject.transform.localPosition;

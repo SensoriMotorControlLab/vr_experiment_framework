@@ -46,6 +46,7 @@ public class LocalizationTask : BaseTask
     Vector2 localizingEvent = new Vector2(0, 0);
     bool outEvent = true;
     float targetAngle = 0;
+    GameObject baseObject;
     public override void Setup()
     {
 
@@ -65,11 +66,12 @@ public class LocalizationTask : BaseTask
         localizationCam = GameObject.Find("LocalizationCamera");
         localizationSurface = GameObject.Find("Surface");
         arcError = GameObject.Find("ArcError");
+        baseObject = GameObject.Find("BaseObject");
 
 
         // Set up the dock position
         targets[0] = GameObject.Find("Dock");
-        targets[0].transform.localPosition = ctrler.TargetContainer.transform.position - ctrler.transform.forward * dock_dist;
+        targets[0].transform.position = ctrler.TargetContainer.transform.position - ctrler.transform.forward * dock_dist;
         //targets[0].transform.position = new Vector3(ctrler.TargetContainer.transform.position.x, -0.250f, ctrler.TargetContainer.transform.position.z);
 
         // Set up the home position
@@ -83,7 +85,8 @@ public class LocalizationTask : BaseTask
         // Grab an angle from the list and then remove it
         targetAngle = Convert.ToSingle(ctrler.PseudoRandom("per_block_targetListToUse"));
         
-
+        ctrler.CursorController.Model.GetComponent<Renderer>().enabled = false;
+        baseObject.GetComponent<Renderer>().enabled = false;
         // Set up the arc object
         arcRotation = GameObject.Find("ArcRotation");
         targets[2] = GameObject.Find("ArcTarget");
@@ -111,6 +114,8 @@ public class LocalizationTask : BaseTask
 
         Target.SetActive(false);
 
+        localizationSurface.GetComponent<Renderer>().material.color = new Color(0f, 0.1f, 0f, 1f);
+
         // Use static camera for non-vr version of pinball
         if (ctrler.Session.settings.GetObjectList("optional_params").Contains("vr"))
         {
@@ -128,12 +133,24 @@ public class LocalizationTask : BaseTask
         arcError.SetActive(false);
     }
 
+    protected virtual Vector3 GetMousePoint(Transform ball)
+    {
+        //ToFix: can the below two be one function called point to planepoint?
+        Vector3 ctrl = new Vector3(ctrler.CursorController.GetHandPosition().x, 0, ctrler.CursorController.GetHandPosition().z);
+        localizationSurface = GameObject.Find("Surface");
+
+            return ctrler.CursorController.ControllerToPlanePoint(
+                        localizationSurface.transform.up * ball.position.y,
+                        ball.position,
+                        ctrl);
+    }
+
     public override void Update()
     {
-        
-        base.Update();
-        
-        
+        baseObject = GameObject.Find("BaseObject");
+        Vector3 mousePoint = GetMousePoint(baseObject.transform);
+        Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
+        baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
         switch (currentStep)
         {
             case 0:
@@ -141,12 +158,17 @@ public class LocalizationTask : BaseTask
                 if (!ctrler.Session.settings.GetObjectList("optional_params").Contains("return_visible"))
                 {
                     // make the ball invisible
-                    ctrler.CursorController.Model.GetComponent<Renderer>().enabled = false;
+                    baseObject.GetComponent<Renderer>().enabled = false;
+                }
+                else
+                {
+                    baseObject.GetComponent<Renderer>().enabled = true;
                 }
                 if (Mathf.Abs(targets[0].transform.position.magnitude - ctrler.CursorController.transform.position.magnitude) < 0.005f
                                 && ctrler.CursorController.stillTime > 0.3f)
                 {
-                    ctrler.CursorController.Model.GetComponent<Renderer>().enabled = true;
+                    
+                    baseObject.GetComponent<Renderer>().enabled = true;
                     IncrementStep();
                 }
                 break;
@@ -171,6 +193,7 @@ public class LocalizationTask : BaseTask
                 break;
             // When the user holds their hand and they are outside the home, begin the next phase of localization
             case 2:
+                baseObject.GetComponent<Renderer>().enabled = false;
                 if(outEvent){
                     if(ctrler.CursorController.DistanceFromHome > 0.03){
                         pos_3cm_out = new Vector2(Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized), Time.time);
@@ -209,6 +232,7 @@ public class LocalizationTask : BaseTask
                 
                 break;
             case 3:
+                baseObject.GetComponent<Renderer>().enabled = false;
                 // VR: User uses their head to localize their hand
                 // Non-VR: User uses horizontal axis to localize their mouse
                 arcError.SetActive(false);
@@ -257,6 +281,7 @@ public class LocalizationTask : BaseTask
                 if (ctrler.CursorController.IsTriggerDown("l") || Input.GetKeyDown(KeyCode.N) || Input.GetKeyDown(KeyCode.Space))
                     IncrementStep();
                     localizingEvent = new Vector2(Vector3.Angle(targets[1].transform.right, (locAim.transform.position - targets[1].transform.position).normalized), Time.time);
+                    baseObject.GetComponent<Renderer>().enabled = false;
 
                 break;
         }
@@ -296,10 +321,6 @@ public class LocalizationTask : BaseTask
     /// </summary>
     protected void Centre()
     {
-        //ctrler.TargetContainer.transform.localPosition = Vector3.zero;
-        Vector3 pos = targets[0].transform.position;
-        Vector3 centre = pos - ctrler.transform.forward * 0.1f;
-        centre.y = ctrler.CursorController.transform.position.y;
         ctrler.CentreExperiment(targets[0].transform.position);
     }
 
@@ -313,6 +334,7 @@ public class LocalizationTask : BaseTask
             case 0: // Enter dock
                 targets[0].SetActive(false);
                 Home.SetActive(true);
+                VibrateController(0, 0.34f, 0.15f, devices);
                 break;
             case 1: // Enter home
                 Home.SetActive(false);
@@ -334,14 +356,13 @@ public class LocalizationTask : BaseTask
                 break;
             case 3: // Select the spot they think their real hand is
                 Target.SetActive(false);
-
+                baseObject.GetComponent<Renderer>().enabled = false;
                 // We use the target variable to store the cursor position
                 Target.transform.position =
                     ExperimentController.Instance().CursorController.GetHandPosition();
 
                 break;
         }
-
         base.IncrementStep();
         return finished;
     }
