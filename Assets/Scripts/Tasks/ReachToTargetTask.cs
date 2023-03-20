@@ -20,7 +20,7 @@ public class ReachToTargetTask : BaseTask
     protected List<GameObject> targets = new List<GameObject>();
     protected ExperimentController ctrler;
     protected Trial trial;
-    float hold_still_time = 0.3f;
+    float hold_still_time = 0.5f;
 
     protected GameObject reachPrefab;
     protected GameObject reachCam;
@@ -46,6 +46,7 @@ public class ReachToTargetTask : BaseTask
     Vector2 pos_3cm_out = new Vector2(0, 0);
     bool outEvent = true;
     GameObject baseObject;
+    bool isNoCursor = false;    
 
     public override void Setup()
     {
@@ -70,6 +71,10 @@ public class ReachToTargetTask : BaseTask
         waterBowl.SetActive(false);
         baseObject = GameObject.Find("BaseObject");
         SetSetup();
+
+        if(trial.settings.GetString("per_block_type") == "nocursor"){
+            isNoCursor = true;
+        }
 
         ctrler.CursorController.Model.GetComponent<Renderer>().enabled = false;
         baseObject.GetComponent<Renderer>().enabled = false;
@@ -149,7 +154,7 @@ public class ReachToTargetTask : BaseTask
         switch (currentStep)
         {
             case 0:
-                if (!ctrler.Session.settings.GetObjectList("optional_params").Contains("return_visible"))
+                if (!ctrler.Session.settings.GetObjectList("optional_params").Contains("return_visible") || isNoCursor)
                 {
                     // make the ball invisible
                     baseObject.GetComponent<Renderer>().enabled = false;
@@ -160,7 +165,9 @@ public class ReachToTargetTask : BaseTask
                 }
                 break;
             case 1:
+            if(!isNoCursor){
                 baseObject.GetComponent<Renderer>().enabled = true;
+            }
                 break;
         }
 
@@ -180,7 +187,7 @@ public class ReachToTargetTask : BaseTask
 
         if (currentStep == 2 &&
             ctrler.CursorController.stillTime > hold_still_time &&
-            ctrler.CursorController.DistanceFromHome > 0.05f &&
+            targets[1].transform.position.z + 0.05f < baseObject.transform.position.z &&
             trial.settings.GetString("per_block_type") == "nocursor")
             IncrementStep();
 
@@ -248,21 +255,22 @@ public class ReachToTargetTask : BaseTask
             case 1:
                 ctrler.StartTimer();
                 ctrler.CursorController.SetMovementType(reachType[2]);
-
+                VibrateController(0, 0.34f, 0.15f, devices);
                 // Start green timer bar
                 if (hasTimer)
                 {
                     timerIndicator.BeginTimer();
                 }
 
-
                 if (trial.settings.GetString("per_block_type") == "nocursor")
-                    ctrler.CursorController.SetCursorVisibility(false);
-
-            
+                    baseObject.GetComponent<Renderer>().enabled = false;
+                else{
+                    baseObject.GetComponent<Renderer>().enabled = true;
+                }
 
                 break;
             case 2:
+                VibrateController(0, 0.34f, 0.15f, devices);
                 if (trackScore && ctrler.Session.settings.GetString("experiment_mode") != "targetTrack")
                 {
                     ctrler.Score++;

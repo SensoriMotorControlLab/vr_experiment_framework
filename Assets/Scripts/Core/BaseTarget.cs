@@ -57,6 +57,7 @@ public class BaseTarget : MonoBehaviour
                 case "Hand":
                     if(ctrler.CursorController.useHand == true)
                     {
+                        Debug.Log("Hand collision");
                         AdvanceStep();
                     }
                     break;
