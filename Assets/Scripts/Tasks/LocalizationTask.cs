@@ -148,13 +148,14 @@ public class LocalizationTask : BaseTask
 
     public override void Update()
     {
+        
         if(ctrler.CursorController.IsTriggerDown("l") || Input.GetKey(KeyCode.Space)){
             pressedTime += Time.deltaTime;
         }
         else{
             pressedTime = 0;
         }
-        Debug.Log(pressedTime);
+        Debug.Log("Pressed Time: " + pressedTime);
         baseObject = GameObject.Find("BaseObject");
         Vector3 mousePoint = GetMousePoint(baseObject.transform);
         Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
@@ -283,17 +284,25 @@ public class LocalizationTask : BaseTask
                     
                 }
 
-                // switch from click to enter or something? issue with clicking to refocus window
-
-                // If the user presses the trigger associated with the hand, we end the trial
-                if (((ctrler.CursorController.IsTriggerDown("l") && 
-                (ctrler.TargetContainer.transform.rotation.eulerAngles.y > -90 && ctrler.TargetContainer.transform.rotation.eulerAngles.y < 90) ) || 
-                Input.GetKey(KeyCode.Space) || (Input.GetKeyDown(KeyCode.Space) && 
-                (ctrler.TargetContainer.transform.rotation.eulerAngles.y > -90 && ctrler.TargetContainer.transform.rotation.eulerAngles.y < 90))) && 
-                pressedTime > 0.2f)
-                    IncrementStep();
-                    localizingEvent = new Vector2(Vector3.Angle(targets[1].transform.right, (locAim.transform.position - targets[1].transform.position).normalized), Time.time);
-                    baseObject.GetComponent<Renderer>().enabled = false;
+                // NON-VR** If the user presses the spacebar for 200ms and localizer is within arcspan, we end the trial
+                if(Input.GetKey(KeyCode.Space) && (ctrler.TargetContainer.transform.rotation.eulerAngles.y > -90 && ctrler.TargetContainer.transform.rotation.eulerAngles.y < 90)){
+                    if(pressedTime > 0.2f){
+                        IncrementStep();
+                        localizingEvent = new Vector2(Vector3.Angle(targets[1].transform.right, (locAim.transform.position - targets[1].transform.position).normalized), Time.time);
+                        baseObject.GetComponent<Renderer>().enabled = false;
+                    }
+                    
+                }
+                
+                // VR** If the user presses the trigger associated with the handfor 200ms and localizer is within arcspan, we end the trial
+                if (ctrler.CursorController.IsTriggerDown("l") && (ctrler.TargetContainer.transform.rotation.eulerAngles.y > -90 && ctrler.TargetContainer.transform.rotation.eulerAngles.y < 90)){
+                    if(pressedTime > 0.2f){
+                        IncrementStep();
+                        localizingEvent = new Vector2(Vector3.Angle(targets[1].transform.right, (locAim.transform.position - targets[1].transform.position).normalized), Time.time);
+                        baseObject.GetComponent<Renderer>().enabled = false;
+                    }
+                }
+                    
 
                 break;
         }
