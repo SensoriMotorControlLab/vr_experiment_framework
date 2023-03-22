@@ -4,14 +4,14 @@
   ],
   "track_score": true,
   "per_block_type": [
-"aligned",
-"aligned",
+"rotated",
+"rotated",
 "rotated"
     
   ],
   "per_block_rotation": [
-    null,
-null,
+    "br1",
+    "br1",
 "br1"
     
   ],

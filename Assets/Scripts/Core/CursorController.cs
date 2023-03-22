@@ -336,7 +336,7 @@ public class CursorController : MonoBehaviour
         // Update the position of the cursor depending on which hand is involved
         transform.position = ConvertPosition(realHandPosition);
 
-        if ((previousPosition - realHandPosition).magnitude > 0.001f)
+        if ((previousPosition - realHandPosition).magnitude > 0.0005f)
             stillTime = 0f;
         else
             stillTime += Time.deltaTime;

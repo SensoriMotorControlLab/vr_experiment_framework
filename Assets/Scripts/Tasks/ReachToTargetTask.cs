@@ -46,7 +46,8 @@ public class ReachToTargetTask : BaseTask
     Vector2 pos_3cm_out = new Vector2(0, 0);
     bool outEvent = true;
     GameObject baseObject;
-    bool isNoCursor = false;    
+    bool isNoCursor = false;
+    GameObject arc;
 
     public override void Setup()
     {
@@ -70,10 +71,13 @@ public class ReachToTargetTask : BaseTask
         waterBowl = GameObject.Find("waterBasin");
         waterBowl.SetActive(false);
         baseObject = GameObject.Find("BaseObject");
+        arc = GameObject.Find("ArcTarget");
         SetSetup();
+        arc.SetActive(false);
 
         if(trial.settings.GetString("per_block_type") == "nocursor"){
             isNoCursor = true;
+            targets[2].GetComponent<BaseTarget>().enabled = false;
         }
 
         ctrler.CursorController.Model.GetComponent<Renderer>().enabled = false;
@@ -165,9 +169,15 @@ public class ReachToTargetTask : BaseTask
                 }
                 break;
             case 1:
-            if(!isNoCursor){
-                baseObject.GetComponent<Renderer>().enabled = true;
-            }
+                if(!isNoCursor){
+                    baseObject.GetComponent<Renderer>().enabled = true;
+                }
+                break;
+            case 2:
+                if(isNoCursor && baseObject.transform.position.z > 0f){
+                    arc.GetComponent<ArcScript>().TargetDistance = ctrler.CursorController.DistanceFromHome * 100;
+                    arc.GetComponent<ArcScript>().GenerateArc();
+                }
                 break;
         }
 
@@ -185,11 +195,14 @@ public class ReachToTargetTask : BaseTask
         if (Input.GetKeyDown(KeyCode.N))
             IncrementStep();
 
+
         if (currentStep == 2 &&
-            ctrler.CursorController.stillTime > hold_still_time &&
-            targets[1].transform.position.z + 0.05f < baseObject.transform.position.z &&
-            trial.settings.GetString("per_block_type") == "nocursor")
-            IncrementStep();
+            ctrler.CursorController.stillTime > 0.5f &&
+            trial.settings.GetString("per_block_type") == "nocursor"){
+                Debug.Log(ctrler.CursorController.stillTime);
+                IncrementStep();
+            }
+            
 
         if (Finished)
             ctrler.EndAndPrepare();
@@ -262,14 +275,17 @@ public class ReachToTargetTask : BaseTask
                     timerIndicator.BeginTimer();
                 }
 
-                if (trial.settings.GetString("per_block_type") == "nocursor")
+                if (trial.settings.GetString("per_block_type") == "nocursor"){
                     baseObject.GetComponent<Renderer>().enabled = false;
+                    arc.SetActive(true);
+                }                 
                 else{
                     baseObject.GetComponent<Renderer>().enabled = true;
                 }
 
                 break;
             case 2:
+                arc.SetActive(false);
                 VibrateController(0, 0.34f, 0.15f, devices);
                 if (trackScore && ctrler.Session.settings.GetString("experiment_mode") != "targetTrack")
                 {
