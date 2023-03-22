@@ -1,6 +1,6 @@
 {
   "experiment_mode": "targetTrack",
-  "optional_params": [ "vr"
+  "optional_params": [
   ],
   "track_score": true,
   "per_block_type": [
@@ -91,8 +91,8 @@ null
     100
   ],
   "tl2": [
-    70,
-    90
+    110,
+    130
   ],
   "tl1": [
     70,

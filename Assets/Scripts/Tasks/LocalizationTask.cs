@@ -155,7 +155,6 @@ public class LocalizationTask : BaseTask
         else{
             pressedTime = 0;
         }
-        Debug.Log("Pressed Time: " + pressedTime);
         baseObject = GameObject.Find("BaseObject");
         Vector3 mousePoint = GetMousePoint(baseObject.transform);
         Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
@@ -285,7 +284,8 @@ public class LocalizationTask : BaseTask
                 }
 
                 // NON-VR** If the user presses the spacebar for 200ms and localizer is within arcspan, we end the trial
-                if(Input.GetKey(KeyCode.Space) && (ctrler.TargetContainer.transform.rotation.eulerAngles.y > -90 && ctrler.TargetContainer.transform.rotation.eulerAngles.y < 90)){
+                Debug.Log(ctrler.TargetContainer.transform.rotation.y);
+                if(Input.GetKey(KeyCode.Space) && ((-0.7f < ctrler.TargetContainer.transform.rotation.y) && (ctrler.TargetContainer.transform.rotation.y < 0.7f))){
                     if(pressedTime > 0.2f){
                         IncrementStep();
                         localizingEvent = new Vector2(Vector3.Angle(targets[1].transform.right, (locAim.transform.position - targets[1].transform.position).normalized), Time.time);
@@ -295,7 +295,7 @@ public class LocalizationTask : BaseTask
                 }
                 
                 // VR** If the user presses the trigger associated with the handfor 200ms and localizer is within arcspan, we end the trial
-                if (ctrler.CursorController.IsTriggerDown("l") && (ctrler.TargetContainer.transform.rotation.eulerAngles.y > -90 && ctrler.TargetContainer.transform.rotation.eulerAngles.y < 90)){
+                if (ctrler.CursorController.IsTriggerDown("l") && ((-0.7f < ctrler.TargetContainer.transform.rotation.y) && (ctrler.TargetContainer.transform.rotation.y < 0.7f))){
                     if(pressedTime > 0.2f){
                         IncrementStep();
                         localizingEvent = new Vector2(Vector3.Angle(targets[1].transform.right, (locAim.transform.position - targets[1].transform.position).normalized), Time.time);
