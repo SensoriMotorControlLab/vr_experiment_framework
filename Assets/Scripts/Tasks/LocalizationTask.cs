@@ -115,8 +115,6 @@ public class LocalizationTask : BaseTask
 
         Target.SetActive(false);
 
-        localizationSurface.GetComponent<Renderer>().material.color = new Color(0f, 0.1f, 0f, 1f);
-
         // Use static camera for non-vr version of pinball
         if (ctrler.Session.settings.GetObjectList("optional_params").Contains("vr"))
         {

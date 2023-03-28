@@ -71,24 +71,26 @@ public class ReachToTargetTask : BaseTask
         waterBowl = GameObject.Find("waterBasin");
         waterBowl.SetActive(false);
         baseObject = GameObject.Find("BaseObject");
-        arc = GameObject.Find("ArcTarget");
+        arc = GameObject.Find("ArcError");
         SetSetup();
         arc.SetActive(false);
+
+        ctrler.CursorController.Model.GetComponent<Renderer>().enabled = false;
+        baseObject.GetComponent<Renderer>().enabled = false;
 
         if(trial.settings.GetString("per_block_type") == "nocursor"){
             isNoCursor = true;
             targets[2].GetComponent<BaseTarget>().enabled = false;
+            reachSurface.GetComponent<Renderer>().material.color = new Color(0f, 0f, 0f, 1f);
         }
 
-        ctrler.CursorController.Model.GetComponent<Renderer>().enabled = false;
-        baseObject.GetComponent<Renderer>().enabled = false;
-        
-        if (trial.settings.GetString("per_block_type") == "rotated"){
+        else if (trial.settings.GetString("per_block_type") == "rotated"){
             rotation = Convert.ToSingle(ctrler.PseudoRandom("per_block_rotation"));
             reachSurface.GetComponent<Renderer>().material.color = new Color(0f, 0f, 0.33f, 1f);
         }
-        else{
-            reachSurface.GetComponent<Renderer>().material.color = new Color(0f, 0f, 0f, 1f);
+
+        else if (trial.settings.GetString("per_block_type") == "aligned"){
+            reachSurface.GetComponent<Renderer>().material.color = new Color(0f, 0.33f, 0f, 1f);
         }
         // sets up the water in the level
 
@@ -185,7 +187,11 @@ public class ReachToTargetTask : BaseTask
             reachSurface = GameObject.Find("Surface");
             reachSurface.GetComponent<Renderer>().material.color = new Color(0f, 0f, 0.33f, 1f);
         }
-        else{
+        else if (trial.settings.GetString("per_block_type") == "aligned"){
+            reachSurface = GameObject.Find("Surface");
+            reachSurface.GetComponent<Renderer>().material.color = new Color(0f, 0.33f, 0f, 1f);
+        }
+        else if (trial.settings.GetString("per_block_type") == "nocursor"){
             reachSurface = GameObject.Find("Surface");
             reachSurface.GetComponent<Renderer>().material.color = new Color(0f, 0f, 0f, 1f);
         }
