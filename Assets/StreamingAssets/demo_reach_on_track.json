@@ -32,7 +32,6 @@
 "nocursor",
 "instruction",
 "instruction",
-"instruction",
 "rotated",
 "localization",
 "rotated",
@@ -55,7 +54,6 @@
   ],
   "per_block_rotation": [
     null,
-null,
 null,
 null,
 null,
@@ -132,7 +130,6 @@ null,
 12,
 null,
 null,
-null,
 12,
 12,
 12,
@@ -180,7 +177,6 @@ null
 8,
 8,
 8,
-1,
 1,
 1,
 100,
@@ -232,16 +228,15 @@ null,
 null,
 "ins7",
 "ins1",
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
 "ins8",
-null,
-null,
-null,
-null,
-null,
-null,
-null,
-null,
-"ins6",
 null,
 null,
 null,
@@ -280,7 +275,6 @@ null,
 "r",
 "r",
 "r",
-null,
 null,
 null,
 "r",
@@ -330,7 +324,6 @@ null,
 "tl1",
 "tl2",
 "tl2",
-null,
 null,
 null,
 "tl2",
@@ -399,12 +392,10 @@ null,
 null,
 null,
 null,
-null,
-null   
+null  
   ],
   "per_block_track_score": [
     false,
-false,
 false,
 false,
 false,
@@ -497,13 +488,11 @@ null,
 null,
 null,
 null,
-null,
 null
    
   ],
   "per_block_timerTime": [
     0,
-0,
 0,
 0,
 0,
@@ -598,7 +587,6 @@ null
 "ll1", 
 "ll1", 
 "ll1", 
-"ll1", 
 "ll1"
   ],
   "per_block_arc_span":[
@@ -647,18 +635,17 @@ null
 "as1",
 "as1",
 "as1",
-"as1",
 "as1"
     
   ],
   "ins1": 
-    "Reach to Target: make a straight reach to the target by extending arm forward. After reaching the target, bring back hand to dock"
+    "Reach to Target: make a straight reach to the target by extending arm forward"
   ,
   "ins2":
   "Reach with right hand to intersect arc and keep right hand in place"
   ,
   "ins3":
-  "Indicate where you think your left hand is using the joystick of the left controller and hold the left controller's trigger button for 1 second"
+  "Indicate right hand using the joystick of the left controller"
   ,
   "ins4":
   "Move right hand back to the dock"
@@ -667,13 +654,13 @@ null
   "No Cursor Reaches"
   ,
   "ins6":
-  "BREAK                             2/8 blocks completed"
+  "BREAK                             25% completed"
   ,
   "ins7":
-  "BREAK                             4/8 blocks completed"
+  "BREAK                             50% completed"
   ,
   "ins8":
-  "BREAK                             6/8 blocks completed"
+  "BREAK                             75% completed"
   ,
   "ins9":
   "Thank you for participating! Please place the controllers on the table and remove the headset"
