@@ -639,31 +639,31 @@ null
     
   ],
   "ins1": 
-    "Reach to Target: make a straight reach to the target by extending arm forward"
+    "Reach to red target"
   ,
   "ins2":
-  "Reach with right hand to intersect arc and keep right hand in place"
+  "Reach to arc"
   ,
   "ins3":
-  "Indicate right hand using the joystick of the left controller"
+  "Indicate with left hand"
   ,
   "ins4":
   "Move right hand back to the dock"
   ,
   "ins5":
-  "No Cursor Reaches"
+  "Move hand back to dock"
   ,
   "ins6":
-  "BREAK                             25% completed"
+  "BREAK             25% completed"
   ,
   "ins7":
-  "BREAK                             50% completed"
+  "BREAK             50% completed"
   ,
   "ins8":
-  "BREAK                             75% completed"
+  "BREAK             75% completed"
   ,
   "ins9":
-  "Thank you for participating! Please place the controllers on the table and remove the headset"
+  "Thank you for participating!"
   ,
   "as1":[
     60,
