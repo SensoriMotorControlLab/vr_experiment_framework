@@ -170,7 +170,7 @@ public class LocalizationTask : BaseTask
                 {
                     baseObject.GetComponent<Renderer>().enabled = true;
                 }
-                if (Mathf.Abs(targets[0].transform.position.magnitude - ctrler.CursorController.transform.position.magnitude) < 0.005f
+                if (Mathf.Abs(targets[0].transform.position.magnitude - ctrler.CursorController.transform.position.magnitude) < 0.05f
                                 && ctrler.CursorController.stillTime > 0.3f)
                 {
                     
@@ -180,7 +180,7 @@ public class LocalizationTask : BaseTask
                 break;
             case 1:
 
-                if ((ctrler.CursorController.DistanceFromHome > - 0.005f && ctrler.CursorController.DistanceFromHome < 0.005f) 
+                if ((ctrler.CursorController.DistanceFromHome > - 0.05f && ctrler.CursorController.DistanceFromHome < 0.05f) 
                     && ctrler.CursorController.transform.position.z > targets[1].transform.position.z)
                 {
                     IncrementStep();

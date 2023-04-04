@@ -81,16 +81,16 @@ public class ReachToTargetTask : BaseTask
         if(trial.settings.GetString("per_block_type") == "nocursor"){
             isNoCursor = true;
             targets[2].GetComponent<BaseTarget>().enabled = false;
-            reachSurface.GetComponent<Renderer>().material.color = new Color(0f, 0f, 0f, 1f);
+            reachSurface.GetComponent<Renderer>().material.color = new Color(0.1f, 0f, 0f, 1f);
         }
 
         else if (trial.settings.GetString("per_block_type") == "rotated"){
             rotation = Convert.ToSingle(ctrler.PseudoRandom("per_block_rotation"));
-            reachSurface.GetComponent<Renderer>().material.color = new Color(0f, 0f, 0.33f, 1f);
+            reachSurface.GetComponent<Renderer>().material.color = new Color(0f, 0f, 0.1f, 1f);
         }
 
         else if (trial.settings.GetString("per_block_type") == "aligned"){
-            reachSurface.GetComponent<Renderer>().material.color = new Color(0f, 0.33f, 0f, 1f);
+            reachSurface.GetComponent<Renderer>().material.color = new Color(0f, 0.1f, 0f, 1f);
         }
         // sets up the water in the level
 
@@ -185,15 +185,15 @@ public class ReachToTargetTask : BaseTask
 
         if (trial.settings.GetString("per_block_type") == "rotated"){
             reachSurface = GameObject.Find("Surface");
-            reachSurface.GetComponent<Renderer>().material.color = new Color(0f, 0f, 0.33f, 1f);
+            reachSurface.GetComponent<Renderer>().material.color = new Color(0f, 0f, 0.1f, 1f);
         }
         else if (trial.settings.GetString("per_block_type") == "aligned"){
             reachSurface = GameObject.Find("Surface");
-            reachSurface.GetComponent<Renderer>().material.color = new Color(0f, 0.33f, 0f, 1f);
+            reachSurface.GetComponent<Renderer>().material.color = new Color(0f, 0.1f, 0f, 1f);
         }
         else if (trial.settings.GetString("per_block_type") == "nocursor"){
             reachSurface = GameObject.Find("Surface");
-            reachSurface.GetComponent<Renderer>().material.color = new Color(0f, 0f, 0f, 1f);
+            reachSurface.GetComponent<Renderer>().material.color = new Color(0.1f, 0f, 0f, 1f);
         }
 
         if (!trackScore) scoreboard.ManualScoreText = "Practice Round";
