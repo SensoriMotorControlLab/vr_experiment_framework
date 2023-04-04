@@ -97,7 +97,6 @@ public class LocalizationTask : BaseTask
 
         targets[2].GetComponent<ArcScript>().TargetDistance = ctrler.Session.CurrentTrial.settings.GetFloat("per_block_distance");
         targets[2].GetComponent<ArcScript>().Angle = targets[2].transform.rotation.eulerAngles.y;
-        //targets[2].transform.localScale = Vector3.one;
         Target = targets[2];
         sound = targets[2].GetComponent<AudioSource>();
 
@@ -153,6 +152,7 @@ public class LocalizationTask : BaseTask
         else{
             pressedTime = 0;
         }
+
         baseObject = GameObject.Find("BaseObject");
         Vector3 mousePoint = GetMousePoint(baseObject.transform);
         Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
@@ -170,7 +170,7 @@ public class LocalizationTask : BaseTask
                 {
                     baseObject.GetComponent<Renderer>().enabled = true;
                 }
-                if (Mathf.Abs(targets[0].transform.position.magnitude - ctrler.CursorController.transform.position.magnitude) < 0.05f
+                if ((targets[0].transform.position - ctrler.CursorController.transform.position).magnitude < 0.005f
                                 && ctrler.CursorController.stillTime > 0.3f)
                 {
                     
@@ -180,19 +180,15 @@ public class LocalizationTask : BaseTask
                 break;
             case 1:
 
-                if ((ctrler.CursorController.DistanceFromHome > - 0.05f && ctrler.CursorController.DistanceFromHome < 0.05f) 
-                    && ctrler.CursorController.transform.position.z > targets[1].transform.position.z)
+                if (ctrler.CursorController.DistanceFromHome < 0.001f)
                 {
                     IncrementStep();
-                    
-
                     localizerLoc = Convert.ToSingle(ctrler.PseudoRandom("per_block_localizer_location"));
                     ctrler.TargetContainer.transform.rotation = Quaternion.Euler(0, localizerLoc, 0);
                     arcRotation = GameObject.Find("ArcRotation");
                     arcRotation.transform.rotation = Quaternion.Euler(Vector3.up * (90 - targetAngle));
                     arcSpan = Convert.ToInt32(ctrler.PseudoRandom("per_block_arc_span"));
                     targets[2].GetComponent<ArcScript>().arcSpan = arcSpan;
-
                     targets[2].GetComponent<ArcScript>().GenerateArc();
 
                 }
@@ -292,7 +288,7 @@ public class LocalizationTask : BaseTask
                     
                 }
                 
-                // VR** If the user presses the trigger associated with the handfor 200ms and localizer is within arcspan, we end the trial
+                // VR** If the user presses the trigger associated with the hand for 200ms and localizer is within arcspan, we end the trial
                 if (ctrler.CursorController.IsTriggerDown("l") && ((-0.7f < ctrler.TargetContainer.transform.rotation.y) && (ctrler.TargetContainer.transform.rotation.y < 0.7f))){
                     if(pressedTime > 0.2f){
                         IncrementStep();
@@ -316,7 +312,6 @@ public class LocalizationTask : BaseTask
 
     private void RotateLocalizer(float locX)
     {
-        //ctrler.TargetContainer.transform.position =new Vector3 (targets[1].transform.position.x, ctrler.TargetContainer.transform.position.y, targets[1].transform.position.z);
         if (ctrler.TargetContainer.transform.rotation.eulerAngles.y < 100){
             ctrler.TargetContainer.transform.Rotate(Vector3.up * locX * Time.deltaTime);
         }
