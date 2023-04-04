@@ -80,7 +80,7 @@ public class ReachToTargetTask : BaseTask
 
         if(trial.settings.GetString("per_block_type") == "nocursor"){
             isNoCursor = true;
-            targets[2].GetComponent<BaseTarget>().enabled = false;
+            
             reachSurface.GetComponent<Renderer>().material.color = new Color(0.1f, 0f, 0f, 1f);
         }
 
@@ -270,6 +270,7 @@ public class ReachToTargetTask : BaseTask
             // If the user enters the home, start tracking time
             case 0:
                 VibrateController(0, 0.34f, 0.15f, devices);
+                targets[2].GetComponent<BaseTarget>().enabled = true;
                 break;
             case 1:
                 ctrler.StartTimer();
@@ -284,6 +285,7 @@ public class ReachToTargetTask : BaseTask
                 if (trial.settings.GetString("per_block_type") == "nocursor"){
                     baseObject.GetComponent<Renderer>().enabled = false;
                     arc.SetActive(true);
+                    targets[2].GetComponent<BaseTarget>().enabled = false;
                 }                 
                 else{
                     baseObject.GetComponent<Renderer>().enabled = true;
