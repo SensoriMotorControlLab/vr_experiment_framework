@@ -180,7 +180,7 @@ public class LocalizationTask : BaseTask
                 break;
             case 1:
 
-                if (ctrler.CursorController.DistanceFromHome < 0.001f)
+                if (ctrler.CursorController.DistanceFromHome < 0.005f)
                 {
                     IncrementStep();
                     localizerLoc = Convert.ToSingle(ctrler.PseudoRandom("per_block_localizer_location"));
