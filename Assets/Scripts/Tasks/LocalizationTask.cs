@@ -48,6 +48,9 @@ public class LocalizationTask : BaseTask
     float targetAngle = 0;
     GameObject baseObject;
     float pressedTime = 0;
+
+    Vector2 curTargetPos2D = new Vector2(0, 0);
+    Vector2 handPos2D = new Vector2(0, 0);
     public override void Setup()
     {
 
@@ -145,6 +148,7 @@ public class LocalizationTask : BaseTask
 
     public override void Update()
     {
+        handPos2D = new Vector2(ctrler.CursorController.transform.position.x, ctrler.CursorController.transform.position.z);
         
         if(ctrler.CursorController.IsTriggerDown("l") || Input.GetKey(KeyCode.Space)){
             pressedTime += Time.deltaTime;
@@ -161,6 +165,7 @@ public class LocalizationTask : BaseTask
         {
             case 0:
                 targets[0].SetActive(true);
+                curTargetPos2D = new Vector2(targets[0].transform.position.x, targets[0].transform.position.z);
                 if (!ctrler.Session.settings.GetObjectList("optional_params").Contains("return_visible"))
                 {
                     // make the ball invisible
@@ -170,7 +175,7 @@ public class LocalizationTask : BaseTask
                 {
                     baseObject.GetComponent<Renderer>().enabled = true;
                 }
-                if ((targets[0].transform.position - ctrler.CursorController.transform.position).magnitude < 0.005f
+                if ((curTargetPos2D - handPos2D).magnitude < 0.009f
                                 && ctrler.CursorController.stillTime > 0.3f)
                 {
                     
@@ -179,8 +184,8 @@ public class LocalizationTask : BaseTask
                 }
                 break;
             case 1:
-
-                if (ctrler.CursorController.DistanceFromHome < 0.005f)
+                curTargetPos2D = new Vector2(targets[1].transform.position.x, targets[1].transform.position.z);
+                if ((curTargetPos2D - handPos2D).magnitude < 0.005f)
                 {
                     IncrementStep();
                     localizerLoc = Convert.ToSingle(ctrler.PseudoRandom("per_block_localizer_location"));
