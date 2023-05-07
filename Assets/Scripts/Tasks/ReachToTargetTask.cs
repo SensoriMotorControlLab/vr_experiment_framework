@@ -13,13 +13,14 @@ public class ReachToTargetTask : BaseTask
     // 3. User moves to TARGET with reachType[1]
 
     MovementType[] reachType;  // Reach type for current step
+    protected List<UnityEngine.XR.InputDevice> devices = new List<UnityEngine.XR.InputDevice>();
 
     // Dock distance from Home
     protected float dock_dist = 0.025f;
     protected List<GameObject> targets = new List<GameObject>();
     protected ExperimentController ctrler;
     protected Trial trial;
-    float hold_still_time = 0.3f;
+    float hold_still_time = 0.5f;
 
     protected GameObject reachPrefab;
     protected GameObject reachCam;
@@ -40,6 +41,13 @@ public class ReachToTargetTask : BaseTask
 
     protected string tintColur;
     public float rotation = 0;
+    List<Vector4> handPos = new List<Vector4>();
+    Vector4 tempHandPos = new Vector4(0, 0, 0, 0);
+    Vector2 pos_3cm_out = new Vector2(0, 0);
+    bool outEvent = true;
+    GameObject baseObject;
+    bool isNoCursor = false;
+    GameObject arc;
 
     public override void Setup()
     {
@@ -57,12 +65,33 @@ public class ReachToTargetTask : BaseTask
         reachCam = GameObject.Find("ReachCam");
         reachSurface = GameObject.Find("Surface");
         water = GameObject.Find("Water");
-        timerIndicator = GameObject.Find("TimerIndicator").GetComponent<TimerIndicator>();
+        // timerIndicator = GameObject.Find("TimerIndicator").GetComponent<TimerIndicator>();
         scoreboard = GameObject.Find("Scoreboard").GetComponent<Scoreboard>();
         tint = GameObject.Find("Tint");
-
+        waterBowl = GameObject.Find("waterBasin");
+        waterBowl.SetActive(false);
+        baseObject = GameObject.Find("BaseObject");
+        arc = GameObject.Find("ArcError");
         SetSetup();
+        arc.SetActive(false);
 
+        ctrler.CursorController.Model.GetComponent<Renderer>().enabled = false;
+        baseObject.GetComponent<Renderer>().enabled = false;
+
+        if(trial.settings.GetString("per_block_type") == "nocursor"){
+            isNoCursor = true;
+            
+            reachSurface.GetComponent<Renderer>().material.color = new Color(0.1f, 0f, 0f, 1f);
+        }
+
+        else if (trial.settings.GetString("per_block_type") == "rotated"){
+            rotation = Convert.ToSingle(ctrler.PseudoRandom("per_block_rotation"));
+            reachSurface.GetComponent<Renderer>().material.color = new Color(0f, 0f, 0.1f, 1f);
+        }
+
+        else if (trial.settings.GetString("per_block_type") == "aligned"){
+            reachSurface.GetComponent<Renderer>().material.color = new Color(0f, 0.1f, 0f, 1f);
+        }
         // sets up the water in the level
 
         if (ctrler.Session.CurrentBlock.settings.GetString("per_block_waterPresent") == "wp1")
@@ -107,20 +136,79 @@ public class ReachToTargetTask : BaseTask
         ctrler.CursorController.useHand = true;
     }
 
+        protected virtual Vector3 GetMousePoint(Transform ball)
+    {
+        //ToFix: can the below two be one function called point to planepoint?
+        Vector3 ctrl = new Vector3(ctrler.CursorController.GetHandPosition().x, 0, ctrler.CursorController.GetHandPosition().z);
+        reachSurface = GameObject.Find("Surface");
+
+            return ctrler.CursorController.ControllerToPlanePoint(
+                        reachSurface.transform.up * ball.position.y,
+                        ball.position,
+                        ctrl);
+    }
+
     public override void Update()
     {
         base.Update();
+
+        baseObject = GameObject.Find("BaseObject");
+        Vector3 mousePoint = GetMousePoint(baseObject.transform);
+        Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
+        baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
+
+        switch (currentStep)
+        {
+            case 0:
+                if (!ctrler.Session.settings.GetObjectList("optional_params").Contains("return_visible") || isNoCursor)
+                {
+                    // make the ball invisible
+                    baseObject.GetComponent<Renderer>().enabled = false;
+                }
+                else
+                {
+                    baseObject.GetComponent<Renderer>().enabled = true;
+                }
+                break;
+            case 1:
+                if(!isNoCursor){
+                    baseObject.GetComponent<Renderer>().enabled = true;
+                }
+                break;
+            case 2:
+                if(isNoCursor && baseObject.transform.position.z > 0f){
+                    arc.GetComponent<ArcScript>().TargetDistance = ctrler.CursorController.DistanceFromHome * 100;
+                    arc.GetComponent<ArcScript>().GenerateArc();
+                }
+                break;
+        }
+
+        if (trial.settings.GetString("per_block_type") == "rotated"){
+            reachSurface = GameObject.Find("Surface");
+            reachSurface.GetComponent<Renderer>().material.color = new Color(0f, 0f, 0.1f, 1f);
+        }
+        else if (trial.settings.GetString("per_block_type") == "aligned"){
+            reachSurface = GameObject.Find("Surface");
+            reachSurface.GetComponent<Renderer>().material.color = new Color(0f, 0.1f, 0f, 1f);
+        }
+        else if (trial.settings.GetString("per_block_type") == "nocursor"){
+            reachSurface = GameObject.Find("Surface");
+            reachSurface.GetComponent<Renderer>().material.color = new Color(0.1f, 0f, 0f, 1f);
+        }
 
         if (!trackScore) scoreboard.ManualScoreText = "Practice Round";
 
         if (Input.GetKeyDown(KeyCode.N))
             IncrementStep();
 
+
         if (currentStep == 2 &&
-            ctrler.CursorController.stillTime > hold_still_time &&
-            ctrler.CursorController.DistanceFromHome > 0.05f &&
-            trial.settings.GetString("per_block_type") == "nocursor")
-            IncrementStep();
+            ctrler.CursorController.stillTime > 0.5f &&
+            trial.settings.GetString("per_block_type") == "nocursor"){
+                Debug.Log(ctrler.CursorController.stillTime);
+                IncrementStep();
+            }
+            
 
         if (Finished)
             ctrler.EndAndPrepare();
@@ -144,6 +232,19 @@ public class ReachToTargetTask : BaseTask
             Centre();
             
         }
+        switch(currentStep)
+        {
+            case 2:
+                if(outEvent){
+                    if(ctrler.CursorController.DistanceFromHome > 0.03){
+                        pos_3cm_out = new Vector2(Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized), Time.time);
+                        outEvent = false;
+                    }
+                }
+                tempHandPos = ctrler.CursorController.transform.position;
+                handPos.Add(new Vector4(tempHandPos.x, tempHandPos.y, tempHandPos.z, Time.time));
+                break;
+        }
     }
 
     /// <summary>
@@ -152,12 +253,13 @@ public class ReachToTargetTask : BaseTask
     /// </summary>
     protected void Centre()
     {
-        Vector3 pos = targets[0].transform.position;
-        ctrler.CentreExperiment(pos - ctrler.transform.forward * dock_dist);
+        ctrler.CentreExperiment(targets[0].transform.position);
     }
 
     public override bool IncrementStep()
     {
+        ExperimentController ctrler = ExperimentController.Instance();
+        UnityEngine.XR.InputDevices.GetDevicesWithRole(UnityEngine.XR.InputDeviceRole.RightHanded, devices);
         if (currentStep < 3)
         {
             targets[currentStep].SetActive(false);
@@ -166,30 +268,33 @@ public class ReachToTargetTask : BaseTask
         switch (currentStep)
         {
             // If the user enters the home, start tracking time
+            case 0:
+                VibrateController(0, 0.34f, 0.15f, devices);
+                targets[2].GetComponent<BaseTarget>().enabled = true;
+                break;
             case 1:
                 ctrler.StartTimer();
                 ctrler.CursorController.SetMovementType(reachType[2]);
-
+                VibrateController(0, 0.34f, 0.15f, devices);
                 // Start green timer bar
                 if (hasTimer)
                 {
                     timerIndicator.BeginTimer();
                 }
 
-
-                if (trial.settings.GetString("per_block_type") == "nocursor")
-                    ctrler.CursorController.SetCursorVisibility(false);
-
-                // Add trackers: current hand position, cursor position
-                ctrler.AddTrackedPosition("hand_path",
-                    ctrler.Session.CurrentTrial.settings.GetString("per_block_hand") == "l"
-                        ? ctrler.CursorController.LeftHand
-                        : ctrler.CursorController.RightHand);
-
-                ctrler.AddTrackedPosition("cursor_path", ctrler.CursorController.gameObject);
+                if (trial.settings.GetString("per_block_type") == "nocursor"){
+                    baseObject.GetComponent<Renderer>().enabled = false;
+                    arc.SetActive(true);
+                    targets[2].GetComponent<BaseTarget>().enabled = false;
+                }                 
+                else{
+                    baseObject.GetComponent<Renderer>().enabled = true;
+                }
 
                 break;
             case 2:
+                arc.SetActive(false);
+                VibrateController(0, 0.34f, 0.15f, devices);
                 if (trackScore && ctrler.Session.settings.GetString("experiment_mode") != "targetTrack")
                 {
                     ctrler.Score++;
@@ -226,7 +331,8 @@ public class ReachToTargetTask : BaseTask
         {
             object obj = ctrler.PseudoRandom("per_block_tintPresent");
             float curTint = Convert.ToSingle(obj);
-            rotation = Convert.ToSingle(ctrler.PairPseudoRandom("per_block_rotation", "per_block_tintPresent", obj));
+            rotation = Convert.ToSingle(ctrler.PseudoRandom("per_block_rotation"));
+            
             tint.SetActive(true);
 
             tint.transform.parent = Camera.main.transform;
@@ -305,7 +411,7 @@ public class ReachToTargetTask : BaseTask
 
         // Set up the dock position
         targets.Add(GameObject.Find("Dock"));
-        targets[0].transform.localPosition = ctrler.TargetContainer.transform.localPosition - ctrler.transform.forward * dock_dist;
+        targets[0].transform.position = ctrler.TargetContainer.transform.position - ctrler.transform.forward * dock_dist;
 
         // Set up the home position
         targets.Add(GameObject.Find("Home"));
@@ -355,13 +461,23 @@ public class ReachToTargetTask : BaseTask
     {
         Session session = ctrler.Session;
 
-        session.CurrentTrial.result["home_x"] = Home.transform.localPosition.x;
-        session.CurrentTrial.result["home_y"] = Home.transform.localPosition.y;
-        session.CurrentTrial.result["home_z"] = Home.transform.localPosition.z;
-
-        session.CurrentTrial.result["target_x"] = Target.transform.localPosition.x;
-        session.CurrentTrial.result["target_y"] = Target.transform.localPosition.y;
-        session.CurrentTrial.result["target_z"] = Target.transform.localPosition.z;
+        session.CurrentTrial.result["type"] = session.CurrentTrial.settings.GetString("per_block_type");
+        session.CurrentTrial.result["hand"] = session.CurrentTrial.settings.GetString("per_block_hand");
+        session.CurrentTrial.result["home_x"] = targets[1].transform.position.x;
+        session.CurrentTrial.result["home_y"] = targets[1].transform.position.y;
+        session.CurrentTrial.result["home_z"] = targets[1].transform.position.z;
+        session.CurrentTrial.result["target_angle"] = targetAngle;
+        session.CurrentTrial.result["target_size_m"] = targets[2].transform.localScale.x;
+        session.CurrentTrial.result["rotation_size"] = rotation;
+        session.CurrentTrial.result["cursor_size_m"] = ctrler.CursorController.Model.transform.localScale.x;
+        session.CurrentTrial.result["arc_radius_or_target_distance_m"] = ctrler.Session.CurrentBlock.settings.GetFloat("per_block_distance") / 100;
+        ctrler.LogVector4List("hand_pos", handPos);
+        session.CurrentTrial.result["pos_3cm_out_angle"] = pos_3cm_out.x;
+        session.CurrentTrial.result["pos_3cm_out_time"] = pos_3cm_out.y;
+        session.CurrentTrial.result["arc_aquired_angle"] = "";
+        session.CurrentTrial.result["arc_aquired_time"] = "";
+        session.CurrentTrial.result["localizing_angle"] = "";
+        session.CurrentTrial.result["localizing_time"] = "";
     }
 
     public override void Disable()

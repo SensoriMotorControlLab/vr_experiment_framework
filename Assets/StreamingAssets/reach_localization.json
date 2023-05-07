@@ -1,0 +1,126 @@
+{
+  "experiment_mode": "targetTrack",
+  "optional_params": [
+  ],
+  "track_score": true,
+  "per_block_type": [
+"localization",
+"aligned",
+"rotated"
+    
+  ],
+  "per_block_rotation": [
+    "br1",
+    "br1",
+"br1"
+    
+  ],
+  "per_block_distance": [
+12,
+12,
+12
+    
+  ],
+  "per_block_n": [
+2,
+2,
+2
+    
+  ],
+  "per_block_instruction": [
+    null,
+null,
+null
+
+  ],
+  "per_block_hand": [
+"r",
+"r",
+"r"
+  
+  ],
+  "per_block_targetListToUse": [
+"tl2",
+"tl1",
+"tl2"
+    
+  ],
+  "per_block_waterPresent": [
+null,
+null,
+null
+  ],
+  "per_block_track_score": [
+    false,
+false,
+false
+  ],
+  "per_block_tintPresent": [
+    null,
+null,
+null
+   
+  ],
+  "per_block_timerTime": [
+    0,
+0,
+0
+   
+  ],
+  
+  "per_block_localizer_location":[
+    "ll1", 
+"ll1", 
+"ll1"
+  ],
+  "per_block_arc_span":[
+    "as1",
+"as1",
+"as1"
+    
+  ],
+  "ins1": 
+    "Instructions go here"
+  ,
+  "as1":[
+    60,
+    60
+  ],
+  "ll1":[
+    -100,
+    100
+  ],
+  "tl2": [
+    110,
+    130
+  ],
+  "tl1": [
+    70,
+    90
+  ],
+  "ct1": [
+    20,
+    10
+  ],
+  "ct2": [
+    15,
+    15
+  ],
+  "st1": [
+    20,
+    10
+  ],
+  "wp1": [
+    0,
+    1
+  ],
+  "tc1": [
+    0,
+    1
+  ],
+  "br1": [
+    30,
+30
+
+  ]
+}

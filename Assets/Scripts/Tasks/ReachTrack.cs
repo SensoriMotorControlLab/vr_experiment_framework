@@ -4,6 +4,7 @@ using UnityEngine;
 using UXF;
 using MovementType = CursorController.MovementType;
 using TMPro;
+using System;
 
 public class ReachTrack : ReachToTargetTask
 {
@@ -49,6 +50,12 @@ public class ReachTrack : ReachToTargetTask
     bool wasOutside = false;
 
     float timer = 0.5f;
+    List<Vector4> handPos = new List<Vector4>();
+    Vector4 tempHandPos = new Vector4(0, 0, 0, 0);
+    public float rotation = 0;
+    Vector2 pos_3cm_out = new Vector2(0, 0);
+    bool outEvent = true;
+    protected List<GameObject> targets = new List<GameObject>();
 
 
     // Start is called before the first frame update
@@ -61,7 +68,7 @@ public class ReachTrack : ReachToTargetTask
 
         Cursor.visible = false;
 
-        reachPrefab = Instantiate(ctrler.GetPrefab("ReachTrack"));
+        reachPrefab = Instantiate(ctrler.GetPrefab("ReachPrefab"));
         //reachPrefab.transform.SetParent(ctrler.transform);
         reachPrefab.transform.position = Vector3.zero;
         ctrler.TargetContainer.transform.localPosition = Vector3.zero;
@@ -79,6 +86,30 @@ public class ReachTrack : ReachToTargetTask
         speedometer.transform.parent = field.transform;
 
 
+        
+        
+        // Set up hand and cursor
+        ctrler.CursorController.SetHandVisibility(false);
+        ctrler.CursorController.SetCursorVisibility(true);
+
+        // Set up the dock position
+        targets.Add(GameObject.Find("Dock"));
+        targets[0].transform.localPosition = ctrler.TargetContainer.transform.localPosition - ctrler.transform.forward * dock_dist;
+
+        // Set up the home position
+        targets.Add(GameObject.Find("Home"));
+        targets[1].transform.localPosition = ctrler.TargetContainer.transform.localPosition;
+        targets[1].SetActive(false);
+        Home = targets[1];
+
+        targets.Add(GameObject.Find("Target"));
+        targets[2].transform.rotation = Quaternion.Euler(
+            0f, -targetAngle + 90f, 0f);
+
+        targets[2].transform.localPosition = targets[1].transform.localPosition +
+                                        targets[2].transform.forward.normalized *
+                                        (trial.settings.GetFloat("per_block_distance") / 100f);
+
         newPos = base.transform.position;
         prevPos = base.transform.position;
 
@@ -90,7 +121,7 @@ public class ReachTrack : ReachToTargetTask
 
         field.SetActive(false);
 
-        SetSetup();
+        //SetSetup();
 
         field.transform.position = new Vector3(targets[1].transform.position.x, field.transform.position.y, targets[1].transform.position.z);
 
@@ -145,23 +176,19 @@ public class ReachTrack : ReachToTargetTask
                 break;
         }
 
-        ctrler.AddTrackedPosition("ball_path", baseObject);
-        ctrler.AddTrackedBool("is_ball_outside", wasOutside);
+        // ctrler.AddTrackedPosition("ball_path", baseObject);
+        //ctrler.AddTrackedBool("is_ball_outside", wasOutside);
         ctrler.CursorController.useHand = false;
 
     }
 
-    void FixedUpdate()
-    {
-        // set boolean in the dict in ctler to wasOutside
-        ctrler.trackedBools["is_ball_outside"] = wasOutside;
-    }
+
 
     // Update is called once per frame
     public override void Update()
     {
         base.Update();
-        // Debug.Log("wasoutside: " + wasOutside);
+
         UnityEngine.XR.InputDevices.GetDevicesWithRole(UnityEngine.XR.InputDeviceRole.RightHanded, devices);
         if (currentStep > 1)
         {
@@ -170,10 +197,7 @@ public class ReachTrack : ReachToTargetTask
         }
 
         Vector3 mousePoint = GetMousePoint(baseObject.transform);
-
-        //ctrler.CursorController.Model.transform.position = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
         Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
-        //baseObject.transform.position = new Vector3(baseObject.transform.position.x, mousePoint.y, baseObject.transform.position.z);
         baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
 
         cur = baseObject.transform.localPosition;
@@ -206,6 +230,7 @@ public class ReachTrack : ReachToTargetTask
                 }
                 break;
             case 1:
+                
                 if (Mathf.Abs(targets[1].transform.localPosition.magnitude - baseObject.transform.localPosition.magnitude) < req_targ_accuracy
                 && ctrler.CursorController.stillTime > hold_still_time)
                 {
@@ -213,6 +238,14 @@ public class ReachTrack : ReachToTargetTask
                 }
                 break;
             case 2:
+                if(outEvent){
+                    if(ctrler.CursorController.DistanceFromHome > 0.03){
+                        pos_3cm_out = new Vector2(Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized), Time.time);
+                        outEvent = false;
+                    }
+                }
+                tempHandPos = ctrler.CursorController.transform.position;
+                handPos.Add(new Vector4(tempHandPos.x, tempHandPos.y, tempHandPos.z, Time.time));
                 ray.transform.position = baseObject.transform.position;
                 if (Physics.Raycast(ray.transform.position, -ray.transform.up, out RaycastHit hit, 0.1f))
                 {
@@ -390,15 +423,25 @@ public class ReachTrack : ReachToTargetTask
 
     public override void LogParameters()
     {
-        ctrler.LogObjectPosition("target", targets[2].transform.position);
+        Session session = ctrler.Session;
 
-        ctrler.Session.CurrentTrial.result["score"] = scoreTrack;
-        ctrler.Session.CurrentTrial.result["velocity_result"] = velResult;
-        ctrler.Session.CurrentTrial.result["tint_colour"] = tintColur;
-        ctrler.Session.CurrentTrial.result["per_block_type"] = trial.settings.GetString("per_block_type");
-        ctrler.Session.CurrentTrial.result["per_block_surface_materials"] = ctrler.Session.CurrentBlock.settings.GetString("per_block_surface_materials");
-        ctrler.Session.CurrentTrial.result["per_block_width"] = ctrler.Session.CurrentBlock.settings.GetFloat("per_block_width");
-        ctrler.Session.CurrentTrial.result["per_block_distance"] = trial.settings.GetFloat("per_block_distance") / 100f;
+        session.CurrentTrial.result["type"] = session.CurrentTrial.settings.GetString("per_block_type");
+        session.CurrentTrial.result["hand"] = session.CurrentTrial.settings.GetString("per_block_hand");
+        session.CurrentTrial.result["home_x"] = targets[1].transform.position.x;
+        session.CurrentTrial.result["home_y"] = targets[1].transform.position.y;
+        session.CurrentTrial.result["home_z"] = targets[1].transform.position.z;
+        session.CurrentTrial.result["target_angle"] = targetAngle;
+        session.CurrentTrial.result["target_size_m"] = targets[2].transform.localScale.x;
+        session.CurrentTrial.result["rotation_size"] = rotation;
+        session.CurrentTrial.result["cursor_size_m"] = ctrler.CursorController.Model.transform.localScale.x;
+        session.CurrentTrial.result["arc_radius_or_target_distance_m"] = ctrler.Session.CurrentBlock.settings.GetFloat("per_block_distance") / 100;
+        ctrler.LogVector4List("hand_pos", handPos);
+        session.CurrentTrial.result["pos_3cm_out_angle"] = pos_3cm_out.x;
+        session.CurrentTrial.result["pos_3cm_out_time"] = pos_3cm_out.y;
+        session.CurrentTrial.result["arc_aquired_angle"] = "";
+        session.CurrentTrial.result["arc_aquired_time"] = "";
+        session.CurrentTrial.result["localizing_angle"] = "";
+        session.CurrentTrial.result["localizing_time"] = "";
     }
 }
 
