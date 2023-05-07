@@ -494,7 +494,7 @@ public class ToolTask : BilliardsTask
         timerIndicator.Timer = ctrler.Session.CurrentBlock.settings.GetFloat("per_block_timerTime");
 
         // Set up target
-        float targetAngle = Convert.ToSingle(ctrler.PollPseudorandomList("per_block_targetListToUse"));
+        float targetAngle = Convert.ToSingle(ctrler.PseudoRandom("per_block_targetListToUse"));
         SetTargetPosition(targetAngle);
 
         // Should the tilt be shown to the participant before they release the pinball?

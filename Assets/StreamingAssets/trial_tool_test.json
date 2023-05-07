@@ -25,7 +25,7 @@
 
     "per_block_list_triggerType": [ "tt1", "tt1", "tt1" ],
 
-    "tt1": [ "slingshot", "impact", "slingshot" ],
+    "tt1": [ "curling", "impact", "slingshot" ],
 
     "per_block_list_puck_type": [ "pt1", "pt1", "pt1" ],
 
@@ -33,7 +33,7 @@
 
     "per_block_list_tool_type": [ "tT", "tT", "tT" ],
 
-    "tT": [ "slingshot", "paddle", "slingshot" ],
+    "tT": [ "squeegee", "paddle", "slingshot" ],
 
     "per_block_surface_dynamic_friction": [ 0.1, 0.1, 0.1 ],
 
