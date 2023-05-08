@@ -32,7 +32,7 @@ public class CurlingToolTask : ToolTask
 
         baseObject.GetComponent<ToolObjectScript>().enabled = false;
         baseObject.SetActive(false);
-        toolObjects.transform.position = new Vector3(toolObjects.transform.position.x, toolObjects.transform.position.y, -0.3f);
+        toolObjects.transform.position = new Vector3(toolObjects.transform.position.x, toolObjects.transform.position.y, -0.2f);
     }
 
     public override bool IncrementStep()
@@ -168,23 +168,7 @@ public class CurlingToolTask : ToolTask
                     VibrateController(0, 0.34f, Time.deltaTime, devices);
                     toolOffset = mousePoint - toolObjects.transform.position;
                     toolGrabed = true;
-                }
-
-                if (toolGrabed){
-                    ObjectFollowMouse(toolObjects, Vector3.zero);
-                }
-
-                if (Vector3.Distance(mousePoint, ballObjects.transform.position) <= 0.02f && toolGrabed)
-                {
-                    Animate();
                     IncrementStep();
-                    ToolLookAtBall();
-                }
-                else if (Vector3.Distance(ctrllerPoint, ballObjects.transform.position) <= 0.02f && toolGrabed)
-                {
-                    Animate();
-                    IncrementStep();
-                    ToolLookAtBall();
                 }
 
                 break;

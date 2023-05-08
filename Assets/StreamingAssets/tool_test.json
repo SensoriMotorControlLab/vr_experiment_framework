@@ -9,7 +9,7 @@
 
   "per_block_rotation": [ 45, 45, 45 ],
 
-  "per_block_n": [ 1, 1, 1 ],
+  "per_block_n": [ 3, 3, 3 ],
 
   "per_block_hand": [ "r", "r", "r" ],
 
