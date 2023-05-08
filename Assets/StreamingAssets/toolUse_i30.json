@@ -3,8 +3,8 @@
 "optional_params":[],
     "exp_record_score": true,
     "per_block_type": [
-        "rotated",
-        "rotated",
+        "aligned",
+        "aligned",
         "instruction",
         "aligned",
         "aligned",
@@ -54,8 +54,8 @@
         "rotated"
     ],
     "per_block_rotation": [
-        30,
-        -30,
+        0,
+        0,
         0,
         0,
         0,
@@ -105,8 +105,8 @@
         -30
     ],
     "per_block_n": [
-       5,
-       5,
+       24,
+       24,
         1,
         8,
         8,
@@ -429,10 +429,10 @@
         "impact"
     ],
     "tt_s": [
-        "curling",
-        "curling",
-        "curling",
-        "curling"
+        "slingshot",
+        "slingshot",
+        "slingshot",
+        "slingshot"
     ],
     "per_block_list_puck_type": [
         "pt1",
@@ -549,10 +549,10 @@
         "paddle"
     ],
     "tType_s": [
-        "squeegee",
-        "squeegee",
-        "squeegee",
-        "squeegee"
+        "slingshot",
+        "slingshot",
+        "slingshot",
+        "slingshot"
     ],
     "per_block_surface_dynamic_friction": [
         0.1,
