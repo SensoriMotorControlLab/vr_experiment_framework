@@ -39,14 +39,14 @@ public class Scoreboard : MonoBehaviour
                                   (ExperimentController.Instance().Session.Trials.Count() -
                                   ExperimentController.Instance().Session.currentTrialNum + 1);
 
-            ManualScoreText = ExperimentController.Instance().Score.ToString();
+            //ManualScoreText = ExperimentController.Instance().Score.ToString();
         }
         else
         {
             CameraSpaceCanvas.SetActive(true);
             WorldSpaceCanvas.SetActive(false);
 
-            ManualScoreText = ExperimentController.Instance().Score.ToString();
+            //ManualScoreText = ExperimentController.Instance().Score.ToString();
         }
     }
 
