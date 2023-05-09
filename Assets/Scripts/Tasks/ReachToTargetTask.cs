@@ -204,7 +204,7 @@ public class ReachToTargetTask : BaseTask
 
         if (currentStep == 2 &&
             ctrler.CursorController.stillTime > 0.5f &&
-            trial.settings.GetString("per_block_type") == "nocursor"){
+            trial.settings.GetString("per_block_type") == "nocursor" && ctrler.CursorController.DistanceFromHome > 0.03f){
                 Debug.Log(ctrler.CursorController.stillTime);
                 IncrementStep();
             }
