@@ -32,7 +32,7 @@ public class CurlingToolTask : ToolTask
 
         baseObject.GetComponent<ToolObjectScript>().enabled = false;
         baseObject.SetActive(false);
-        toolObjects.transform.position = new Vector3(toolObjects.transform.position.x, toolObjects.transform.position.y, -0.2f);
+        toolObjects.transform.position = new Vector3(toolObjects.transform.position.x, toolObjects.transform.position.y, -0.15f);
     }
 
     public override bool IncrementStep()
@@ -99,7 +99,7 @@ public class CurlingToolTask : ToolTask
                             shotDir = RotateShot(shotDir);
                         }
                         shotDir = new Vector3(shotDir.x, 0, shotDir.z);
-                        baseObject.GetComponent<BilliardsBallBehaviour>().FireBilliardsBall(-shotDir, 5f);
+                        baseObject.GetComponent<BilliardsBallBehaviour>().FireBilliardsBall(-shotDir, 0.4f);
                         pos = toolObjects.transform.position;
                         launchAngle = Vector3.Angle(shotDir, transform.right);
                         IncrementStep(); 

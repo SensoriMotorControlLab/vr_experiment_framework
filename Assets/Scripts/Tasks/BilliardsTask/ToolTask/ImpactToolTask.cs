@@ -21,16 +21,18 @@ public class ImpactToolTask : ToolTask
 
         toolObjects.GetComponentInChildren<Collider>().material.bounciness = 1f;
         toolObjects.GetComponentInChildren<Collider>().enabled = false;
-      //  rend = toolBox.GetComponent<Renderer>();
-
-      //  if (ctrler.Session.CurrentBlock.settings.GetString("per_block_colour") == "r")
-       // {
-     //       rend.material.SetTexture("_BaseMap", ctrler.textures[0]);
-     //   }
-      //  else
-       // {
-   //         rend.material.SetTexture("_BaseMap", ctrler.textures[1]);
-      //  }
+        rend = toolBox.GetComponent<Renderer>();
+        
+        if(ctrler.Session.settings.GetObjectList("optional_params").Contains("variable_paddle_colour")){
+            if (ctrler.Session.CurrentBlock.settings.GetString("per_block_colour") == "r")
+            {
+                rend.material.SetTexture("_BaseMap", ctrler.textures[0]);
+            }
+            else
+            {
+                rend.material.SetTexture("_BaseMap", ctrler.textures[1]);
+            }
+        }
 
         string puck_type = Convert.ToString(ctrler.PollPseudorandomList("per_block_list_puck_type"));
 

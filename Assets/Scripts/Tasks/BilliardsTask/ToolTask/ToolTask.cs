@@ -528,7 +528,7 @@ public class ToolTask : BilliardsTask
                 sound = toolBox.GetComponentInChildren<AudioSource>();
                 break;
             case "squeegee":
-                Home.transform.position = new Vector3(Home.transform.position.x, Home.transform.position.y, -0.2f);
+                Home.transform.position = new Vector3(Home.transform.position.x, Home.transform.position.y, -0.15f);
                 toolCylinder.SetActive(false);
                 toolBox.SetActive(false);
                 selectedObject = toolSphere;
