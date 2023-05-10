@@ -83,11 +83,11 @@ public class ImpactToolTask : ToolTask
                 // run the FireBilliardsBall function from the BilliardsBallBehaviour script
                 baseObject.GetComponent<BilliardsBallBehaviour>().FireBilliardsBall(shotDir, 1);
 
-
                 toolObjects.transform.rotation = toolSpace.transform.rotation;
-
                 toolObjects.GetComponentInChildren<Collider>().enabled = false;
+                
                 break;
+                
         }
 
         return base.IncrementStep();
@@ -100,7 +100,7 @@ public class ImpactToolTask : ToolTask
 
         switch (currentStep)
         {
-            // initlize the scene 
+            //initlize the scene 
             case 0:
                 toolObjects.GetComponent<Rigidbody>().velocity = Vector3.zero;
 
@@ -121,7 +121,6 @@ public class ImpactToolTask : ToolTask
 
                 break;
 
-            // the user triggers the object 
             case 1:
                 // Tool follows mouse
                 ObjectFollowMouse(toolObjects, toolOffset);
@@ -135,17 +134,18 @@ public class ImpactToolTask : ToolTask
                 toolDir = toolObjects.GetComponent<Rigidbody>().velocity;
 
                 // also get distance
-                float ball_tool_distance = Vector3.Magnitude(toolObjects.transform.position - ballObjects.transform.position);
+                float ball_tool_distance = Vector3.Magnitude(toolObjects.transform.position - fireLocation.transform.position);
 
                 // only update this if moving forward
-                if (toolDir.z > 0.1f && Vector3.Magnitude(toolDir) > Vector3.Magnitude(lastForward_toolDir) && ball_tool_distance < 0.10f)
+                if (toolDir.z > 0.1f && Vector3.Magnitude(toolDir) > Vector3.Magnitude(lastForward_toolDir) && ball_tool_distance < 0.07f)
                 {
                     lastForward_toolDir = toolDir;
+                    IncrementStep();
                 }
 
                 // non vr and vr turning on the collider on the tool
                 // CHECK IF THIS IS STILL NECESSARY
-                toolObjects.GetComponentInChildren<Collider>().enabled = mousePoint.z <= 0.05f;
+                //toolObjects.GetComponentInChildren<Collider>().enabled = mousePoint.z <= 0.05f;
 
                 pos = toolObjects.transform.position;
                 break;

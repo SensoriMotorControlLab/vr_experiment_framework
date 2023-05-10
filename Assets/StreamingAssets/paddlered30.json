@@ -72,7 +72,6 @@
       0,
       0,
       0,
-      -30,
       30,
       -30,
       30,
@@ -82,8 +81,8 @@
       30,
       -30,
       30,
+      -30,
       0,
-      -30,
       30,
       -30,
       30,
@@ -93,20 +92,21 @@
       30,
       -30,
       30,
-      0,
-      0,
+      -30,
       0,
       0,
       0,
       0,
       0,
       0,
-      -30,
+      0,
+      0,
       30,
       -30,
       30,
       -30,
-      30
+      30,
+      -30
   ],
    "per_block_colour": [
      "r",
@@ -479,10 +479,10 @@
       "tT_s2"
   ],
   "tT_s1": [
-      "curling",
-      "curling",
-      "curling",
-      "curling"
+      "impact",
+      "impact",
+      "impact",
+      "impact"
   ],
   "tT_s2": [
       "impact",
@@ -603,10 +603,10 @@
           "paddle"
       ],
       "tT_s": [
-          "squeegee",
-          "squeegee",
-          "squeegee",
-          "squeegee"
+          "paddle",
+          "paddle",
+          "paddle",
+          "paddle"
       ],
   
   
