@@ -479,11 +479,12 @@ public class ReachToTargetTask : BaseTask
         ctrler.LogVector4List("hand_pos", handPos);
         session.CurrentTrial.result["pos_3cm_out_angle"] = pos_3cm_out.x;
         session.CurrentTrial.result["pos_3cm_out_time"] = pos_3cm_out.y;
+        session.CurrentTrial.result["final_hand_angle"] = finalReachAngle;
         session.CurrentTrial.result["arc_aquired_angle"] = "";
         session.CurrentTrial.result["arc_aquired_time"] = "";
         session.CurrentTrial.result["localizing_angle"] = "";
         session.CurrentTrial.result["localizing_time"] = "";
-        session.CurrentTrial.result["final_hand_angle"] = finalReachAngle;
+        
     }
 
     public override void Disable()
