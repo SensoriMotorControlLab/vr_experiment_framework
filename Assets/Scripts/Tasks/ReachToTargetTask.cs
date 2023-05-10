@@ -49,6 +49,8 @@ public class ReachToTargetTask : BaseTask
     bool isNoCursor = false;
     GameObject arc;
 
+    float finalReachAngle;
+
     public override void Setup()
     {
         maxSteps = 3;
@@ -210,8 +212,11 @@ public class ReachToTargetTask : BaseTask
             }
             
 
-        if (Finished)
+        if (Finished){
+            finalReachAngle = Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized);
             ctrler.EndAndPrepare();
+        }
+            
 
         // checks if there is a water animation in the scene
         if (d != null)
@@ -478,6 +483,7 @@ public class ReachToTargetTask : BaseTask
         session.CurrentTrial.result["arc_aquired_time"] = "";
         session.CurrentTrial.result["localizing_angle"] = "";
         session.CurrentTrial.result["localizing_time"] = "";
+        session.CurrentTrial.result["final_hand_angle"] = finalReachAngle;
     }
 
     public override void Disable()

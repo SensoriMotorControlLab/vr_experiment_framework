@@ -5,7 +5,7 @@
   "track_score": true,
   "per_block_type": [
 "nocursor",
-"aligned",
+"localization",
 "rotated"
     
   ],
