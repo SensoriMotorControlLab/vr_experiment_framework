@@ -89,7 +89,7 @@ public class CurlingToolTask : ToolTask
                         //startPos = mousePoint;
                     }
 
-                    if (Vector3.Distance(curlingStone.transform.position, Home.transform.position) > 0.2f && curlingStone.transform.position.z > Home.transform.position.z)
+                    if (Vector3.Distance(curlingStone.transform.position, Home.transform.position) > 0.15f && curlingStone.transform.position.z > Home.transform.position.z)
                     {
                         
                         shotDir = startPos - mousePoint;
