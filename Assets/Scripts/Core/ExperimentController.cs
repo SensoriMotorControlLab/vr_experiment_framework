@@ -193,9 +193,11 @@ public class ExperimentController : MonoBehaviour
 
     public void CentreExperiment(Vector3 centre)
     {
+        exp_centre_pos = centre;
         Transform temp = cameraOffset.transform.parent;
         cameraOffset.transform.parent = dummyCamera.transform;
-        dummyCamera.transform.position = new Vector3(centre.x, 0, centre.z);
+        dummyCamera.transform.position = new Vector3(centre.x, 0.2f, centre.z);
+        dummyCamera.transform.eulerAngles = new Vector3(0, -10, 0);
         cameraOffset.transform.parent = null;
         cameraOffset.transform.parent = temp;
         //StartCoroutine(TempDisableCursor());

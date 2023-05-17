@@ -32,7 +32,7 @@ public class CurlingToolTask : ToolTask
 
         baseObject.GetComponent<ToolObjectScript>().enabled = false;
         baseObject.SetActive(false);
-        toolObjects.transform.position = new Vector3(toolObjects.transform.position.x, toolObjects.transform.position.y, -0.2f);
+        toolObjects.transform.position = new Vector3(toolObjects.transform.position.x, toolObjects.transform.position.y, -0.15f);
     }
 
     public override bool IncrementStep()
@@ -89,7 +89,7 @@ public class CurlingToolTask : ToolTask
                         //startPos = mousePoint;
                     }
 
-                    if (Vector3.Distance(curlingStone.transform.position, Home.transform.position) > 0.2f && curlingStone.transform.position.z > Home.transform.position.z)
+                    if (Vector3.Distance(curlingStone.transform.position, Home.transform.position) > 0.15f && curlingStone.transform.position.z > Home.transform.position.z)
                     {
                         
                         shotDir = startPos - mousePoint;
@@ -99,7 +99,7 @@ public class CurlingToolTask : ToolTask
                             shotDir = RotateShot(shotDir);
                         }
                         shotDir = new Vector3(shotDir.x, 0, shotDir.z);
-                        baseObject.GetComponent<BilliardsBallBehaviour>().FireBilliardsBall(-shotDir, 0.5f);
+                        baseObject.GetComponent<BilliardsBallBehaviour>().FireBilliardsBall(-shotDir, 0.4f);
                         pos = toolObjects.transform.position;
                         launchAngle = Vector3.Angle(shotDir, transform.right);
                         IncrementStep(); 
@@ -118,7 +118,7 @@ public class CurlingToolTask : ToolTask
                        VibrateController(0, Mathf.Lerp(0.1f, 0.3f, toolObjects.GetComponent<Rigidbody>().velocity.magnitude / 10f), Time.deltaTime, devices);
                    //VibrateController(0, 0.2f, Time.deltaTime, devices);
 
-                   if ((curlingStone.transform.position.z - Home.transform.position.z) > 0.2f)
+                   if ((curlingStone.transform.position.z - Home.transform.position.z) > 0.15f)
                    {
                        
                        shotDir = ctrler.CursorController.GetVelocity();
@@ -128,7 +128,7 @@ public class CurlingToolTask : ToolTask
                         }
   
                         shotDir = new Vector3(shotDir.x, 0, shotDir.z);
-                        baseObject.GetComponent<BilliardsBallBehaviour>().FireBilliardsBall(shotDir, 2f);
+                        baseObject.GetComponent<BilliardsBallBehaviour>().FireBilliardsBall(shotDir, 3.5f);
                         Debug.Log(shotDir);
                         pos = toolObjects.transform.position;
                         launchAngle = Vector3.Angle(shotDir, -transform.right);
