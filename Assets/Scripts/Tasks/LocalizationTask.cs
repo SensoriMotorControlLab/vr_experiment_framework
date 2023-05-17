@@ -51,6 +51,7 @@ public class LocalizationTask : BaseTask
 
     Vector2 curTargetPos2D = new Vector2(0, 0);
     Vector2 handPos2D = new Vector2(0, 0);
+    float finalReachAngle;
     public override void Setup()
     {
 
@@ -306,8 +307,11 @@ public class LocalizationTask : BaseTask
                 break;
         }
 
-        if (Finished)
+        if (Finished){
+            finalReachAngle = Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized);
             ctrler.EndAndPrepare();
+        }
+            
 
         if (Input.GetKeyDown(KeyCode.C))
         {
@@ -404,11 +408,13 @@ public class LocalizationTask : BaseTask
         ctrler.LogVector4List("hand_pos", handPos);
         session.CurrentTrial.result["pos_3cm_out_angle"] = pos_3cm_out.x;
         session.CurrentTrial.result["pos_3cm_out_time"] = pos_3cm_out.y;
+        session.CurrentTrial.result["final_hand_angle"] = finalReachAngle;
         session.CurrentTrial.result["arc_aquired_angle"] = arcAquired.x;
         session.CurrentTrial.result["arc_aquired_time"] = arcAquired.y;
         ctrler.LogVector4List("Indicator_position", indicatorPos);
         session.CurrentTrial.result["localizing_angle"] = localizingEvent.x;
         session.CurrentTrial.result["localizing_time"] = localizingEvent.y;
+        
         
 
     }
