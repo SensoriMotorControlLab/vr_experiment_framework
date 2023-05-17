@@ -42,8 +42,10 @@ public class ReachToTargetTask : BaseTask
     protected string tintColur;
     public float rotation = 0;
     List<Vector4> handPos = new List<Vector4>();
+    List<Vector4> cursorPos = new List<Vector4>();
     Vector4 tempHandPos = new Vector4(0, 0, 0, 0);
     Vector2 pos_3cm_out = new Vector2(0, 0);
+    Vector2 cursor_pos_3cm_out = new Vector2(0, 0);
     bool outEvent = true;
     GameObject baseObject;
     bool isNoCursor = false;
@@ -243,11 +245,14 @@ public class ReachToTargetTask : BaseTask
                 if(outEvent){
                     if(ctrler.CursorController.DistanceFromHome > 0.03){
                         pos_3cm_out = new Vector2(Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized), Time.time);
+                        cursor_pos_3cm_out = new Vector2(Vector3.Angle(targets[1].transform.right, ctrler.CursorController.Model.transform.position), Time.time);
                         outEvent = false;
                     }
                 }
                 tempHandPos = ctrler.CursorController.transform.position;
+                Vector3 tempCursorPos = ctrler.CursorController.Model.transform.position;
                 handPos.Add(new Vector4(tempHandPos.x, tempHandPos.y, tempHandPos.z, Time.time));
+                cursorPos.Add(new Vector4(tempCursorPos.x, tempCursorPos.y, tempCursorPos.z, Time.time));
                 break;
         }
     }
@@ -477,8 +482,11 @@ public class ReachToTargetTask : BaseTask
         session.CurrentTrial.result["cursor_size_m"] = ctrler.CursorController.Model.transform.localScale.x;
         session.CurrentTrial.result["arc_radius_or_target_distance_m"] = ctrler.Session.CurrentBlock.settings.GetFloat("per_block_distance") / 100;
         ctrler.LogVector4List("hand_pos", handPos);
-        session.CurrentTrial.result["pos_3cm_out_angle"] = pos_3cm_out.x;
-        session.CurrentTrial.result["pos_3cm_out_time"] = pos_3cm_out.y;
+        ctrler.LogVector4List("cursor_pos", cursorPos);
+        session.CurrentTrial.result["hand_pos_3cm_out_angle"] = pos_3cm_out.x;
+        session.CurrentTrial.result["hand_pos_3cm_out_time"] = pos_3cm_out.y;
+        session.CurrentTrial.result["cursor_pos_3cm_out_angle"] = cursor_pos_3cm_out.x;
+        session.CurrentTrial.result["cursor_pos_3cm_out_time"] = cursor_pos_3cm_out.y;
         session.CurrentTrial.result["final_hand_angle"] = finalReachAngle;
         session.CurrentTrial.result["arc_aquired_angle"] = "";
         session.CurrentTrial.result["arc_aquired_time"] = "";

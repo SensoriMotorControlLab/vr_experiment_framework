@@ -38,10 +38,12 @@ public class LocalizationTask : BaseTask
     private float minZ = 0;
     Vector3 homePos = new Vector3(0, 0, 0);
     List<Vector4> handPos = new List<Vector4>();
+    List<Vector4> cursorPos = new List<Vector4>();
     Vector4 tempHandPos = new Vector4(0, 0, 0, 0);
     List<Vector4> indicatorPos = new List<Vector4>();
     Vector4 tempIndicatorPos = new Vector4(0, 0, 0, 0);
     Vector2 pos_3cm_out = new Vector2(0, 0);
+    Vector2 cursor_pos_3cm_out = new Vector2(0, 0);
     Vector2 arcAquired = new Vector2(0, 0);
     Vector2 localizingEvent = new Vector2(0, 0);
     bool outEvent = true;
@@ -150,6 +152,7 @@ public class LocalizationTask : BaseTask
     public override void Update()
     {
         handPos2D = new Vector2(ctrler.CursorController.transform.position.x, ctrler.CursorController.transform.position.z);
+        Vector3 tempCursorPos = ctrler.CursorController.Model.transform.position;
         
         if(ctrler.CursorController.IsTriggerDown("l") || Input.GetKey(KeyCode.Space)){
             pressedTime += Time.deltaTime;
@@ -205,11 +208,14 @@ public class LocalizationTask : BaseTask
                 if(outEvent){
                     if(ctrler.CursorController.DistanceFromHome > 0.03){
                         pos_3cm_out = new Vector2(Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized), Time.time);
+                        cursor_pos_3cm_out = new Vector2(Vector3.Angle(targets[1].transform.right, ctrler.CursorController.Model.transform.position), Time.time);
                         outEvent = false;
                     }
                 }
                 tempHandPos = ctrler.CursorController.transform.position;
+                
                 handPos.Add(new Vector4(tempHandPos.x, tempHandPos.y, tempHandPos.z, Time.time));
+                cursorPos.Add(new Vector4(tempCursorPos.x, tempCursorPos.y, tempCursorPos.z, Time.time));
                 if(ctrler.CursorController.DistanceFromHome > 0.005f && ctrler.CursorController.DistanceFromHome < 0.12f){
                     // Debug.Log(ctrler.CursorController.transform.localPosition.z + " " + minZ);
                 }
@@ -250,6 +256,7 @@ public class LocalizationTask : BaseTask
                 //logging params for cvs file
                 tempHandPos = ctrler.CursorController.transform.position;
                 handPos.Add(new Vector4(tempHandPos.x, tempHandPos.y, tempHandPos.z, Time.time));
+                cursorPos.Add(new Vector4(tempCursorPos.x, tempCursorPos.y, tempCursorPos.z, Time.time));
                 tempIndicatorPos = locAim.transform.position;
                 indicatorPos.Add(new Vector4(tempIndicatorPos.x, tempIndicatorPos.y, tempIndicatorPos.z, Time.time));
 
@@ -406,8 +413,11 @@ public class LocalizationTask : BaseTask
         session.CurrentTrial.result["cursor_size_m"] = ctrler.CursorController.Model.transform.localScale.x;
         session.CurrentTrial.result["arc_radius_or_target_distance_m"] = targets[2].GetComponent<ArcScript>().TargetDistance / 100;
         ctrler.LogVector4List("hand_pos", handPos);
-        session.CurrentTrial.result["pos_3cm_out_angle"] = pos_3cm_out.x;
-        session.CurrentTrial.result["pos_3cm_out_time"] = pos_3cm_out.y;
+        ctrler.LogVector4List("cursor_pos", cursorPos);
+        session.CurrentTrial.result["hand_pos_3cm_out_angle"] = pos_3cm_out.x;
+        session.CurrentTrial.result["hand_pos_3cm_out_time"] = pos_3cm_out.y;
+        session.CurrentTrial.result["cursor_pos_3cm_out_angle"] = cursor_pos_3cm_out.x;
+        session.CurrentTrial.result["cursor_pos_3cm_out_time"] = cursor_pos_3cm_out.y;
         session.CurrentTrial.result["final_hand_angle"] = finalReachAngle;
         session.CurrentTrial.result["arc_aquired_angle"] = arcAquired.x;
         session.CurrentTrial.result["arc_aquired_time"] = arcAquired.y;
