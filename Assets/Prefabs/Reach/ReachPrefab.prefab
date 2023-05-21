@@ -719,6 +719,11 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6116081743664576187, guid: 58eaa6eaddb506c48ac20629e050cd57,
+        type: 3}
+      propertyPath: m_Text
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 6510875991752790500, guid: 58eaa6eaddb506c48ac20629e050cd57,
         type: 3}
       propertyPath: ScorePrefix
@@ -731,13 +736,28 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6510875991752790500, guid: 58eaa6eaddb506c48ac20629e050cd57,
         type: 3}
+      propertyPath: CamSpaceText
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6510875991752790500, guid: 58eaa6eaddb506c48ac20629e050cd57,
+        type: 3}
       propertyPath: AllowManualSet
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6510875991752790500, guid: 58eaa6eaddb506c48ac20629e050cd57,
+        type: 3}
+      propertyPath: WorldSpaceText
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 6734463981499679078, guid: 58eaa6eaddb506c48ac20629e050cd57,
         type: 3}
       propertyPath: m_Name
       value: Scoreboard
+      objectReference: {fileID: 0}
+    - target: {fileID: 7077611417262036450, guid: 58eaa6eaddb506c48ac20629e050cd57,
+        type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8338628760067477892, guid: 58eaa6eaddb506c48ac20629e050cd57,
         type: 3}

@@ -9,7 +9,6 @@ public class Scoreboard : MonoBehaviour
 {
     public bool WorldSpace = true;
     public bool TrackTrials = false;
-
     public GameObject CameraSpaceCanvas, WorldSpaceCanvas;
     public Text CamSpaceText, WorldSpaceText, TrialTrackText;
 
@@ -58,7 +57,7 @@ public class Scoreboard : MonoBehaviour
         if (AllowManualSet)
         {
             if (ScorePrefix) target.text = "Score: " + ManualScoreText;
-            else target.text = ManualScoreText;
+            else target.text = "" + ManualScoreText;
         }
         else
         {
