@@ -63,16 +63,9 @@ public class CurlingToolTask : ToolTask
         {
             // the user triggers the object 
             case 1:
-
+                // Ball & tool follows mouse
                 ObjectFollowMouse(toolObjects, Vector3.zero);
-                //// Ball follows mouse
                 ObjectFollowMouse(baseObject, Vector3.zero);
-
-                d = LeanTween.descr(id);
-                if (d == null)
-                {
-                    toolObjects.transform.LookAt(look, surfaceParent.transform.up);
-                }
 
                 pos = toolObjects.transform.position;
 
@@ -150,9 +143,7 @@ public class CurlingToolTask : ToolTask
         {
             // initlize the scene 
             case 0:
-                // ObjectFollowMouse(toolObjects, Vector3.zero);
-                // ToolLookAtBall();
-
+                toolObjects.transform.LookAt(look, surfaceParent.transform.up);
                 baseObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
 
                 // when close to the tool the controller vibrates
@@ -171,6 +162,9 @@ public class CurlingToolTask : ToolTask
                     IncrementStep();
                 }
 
+                break;
+            case 1:
+                toolObjects.transform.LookAt(look, surfaceParent.transform.up);
                 break;
             case 2:
                 toolObjects.transform.position = pos;
