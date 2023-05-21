@@ -4,7 +4,7 @@
   ],
   "track_score": true,
   "per_block_type": [
-"nocursor",
+"aligned",
 "localization",
 "rotated"
     
@@ -12,7 +12,7 @@
   "per_block_rotation": [
     "br1",
     "br1",
-"br1"
+    "br1"
     
   ],
   "per_block_distance": [
