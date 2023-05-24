@@ -665,16 +665,16 @@ null
     
   ],
   "ins1": 
-   "Reach to red target \n Return back to dock"
+   "Reach to red target \n Return back to dock \n make straight, smooth, and accurate reaches"
   ,
   "ins2":
   "Reach to arc \n Indicate left hand \n Move right hand back to the dock"
   ,
   "ins4":
-  "No cursor"
+  "No cursor \n do NOT use any strategies"
   ,
   "ins5":
-  "No cursor \n Reach out to target and hold still \n Return hand back to dock"
+  "No cursor: don't use any strategies \n Reach out to target and hold still \n Return hand back to dock"
   ,
   "ins6":
   "BREAK \n 25% completed"
