@@ -57,7 +57,7 @@ public class Scoreboard : MonoBehaviour
         if (AllowManualSet)
         {
             if (ScorePrefix) target.text = "Score: " + ManualScoreText;
-            else target.text = "" + ManualScoreText;
+            // else target.text = "" + ManualScoreText;
         }
         else
         {
