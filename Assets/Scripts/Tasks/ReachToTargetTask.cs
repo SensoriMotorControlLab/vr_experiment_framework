@@ -30,7 +30,7 @@ public class ReachToTargetTask : BaseTask
     protected TimerIndicator timerIndicator;
     protected Scoreboard scoreboard;
     protected GameObject tint;
-
+    protected GameObject pen;
     protected float speed = 1;
     protected int id;
     protected LTDescr d;
@@ -75,11 +75,21 @@ public class ReachToTargetTask : BaseTask
         waterBowl.SetActive(false);
         baseObject = GameObject.Find("BaseObject");
         arc = GameObject.Find("ArcError");
+        pen = GameObject.Find("Pen");
         SetSetup();
         arc.SetActive(false);
 
         ctrler.CursorController.Model.GetComponent<Renderer>().enabled = false;
         baseObject.GetComponent<Renderer>().enabled = false;
+
+        if(trial.settings.GetBool("per_block_penPresent")){
+            pen.SetActive(true);
+            baseObject.GetComponent<BaseTarget>().enabled = false;
+        }
+        else{
+            pen.SetActive(false);
+            baseObject.GetComponent<BaseTarget>().enabled = true;
+        }
 
         if(trial.settings.GetString("per_block_type") == "nocursor"){
             isNoCursor = true;
@@ -151,10 +161,18 @@ public class ReachToTargetTask : BaseTask
                         ctrl);
     }
 
+    void PenFollowMouse()
+    {
+        pen.transform.position = ctrler.CursorController.transform.position;
+        pen.transform.eulerAngles = ctrler.CursorController.GetHandRotation();
+    }
+
     public override void Update()
     {
         base.Update();
-
+        if(trial.settings.GetBool("per_block_penPresent")){
+            PenFollowMouse();
+        }
         baseObject = GameObject.Find("BaseObject");
         Vector3 mousePoint = GetMousePoint(baseObject.transform);
         Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
@@ -174,7 +192,10 @@ public class ReachToTargetTask : BaseTask
                 }
                 break;
             case 1:
-                if(!isNoCursor){
+                if(isNoCursor || trial.settings.GetBool("per_block_penPresent")){
+                    baseObject.GetComponent<Renderer>().enabled = false;
+                }
+                else{
                     baseObject.GetComponent<Renderer>().enabled = true;
                 }
                 break;
@@ -186,17 +207,17 @@ public class ReachToTargetTask : BaseTask
                 break;
         }
 
-        if (trial.settings.GetString("per_block_type") == "rotated"){
-            reachSurface = GameObject.Find("Surface");
-            reachSurface.GetComponent<Renderer>().material.color = new Color(0f, 0f, 0.1f, 1f);
-        }
-        else if (trial.settings.GetString("per_block_type") == "aligned"){
-            reachSurface = GameObject.Find("Surface");
-            reachSurface.GetComponent<Renderer>().material.color = new Color(0f, 0.1f, 0f, 1f);
-        }
-        else if (trial.settings.GetString("per_block_type") == "nocursor"){
-            reachSurface = GameObject.Find("Surface");
-            reachSurface.GetComponent<Renderer>().material.color = new Color(0.1f, 0f, 0f, 1f);
+        reachSurface = GameObject.Find("Surface");
+        switch(trial.settings.GetString("per_block_type")){
+            case "rotated":
+                reachSurface.GetComponent<Renderer>().material.color = new Color(0f, 0f, 0.1f, 1f);
+                break;
+            case "aligned":
+                reachSurface.GetComponent<Renderer>().material.color = new Color(0f, 0.1f, 0f, 1f);
+                break;
+            case "nocursor":
+                reachSurface.GetComponent<Renderer>().material.color = new Color(0.1f, 0f, 0f, 1f);
+                break;
         }
 
         if (!trackScore) scoreboard.ManualScoreText = "Practice Round";
@@ -280,7 +301,6 @@ public class ReachToTargetTask : BaseTask
             // If the user enters the home, start tracking time
             case 0:
                 VibrateController(0, 0.34f, 0.15f, devices);
-                targets[2].GetComponent<BaseTarget>().enabled = true;
                 break;
             case 1:
                 ctrler.StartTimer();
@@ -292,11 +312,15 @@ public class ReachToTargetTask : BaseTask
                     timerIndicator.BeginTimer();
                 }
 
-                if (trial.settings.GetString("per_block_type") == "nocursor"){
+                if (trial.settings.GetString("per_block_type") == "nocursor" ){
                     baseObject.GetComponent<Renderer>().enabled = false;
                     arc.SetActive(true);
-                    targets[2].GetComponent<BaseTarget>().enabled = false;
-                }                 
+                    baseObject.GetComponent<BaseTarget>().enabled = false;
+                } 
+                else if(trial.settings.GetBool("per_block_penPresent")){
+                    baseObject.GetComponent<Renderer>().enabled = false;
+                    baseObject.GetComponent<BaseTarget>().enabled = false;
+                }                
                 else{
                     baseObject.GetComponent<Renderer>().enabled = true;
                 }

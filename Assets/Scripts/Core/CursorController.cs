@@ -376,6 +376,12 @@ public class CursorController : MonoBehaviour
         return new Vector3(mousePos.x, ExperimentController.Instance().transform.position.y, mousePos.z);
     }
 
+    public Vector3 GetHandRotation(){
+        return CurrentTaskHand == "l"
+            ? leftHandCollider.transform.rotation.eulerAngles
+            : rightHandCollider.transform.rotation.eulerAngles;
+    }
+
     /// <summary>
     /// Converts the user's hand location into the transformed cursor location
     /// </summary>

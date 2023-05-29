@@ -20,7 +20,7 @@ public class BaseTarget : MonoBehaviour
 
     private void Start()
     {
-        ctrler = ExperimentController.Instance();
+        ctrler = GameObject.Find("ExperimentController").GetComponent<ExperimentController>();
     }
 
     private void AdvanceStep()
@@ -48,16 +48,16 @@ public class BaseTarget : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log(ctrler);
         if (!enabled) return;
 
         if (!CollisionModeOnly)
         {
             switch (other.gameObject.tag)
             {
-                case "Hand":
+                case "Target":
                     if(ctrler.CursorController.useHand == true)
                     {
-                        Debug.Log("Hand collision");
                         AdvanceStep();
                     }
                     break;

@@ -1,12 +1,12 @@
 {
   "experiment_mode": "targetTrack",
-  "optional_params": [
+  "optional_params": [ "vr"
   ],
   "track_score": true,
   "per_block_type": [
 "aligned",
-"localization",
-"rotated"
+"aligned",
+"aligned"
     
   ],
   "per_block_rotation": [
@@ -15,6 +15,13 @@
     "br1"
     
   ],
+  "per_block_penPresent": [
+    true,
+    true,
+    false
+  ],
+
+
   "per_block_distance": [
 12,
 12,
