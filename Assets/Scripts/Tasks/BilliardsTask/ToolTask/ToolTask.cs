@@ -103,6 +103,7 @@ public class ToolTask : BilliardsTask
     protected GameObject fireLocation;
     // Used to keep track of the rotation of the surface, when using dynamic tilt
     private List<float> dynamicTiltRotations = new List<float>();
+    float targetAngle
 
     private void FixedUpdate()
     {
@@ -502,7 +503,7 @@ public class ToolTask : BilliardsTask
         timerIndicator.Timer = ctrler.Session.CurrentBlock.settings.GetFloat("per_block_timerTime");
 
         // Set up target
-        float targetAngle = Convert.ToSingle(ctrler.PseudoRandom("per_block_targetListToUse"));
+        targetAngle = Convert.ToSingle(ctrler.PseudoRandom("per_block_targetListToUse"));
         SetTargetPosition(targetAngle);
 
         // Should the tilt be shown to the participant before they release the pinball?
@@ -624,7 +625,9 @@ public class ToolTask : BilliardsTask
         // Error is the distance between the pinball and the target (meters)
         Vector2 lastPos = new Vector2(lastPositionNearTarget.x, lastPositionNearTarget.z);
         Vector2 targetPos = new Vector2(Target.transform.position.x, Target.transform.position.z);
-
+        ctrler.Session.CurrentTrial.result["Trial_Type"] = ctrler.Session.CurrentBlock.settings.GetString("per_block_type");
+        ctrler.Session.CurrentTrial.result["Target_List"] = targetAngle;
+    
         Vector2 dist = lastPos - targetPos; //To Fix: Cast to plane here instead to accound for tilts
         // Debug.Log("error: " + dist.magnitude.ToString("F5"));
 
