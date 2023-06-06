@@ -163,21 +163,24 @@ public class ReachToTargetTask : BaseTask
 
     void PenFollowMouse()
     {
-        pen.transform.position = ctrler.CursorController.transform.position;
+        pen.transform.position = new Vector3(baseObject.transform.position.x, baseObject.transform.position.y+ 0.03f, baseObject.transform.position.z);
         pen.transform.eulerAngles = ctrler.CursorController.GetHandRotation();
     }
 
     public override void Update()
     {
         base.Update();
+        baseObject = GameObject.Find("BaseObject");
         if(trial.settings.GetBool("per_block_penPresent")){
+            baseObject.transform.position = ctrler.CursorController.ConvertPosition(ctrler.CursorController.GetHandPosition());
             PenFollowMouse();
         }
-        baseObject = GameObject.Find("BaseObject");
-        Vector3 mousePoint = GetMousePoint(baseObject.transform);
-        Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
-        baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
-
+        else{
+            Vector3 mousePoint = GetMousePoint(baseObject.transform);
+            Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
+            baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
+        }
+        
         switch (currentStep)
         {
             case 0:

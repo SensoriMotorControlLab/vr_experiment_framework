@@ -1,11 +1,11 @@
 {
   "experiment_mode": "targetTrack",
-  "optional_params": [ "vr"
+  "optional_params": [
   ],
   "track_score": true,
   "per_block_type": [
-"aligned",
-"aligned",
+"rotated",
+"rotated",
 "aligned"
     
   ],
@@ -17,7 +17,7 @@
   ],
   "per_block_penPresent": [
     true,
-    true,
+    false,
     false
   ],
 
