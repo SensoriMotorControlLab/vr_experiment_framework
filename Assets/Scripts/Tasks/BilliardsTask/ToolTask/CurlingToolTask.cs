@@ -122,10 +122,8 @@ public class CurlingToolTask : ToolTask
   
                         shotDir = new Vector3(shotDir.x, 0, shotDir.z);
                         baseObject.GetComponent<BilliardsBallBehaviour>().FireBilliardsBall(shotDir, 3.5f);
-                        Debug.Log(shotDir);
                         pos = toolObjects.transform.position;
-                        launchAngle = Vector3.Angle(shotDir, -transform.right);
-                        Debug.Log(launchAngle);
+                        launchAngle = Vector2.SignedAngle(new Vector2(1f, 0f), new Vector2(shotDir.x, shotDir.z));
                         IncrementStep();
                    }
                 }
