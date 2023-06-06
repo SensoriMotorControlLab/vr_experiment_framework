@@ -91,10 +91,10 @@ public class CurlingToolTask : ToolTask
                         {
                             shotDir = RotateShot(shotDir);
                         }
-                        shotDir = new Vector3(shotDir.x, 0, shotDir.z);
-                        baseObject.GetComponent<BilliardsBallBehaviour>().FireBilliardsBall(-shotDir, 0.4f);
+                        shotDir = (new Vector3(shotDir.x, 0, shotDir.z))*-1;
+                        baseObject.GetComponent<BilliardsBallBehaviour>().FireBilliardsBall(shotDir, 0.4f);
                         pos = toolObjects.transform.position;
-                        launchAngle = Vector3.Angle(shotDir, transform.right);
+                        launchAngle = Vector2.SignedAngle(new Vector2(1f, 0f), new Vector2(shotDir.x, shotDir.z));
                         IncrementStep(); 
                     }
                 }
