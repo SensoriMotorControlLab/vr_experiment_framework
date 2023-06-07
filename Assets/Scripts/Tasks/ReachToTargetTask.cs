@@ -31,6 +31,7 @@ public class ReachToTargetTask : BaseTask
     protected Scoreboard scoreboard;
     protected GameObject tint;
     protected GameObject pen;
+    protected GameObject activeCursor;
     protected float speed = 1;
     protected int id;
     protected LTDescr d;
@@ -84,11 +85,10 @@ public class ReachToTargetTask : BaseTask
 
         if(trial.settings.GetBool("per_block_penPresent")){
             pen.SetActive(true);
-            baseObject.GetComponent<BaseTarget>().enabled = false;
+            baseObject.GetComponent<Renderer>().enabled = false;
         }
         else{
             pen.SetActive(false);
-            baseObject.GetComponent<BaseTarget>().enabled = true;
         }
 
         if(trial.settings.GetString("per_block_type") == "nocursor"){
@@ -171,11 +171,17 @@ public class ReachToTargetTask : BaseTask
     {
         base.Update();
         baseObject = GameObject.Find("BaseObject");
-        if(trial.settings.GetBool("per_block_penPresent")){
+        pen = GameObject.Find("Pen");
+        if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
             baseObject.transform.position = ctrler.CursorController.ConvertPosition(ctrler.CursorController.GetHandPosition());
+            baseObject.GetComponent<BaseTarget>().enabled = false;
+            baseObject.GetComponent<Renderer>().enabled = false;
+            pen.GetComponent<Renderer>().enabled = true;
+            activeCursor = pen;
             PenFollowMouse();
         }
         else{
+            activeCursor = baseObject;
             Vector3 mousePoint = GetMousePoint(baseObject.transform);
             Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
             baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
@@ -187,19 +193,19 @@ public class ReachToTargetTask : BaseTask
                 if (!ctrler.Session.settings.GetObjectList("optional_params").Contains("return_visible") || isNoCursor)
                 {
                     // make the ball invisible
-                    baseObject.GetComponent<Renderer>().enabled = false;
+                    activeCursor.GetComponent<Renderer>().enabled = false;
                 }
                 else
                 {
-                    baseObject.GetComponent<Renderer>().enabled = true;
+                    activeCursor.GetComponent<Renderer>().enabled = true;
                 }
                 break;
             case 1:
-                if(isNoCursor || trial.settings.GetBool("per_block_penPresent")){
-                    baseObject.GetComponent<Renderer>().enabled = false;
+                if(isNoCursor){
+                    activeCursor.GetComponent<Renderer>().enabled = false;
                 }
                 else{
-                    baseObject.GetComponent<Renderer>().enabled = true;
+                    activeCursor.GetComponent<Renderer>().enabled = true;
                 }
                 break;
             case 2:

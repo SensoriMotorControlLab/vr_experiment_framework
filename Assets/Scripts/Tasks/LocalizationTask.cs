@@ -19,6 +19,7 @@ public class LocalizationTask : BaseTask
     private GameObject arcError;
     private GameObject arcRotation;
     protected AudioSource sound;
+    protected GameObject pen;
     float localizerLoc = 0;
     int arcSpan = 0;
     float ArcRot = 0;
@@ -28,7 +29,6 @@ public class LocalizationTask : BaseTask
 
     // Angle of the localizer along the arc, in non-vr mode
     public float locX = 0;
-    private float localizerSpeed2D = 0.0005f;
     private Vector3 localizerPos = new Vector3(0, 0, 0);
 
     ExperimentController ctrler;
@@ -48,6 +48,7 @@ public class LocalizationTask : BaseTask
     float targetAngle = 0;
     GameObject baseObject;
     float pressedTime = 0;
+    GameObject activeCursor;
 
     Vector2 curTargetPos2D = new Vector2(0, 0);
     Vector2 handPos2D = new Vector2(0, 0);
@@ -73,8 +74,18 @@ public class LocalizationTask : BaseTask
         localizationSurface = GameObject.Find("Surface");
         arcError = GameObject.Find("ArcError");
         baseObject = GameObject.Find("BaseObject");
+        pen = GameObject.Find("Pen");
 
-
+        if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
+            pen.SetActive(true);
+            baseObject.GetComponent<Renderer>().enabled = false;
+            activeCursor = pen;
+        }
+        else{
+            pen.SetActive(false);
+            baseObject.GetComponent<Renderer>().enabled = true;
+            activeCursor = baseObject;
+        }
         // Set up the dock position
         targets[0] = GameObject.Find("Dock");
         targets[0].transform.position = ctrler.TargetContainer.transform.position - ctrler.transform.forward * dock_dist;
@@ -148,23 +159,42 @@ public class LocalizationTask : BaseTask
                         ctrl);
     }
 
+    void PenFollowMouse()
+    {
+        pen.transform.position = new Vector3(baseObject.transform.position.x, baseObject.transform.position.y+ 0.03f, baseObject.transform.position.z);
+        pen.transform.eulerAngles = ctrler.CursorController.GetHandRotation();
+        handPos2D = new Vector2(pen.transform.GetChild(0).transform.position.x, pen.transform.GetChild(0).transform.position.z);
+    }
+
     public override void Update()
     {
-        handPos2D = new Vector2(ctrler.CursorController.transform.position.x, ctrler.CursorController.transform.position.z);
+        
         Vector3 tempHandPos;
         Vector3 tempCursorPos;
+        baseObject = GameObject.Find("BaseObject");
+        pen = GameObject.Find("Pen");
         
-        if(ctrler.CursorController.IsTriggerDown("l") || Input.GetKey(KeyCode.Space)){
+        if(ctrler.CursorController.IsTriggerDown("l") || Input.GetKey(KeyCode.S)){
             pressedTime += Time.deltaTime;
         }
         else{
             pressedTime = 0;
         }
 
-        baseObject = GameObject.Find("BaseObject");
-        Vector3 mousePoint = GetMousePoint(baseObject.transform);
-        Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
-        baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
+        if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
+            baseObject.transform.position = ctrler.CursorController.ConvertPosition(ctrler.CursorController.GetHandPosition());
+            baseObject.GetComponent<Renderer>().enabled = false;
+            activeCursor = pen;
+            PenFollowMouse();
+        }
+        else{
+            handPos2D = new Vector2(ctrler.CursorController.transform.position.x, ctrler.CursorController.transform.position.z);
+            Vector3 mousePoint = GetMousePoint(baseObject.transform);
+            Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
+            baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
+            activeCursor = baseObject;
+        }
+
         switch (currentStep)
         {
             case 0:
@@ -173,17 +203,16 @@ public class LocalizationTask : BaseTask
                 if (!ctrler.Session.settings.GetObjectList("optional_params").Contains("return_visible"))
                 {
                     // make the ball invisible
-                    baseObject.GetComponent<Renderer>().enabled = false;
+                    activeCursor.GetComponent<Renderer>().enabled = false;
                 }
                 else
                 {
-                    baseObject.GetComponent<Renderer>().enabled = true;
+                    activeCursor.GetComponent<Renderer>().enabled = true;
                 }
                 if ((curTargetPos2D - handPos2D).magnitude < 0.009f
                                 && ctrler.CursorController.stillTime > 0.3f)
                 {
-                    
-                    baseObject.GetComponent<Renderer>().enabled = true;
+                    activeCursor.GetComponent<Renderer>().enabled = true;
                     IncrementStep();
                 }
                 break;
@@ -204,7 +233,7 @@ public class LocalizationTask : BaseTask
                 break;
             // When the user holds their hand and they are outside the home, begin the next phase of localization
             case 2:
-                baseObject.GetComponent<Renderer>().enabled = false;
+                activeCursor.GetComponent<Renderer>().enabled = false;
                 if(outEvent){
                     if(ctrler.CursorController.DistanceFromHome > 0.03){
                         pos_3cm_out = new Vector2(Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized), Time.time);
@@ -246,7 +275,7 @@ public class LocalizationTask : BaseTask
                 
                 break;
             case 3:
-                baseObject.GetComponent<Renderer>().enabled = false;
+                activeCursor.GetComponent<Renderer>().enabled = false;
                 // VR: User uses their head to localize their hand
                 // Non-VR: User uses horizontal axis to localize their mouse
                 arcError.SetActive(false);
@@ -293,7 +322,7 @@ public class LocalizationTask : BaseTask
 
                 // NON-VR** If the user presses the spacebar for 200ms and localizer is within arcspan, we end the trial
                 Debug.Log(ctrler.TargetContainer.transform.rotation.y);
-                if(Input.GetKey(KeyCode.Space) && ((-0.7f < ctrler.TargetContainer.transform.rotation.y) && (ctrler.TargetContainer.transform.rotation.y < 0.7f))){
+                if(Input.GetKey(KeyCode.S) && ((-0.7f < ctrler.TargetContainer.transform.rotation.y) && (ctrler.TargetContainer.transform.rotation.y < 0.7f))){
                     if(pressedTime > 0.2f){
                         IncrementStep();
                         localizingEvent = new Vector2(Vector3.Angle(targets[1].transform.right, (locAim.transform.position - targets[1].transform.position).normalized), Time.time);
