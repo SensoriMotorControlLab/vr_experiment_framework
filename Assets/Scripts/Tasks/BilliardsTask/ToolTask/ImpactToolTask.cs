@@ -80,7 +80,7 @@ public class ImpactToolTask : ToolTask
                     shotDir = RotateShot(shotDir);
                 }
 
-                if(ctrler.Session.CurrentBlock.settings.GetString("per_block_type") == "target")
+                if(ctrler.Session.CurrentBlock.settings.GetString("per_block_type") == "clamped")
                 {
                     shotDir = (Target.transform.position - ballObjects.transform.position).normalized * MAX_MAGNITUDE;
                 }
@@ -89,7 +89,7 @@ public class ImpactToolTask : ToolTask
                 launchAngle = Vector2.SignedAngle(new Vector2(1f, 0f), new Vector2(shotDir.x, shotDir.z));
                 // run the FireBilliardsBall function from the BilliardsBallBehaviour script
                 baseObject.GetComponent<BilliardsBallBehaviour>().FireBilliardsBall(shotDir, 1);
-                if(ctrler.Session.settings.GetObjectList("optional_params").Contains("hit_invisible") && ctrler.Session.CurrentBlock.settings.GetBool("per_block_hit_invisible"))
+                if(ctrler.Session.CurrentBlock.settings.GetString("per_block_type") == "invisible")
                 {
                     puckobj.GetComponent<MeshRenderer>().enabled = false;
                     ballobj.GetComponent<MeshRenderer>().enabled = false;

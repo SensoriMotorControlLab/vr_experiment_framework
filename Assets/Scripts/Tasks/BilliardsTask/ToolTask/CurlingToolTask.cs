@@ -11,7 +11,7 @@ public class CurlingToolTask : ToolTask
     private LTDescr d;
     private int id;
     bool toolGrabed = false;
-    private const float MAX_MAGNITUDE = 9f;
+    private const float MAX_MAGNITUDE = 10f;
 
     public override void Setup()
     {
@@ -84,7 +84,7 @@ public class CurlingToolTask : ToolTask
                         {
                             shotDir = RotateShot(shotDir);
                         }
-                        if(ctrler.Session.CurrentBlock.settings.GetString("per_block_type") == "target")
+                        if(ctrler.Session.CurrentBlock.settings.GetString("per_block_type") == "clamped")
                         {
                             shotDir = (ballObjects.transform.position - Target.transform.position).normalized * MAX_MAGNITUDE;
                         }
@@ -92,7 +92,7 @@ public class CurlingToolTask : ToolTask
                         baseObject.GetComponent<BilliardsBallBehaviour>().FireBilliardsBall(shotDir, 0.4f);
                         pos = toolObjects.transform.position;
                         launchAngle = Vector2.SignedAngle(new Vector2(1f, 0f), new Vector2(shotDir.x, shotDir.z));
-                        if(ctrler.Session.settings.GetObjectList("optional_params").Contains("hit_invisible") && ctrler.Session.CurrentBlock.settings.GetBool("per_block_hit_invisible"))
+                        if(ctrler.Session.CurrentBlock.settings.GetString("per_block_type") == "invisible")
                         {
                             curlingStone.GetComponent<MeshRenderer>().enabled = false;
                         }
@@ -120,7 +120,7 @@ public class CurlingToolTask : ToolTask
                         {
                             shotDir = RotateShot(shotDir);
                         }
-                        if(ctrler.Session.CurrentBlock.settings.GetString("per_block_type") == "target")
+                        if(ctrler.Session.CurrentBlock.settings.GetString("per_block_type") == "clamped")
                         {
                             shotDir = (Target.transform.position - ballObjects.transform.position).normalized * MAX_MAGNITUDE;
                         }
@@ -128,7 +128,7 @@ public class CurlingToolTask : ToolTask
                         baseObject.GetComponent<BilliardsBallBehaviour>().FireBilliardsBall(shotDir, 3.5f);
                         pos = toolObjects.transform.position;
                         launchAngle = Vector2.SignedAngle(new Vector2(1f, 0f), new Vector2(shotDir.x, shotDir.z));
-                        if(ctrler.Session.settings.GetObjectList("optional_params").Contains("hit_invisible") && ctrler.Session.settings.GetBool("per_block_hit_invisible"))
+                        if(ctrler.Session.CurrentBlock.settings.GetString("per_block_type") == "invisible")
                         {
                             curlingStone.GetComponent<Renderer>().enabled = false;
                         }
