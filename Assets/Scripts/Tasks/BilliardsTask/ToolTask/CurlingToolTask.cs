@@ -11,25 +11,18 @@ public class CurlingToolTask : ToolTask
     private LTDescr d;
     private int id;
     bool toolGrabed = false;
+    private const float MAX_MAGNITUDE = 9f;
 
     public override void Setup()
     {
         base.Setup();
 
         look = new Vector3(Home.transform.position.x, Home.transform.position.y, 0);
-
-
-
         Cursor.visible = false;
 
         baseObject.GetComponent<SphereCollider>().material.bounciness = 1f;
 
         curlingStone.SetActive(true);
-        //Home.transform.position = new Vector3(Home.transform.position.x, Home.transform.position.y, -0.2f);
-        //ballObjects.transform.position = new Vector3(ballObjects.transform.position.x, ballObjects.transform.position.y, -0.2f);
-        //curlingStone.transform.position = new Vector3(curlingStone.transform.position.x, curlingStone.transform.position.y, -0.2f);
-
-
         baseObject.GetComponent<ToolObjectScript>().enabled = false;
         baseObject.SetActive(false);
         toolObjects.transform.position = new Vector3(toolObjects.transform.position.x, toolObjects.transform.position.y, -0.15f);
@@ -91,10 +84,18 @@ public class CurlingToolTask : ToolTask
                         {
                             shotDir = RotateShot(shotDir);
                         }
+                        if(ctrler.Session.CurrentBlock.settings.GetString("per_block_type") == "target")
+                        {
+                            shotDir = (ballObjects.transform.position - Target.transform.position).normalized * MAX_MAGNITUDE;
+                        }
                         shotDir = (new Vector3(shotDir.x, 0, shotDir.z))*-1;
                         baseObject.GetComponent<BilliardsBallBehaviour>().FireBilliardsBall(shotDir, 0.4f);
                         pos = toolObjects.transform.position;
                         launchAngle = Vector2.SignedAngle(new Vector2(1f, 0f), new Vector2(shotDir.x, shotDir.z));
+                        if(ctrler.Session.settings.GetObjectList("optional_params").Contains("hit_invisible") && ctrler.Session.CurrentBlock.settings.GetBool("per_block_hit_invisible"))
+                        {
+                            curlingStone.GetComponent<MeshRenderer>().enabled = false;
+                        }
                         IncrementStep(); 
                     }
                 }
@@ -114,16 +115,23 @@ public class CurlingToolTask : ToolTask
                    if ((curlingStone.transform.position.z - Home.transform.position.z) > 0.15f)
                    {
                        
-                       shotDir = ctrler.CursorController.GetVelocity();
-                       if (ctrler.Session.CurrentBlock.settings.GetString("per_block_type") == "rotated")
+                        shotDir = ctrler.CursorController.GetVelocity();
+                        if (ctrler.Session.CurrentBlock.settings.GetString("per_block_type") == "rotated")
                         {
                             shotDir = RotateShot(shotDir);
                         }
-  
+                        if(ctrler.Session.CurrentBlock.settings.GetString("per_block_type") == "target")
+                        {
+                            shotDir = (Target.transform.position - ballObjects.transform.position).normalized * MAX_MAGNITUDE;
+                        }
                         shotDir = new Vector3(shotDir.x, 0, shotDir.z);
                         baseObject.GetComponent<BilliardsBallBehaviour>().FireBilliardsBall(shotDir, 3.5f);
                         pos = toolObjects.transform.position;
                         launchAngle = Vector2.SignedAngle(new Vector2(1f, 0f), new Vector2(shotDir.x, shotDir.z));
+                        if(ctrler.Session.settings.GetObjectList("optional_params").Contains("hit_invisible") && ctrler.Session.settings.GetBool("per_block_hit_invisible"))
+                        {
+                            curlingStone.GetComponent<Renderer>().enabled = false;
+                        }
                         IncrementStep();
                    }
                 }

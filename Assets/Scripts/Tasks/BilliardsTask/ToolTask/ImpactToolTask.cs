@@ -80,10 +80,20 @@ public class ImpactToolTask : ToolTask
                     shotDir = RotateShot(shotDir);
                 }
 
+                if(ctrler.Session.CurrentBlock.settings.GetString("per_block_type") == "target")
+                {
+                    shotDir = (Target.transform.position - ballObjects.transform.position).normalized * MAX_MAGNITUDE;
+                }
+
                 // record and apply shotDir
                 launchAngle = Vector2.SignedAngle(new Vector2(1f, 0f), new Vector2(shotDir.x, shotDir.z));
                 // run the FireBilliardsBall function from the BilliardsBallBehaviour script
                 baseObject.GetComponent<BilliardsBallBehaviour>().FireBilliardsBall(shotDir, 1);
+                if(ctrler.Session.settings.GetObjectList("optional_params").Contains("hit_invisible") && ctrler.Session.CurrentBlock.settings.GetBool("per_block_hit_invisible"))
+                {
+                    puckobj.GetComponent<MeshRenderer>().enabled = false;
+                    ballobj.GetComponent<MeshRenderer>().enabled = false;
+                }
 
                 toolObjects.transform.rotation = toolSpace.transform.rotation;
                 toolObjects.GetComponentInChildren<Collider>().enabled = false;

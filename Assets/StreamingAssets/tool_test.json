@@ -1,11 +1,11 @@
 {
   "experiment_mode": "tool",
 
-  "optional_params": [],
+  "optional_params": ["hit_invisible"],
 
   "exp_record_score": true,
 
-  "per_block_type": [ "aligned", "aligned", "aligned" ],
+  "per_block_type": [ "target", "target", "target" ],
 
   "per_block_rotation": [ 45, 45, 45 ],
 
@@ -54,5 +54,6 @@
   "st1": [ 0, 0, 0],
 
   "per_block_curve_type": [ "sin", "cos", "linear" ],
-  "per_trial_dynamic_tilt": [ 1, 1, 1, 1, 1, 1, 1, 1, 1 ]
+  "per_trial_dynamic_tilt": [ 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
+  "per_block_hit_invisible": [ false, false, false ]
 }
