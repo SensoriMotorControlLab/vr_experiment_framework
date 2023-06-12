@@ -54,6 +54,7 @@ public class LocalizationTask : BaseTask
     Vector2 handPos2D = new Vector2(0, 0);
     float finalReachAngle;
     float finalCursorAngle;
+    Vector3 locPos;
     public override void Setup()
     {
 
@@ -62,7 +63,6 @@ public class LocalizationTask : BaseTask
 
         ctrler.CursorController.SetHandVisibility(false);
         Cursor.visible = false;
-        ctrler.CursorController.SetCursorVisibility(true);
 
         localizationPrefab = Instantiate(ctrler.GetPrefab("LocalizationPrefab"));
         
@@ -75,6 +75,17 @@ public class LocalizationTask : BaseTask
         arcError = GameObject.Find("ArcError");
         baseObject = GameObject.Find("BaseObject");
         pen = GameObject.Find("Pen");
+        arcRotation = GameObject.Find("ArcRotation");
+        targets[2] = GameObject.Find("ArcTarget");
+        locAim = GameObject.Find("Localizer");
+        locAngle = GameObject.Find("locAngle");
+
+        if (ctrler.Session.settings.GetObjectList("optional_params").Contains("cursor") && ctrler.Session.CurrentTrial.settings.GetBool("per_block_cursor_visible")){
+            ctrler.CursorController.SetCursorVisibility(true);
+        }
+        else{
+            ctrler.CursorController.SetCursorVisibility(false);
+        }
 
         if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
             pen.SetActive(true);
@@ -101,12 +112,9 @@ public class LocalizationTask : BaseTask
 
         // Grab an angle from the list and then remove it
         targetAngle = Convert.ToSingle(ctrler.PseudoRandom("per_block_targetListToUse"));
-        
-        ctrler.CursorController.Model.GetComponent<Renderer>().enabled = false;
         baseObject.GetComponent<Renderer>().enabled = false;
         // Set up the arc object
-        arcRotation = GameObject.Find("ArcRotation");
-        targets[2] = GameObject.Find("ArcTarget");
+        
         
         Debug.Log("Target Angle: " + targetAngle);
         targets[2].transform.position = targets[1].transform.position;
@@ -117,8 +125,7 @@ public class LocalizationTask : BaseTask
         sound = targets[2].GetComponent<AudioSource>();
 
         // Set up the GameObject that tracks the user's gaze
-        locAim = GameObject.Find("Localizer");
-        locAngle = GameObject.Find("locAngle");
+       
         
         locAim.GetComponent<SphereCollider>().enabled = false;
         locAim.GetComponent<BaseTarget>().enabled = false;
@@ -161,9 +168,9 @@ public class LocalizationTask : BaseTask
 
     void PenFollowMouse()
     {
-        pen.transform.position = new Vector3(baseObject.transform.position.x, baseObject.transform.position.y+ 0.03f, baseObject.transform.position.z);
-        pen.transform.eulerAngles = ctrler.CursorController.GetHandRotation();
-        handPos2D = new Vector2(pen.transform.GetChild(0).transform.position.x, pen.transform.GetChild(0).transform.position.z);
+        pen.transform.position = new Vector3(baseObject.transform.position.x, baseObject.transform.position.y, baseObject.transform.position.z);
+        pen.transform.eulerAngles = new Vector3(ctrler.CursorController.GetHandRotation().x, ctrler.CursorController.GetHandRotation().y-90, ctrler.CursorController.GetHandRotation().z);
+        locPos = pen.transform.GetChild(0).transform.position;
     }
 
     public override void Update()
@@ -173,6 +180,7 @@ public class LocalizationTask : BaseTask
         Vector3 tempCursorPos;
         baseObject = GameObject.Find("BaseObject");
         pen = GameObject.Find("Pen");
+        handPos2D = new Vector2(ctrler.CursorController.transform.position.x, ctrler.CursorController.transform.position.z);
         
         if(ctrler.CursorController.IsTriggerDown("l") || Input.GetKey(KeyCode.S)){
             pressedTime += Time.deltaTime;
@@ -187,8 +195,8 @@ public class LocalizationTask : BaseTask
             activeCursor = pen;
             PenFollowMouse();
         }
-        else{
-            handPos2D = new Vector2(ctrler.CursorController.transform.position.x, ctrler.CursorController.transform.position.z);
+        else{    
+            locPos = ctrler.CursorController.transform.position;
             Vector3 mousePoint = GetMousePoint(baseObject.transform);
             Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
             baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
@@ -199,7 +207,6 @@ public class LocalizationTask : BaseTask
         {
             case 0:
                 targets[0].SetActive(true);
-                curTargetPos2D = new Vector2(targets[0].transform.position.x, targets[0].transform.position.z);
                 if (!ctrler.Session.settings.GetObjectList("optional_params").Contains("return_visible"))
                 {
                     // make the ball invisible
@@ -209,7 +216,7 @@ public class LocalizationTask : BaseTask
                 {
                     activeCursor.GetComponent<Renderer>().enabled = true;
                 }
-                if ((curTargetPos2D - handPos2D).magnitude < 0.009f
+                if ((targets[0].transform.position - locPos).magnitude < 0.009f
                                 && ctrler.CursorController.stillTime > 0.3f)
                 {
                     activeCursor.GetComponent<Renderer>().enabled = true;
@@ -217,8 +224,7 @@ public class LocalizationTask : BaseTask
                 }
                 break;
             case 1:
-                curTargetPos2D = new Vector2(targets[1].transform.position.x, targets[1].transform.position.z);
-                if ((curTargetPos2D - handPos2D).magnitude < 0.005f)
+                if ((targets[1].transform.position - locPos).magnitude < 0.005f)
                 {
                     IncrementStep();
                     localizerLoc = Convert.ToSingle(ctrler.PseudoRandom("per_block_localizer_location"));
@@ -235,7 +241,7 @@ public class LocalizationTask : BaseTask
             case 2:
                 activeCursor.GetComponent<Renderer>().enabled = false;
                 if(outEvent){
-                    if(ctrler.CursorController.DistanceFromHome > 0.03){
+                    if((locPos - targets[1].transform.position).magnitude > 0.03){
                         pos_3cm_out = new Vector2(Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized), Time.time);
                         cursor_3cm_out = new Vector2(Vector3.Angle(targets[1].transform.right, ctrler.CursorController.Model.transform.position), Time.time);
                         outEvent = false;
@@ -245,24 +251,20 @@ public class LocalizationTask : BaseTask
                 tempCursorPos = ctrler.CursorController.Model.transform.position;
                 handPos.Add(new Vector4(tempHandPos.x, tempHandPos.y, tempHandPos.z, Time.time));
                 cursorPos.Add(new Vector4(tempCursorPos.x, tempCursorPos.y, tempCursorPos.z, Time.time));
-                if(ctrler.CursorController.DistanceFromHome > 0.005f && ctrler.CursorController.DistanceFromHome < 0.12f){
-                    // Debug.Log(ctrler.CursorController.transform.localPosition.z + " " + minZ);
-                }
-                if(ctrler.CursorController.stillTime > 0.5f &&
-                        ctrler.CursorController.DistanceFromHome > 0.1f && ctrler.CursorController.transform.position.z > targets[1].transform.position.z
-                        && ctrler.CursorController.DistanceFromHome < 0.125f)
-                        {
 
+                if(ctrler.CursorController.stillTime > 0.5f &&
+                        (targets[1].transform.position - locPos).magnitude > 0.1f && locPos.z > targets[1].transform.position.z
+                        && (targets[1].transform.position - locPos).magnitude < 0.125f)
+                        {
                             IncrementStep();
                             arcAquired = new Vector2(Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized), Time.time);
-
                         }
 
-                if(((ctrler.CursorController.DistanceFromHome > 0.005f && ctrler.CursorController.DistanceFromHome < 0.12f) || (ctrler.CursorController.DistanceFromHome > 0.125f)) 
-                    && ctrler.CursorController.transform.position.z > targets[1].transform.position.z){
+                if((((targets[1].transform.position - locPos).magnitude > 0.005f && (targets[1].transform.position - locPos).magnitude < 0.12f) || ((targets[1].transform.position - locPos).magnitude > 0.125f)) 
+                    && locPos.z > targets[1].transform.position.z){
                     
                     arcError.SetActive(true);
-                    arcError.GetComponent<ArcScript>().TargetDistance = ctrler.CursorController.DistanceFromHome * 100;
+                    arcError.GetComponent<ArcScript>().TargetDistance = (targets[1].transform.position - locPos).magnitude * 100;
                     arcError.GetComponent<ArcScript>().GenerateArc();
                     
                     
@@ -404,7 +406,7 @@ public class LocalizationTask : BaseTask
 
                 Target.SetActive(true);
 
-                ExperimentController.Instance().CursorController.SetCursorVisibility(false);
+                
 
                 break;
             case 2: // Pause in arc

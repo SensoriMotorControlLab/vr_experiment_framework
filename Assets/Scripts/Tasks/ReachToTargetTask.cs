@@ -80,7 +80,13 @@ public class ReachToTargetTask : BaseTask
         SetSetup();
         arc.SetActive(false);
 
-        ctrler.CursorController.Model.GetComponent<Renderer>().enabled = false;
+         if (ctrler.Session.settings.GetObjectList("optional_params").Contains("cursor") && ctrler.Session.CurrentTrial.settings.GetBool("per_block_cursor_visible")){
+            ctrler.CursorController.SetCursorVisibility(true);
+        }
+        else{
+            ctrler.CursorController.SetCursorVisibility(false);
+        }
+
         baseObject.GetComponent<Renderer>().enabled = false;
 
         if(trial.settings.GetBool("per_block_penPresent")){
@@ -163,8 +169,8 @@ public class ReachToTargetTask : BaseTask
 
     void PenFollowMouse()
     {
-        pen.transform.position = new Vector3(baseObject.transform.position.x, baseObject.transform.position.y+ 0.03f, baseObject.transform.position.z);
-        pen.transform.eulerAngles = ctrler.CursorController.GetHandRotation();
+        pen.transform.position = new Vector3(baseObject.transform.position.x, baseObject.transform.position.y, baseObject.transform.position.z);
+        pen.transform.eulerAngles = new Vector3(ctrler.CursorController.GetHandRotation().x, ctrler.CursorController.GetHandRotation().y-90, ctrler.CursorController.GetHandRotation().z);
     }
 
     public override void Update()
