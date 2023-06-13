@@ -172,7 +172,15 @@ public class ReachToTargetTask : BaseTask
     {
         pen.transform.parent = ctrler.CursorController.RightHand.transform;
         pen.transform.position = new Vector3(baseObject.transform.position.x, baseObject.transform.position.y, baseObject.transform.position.z);
-        pen.transform.localEulerAngles = new Vector3(0, -90, 0);
+        pen.transform.localEulerAngles = new Vector3(0, -135, 0);
+        switch(currentStep){
+            case 0: 
+                baseObject.GetComponent<BaseTarget>().enabled = true;
+                break;
+            default:
+                baseObject.GetComponent<BaseTarget>().enabled = false;
+                break;
+        }
     }
 
     public override void Update()
@@ -462,14 +470,14 @@ public class ReachToTargetTask : BaseTask
         // Set up hand and cursor
         ctrler.CursorController.SetHandVisibility(false);
         ctrler.CursorController.SetCursorVisibility(true);
-
+        Vector3 tempPos =new Vector3 (ctrler.TargetContainer.transform.position.x, ctrler.TargetContainer.transform.position.y + 0.03f, ctrler.TargetContainer.transform.position.z); 
         // Set up the dock position
         targets.Add(GameObject.Find("Dock"));
         targets[0].transform.position = ctrler.TargetContainer.transform.position - ctrler.transform.forward * dock_dist;
 
         // Set up the home position
         targets.Add(GameObject.Find("Home"));
-        targets[1].transform.localPosition = ctrler.TargetContainer.transform.localPosition;
+        targets[1].transform.localPosition = tempPos + targets[1].transform.forward * 7f/100f;
         targets[1].SetActive(false);
         Home = targets[1];
 
