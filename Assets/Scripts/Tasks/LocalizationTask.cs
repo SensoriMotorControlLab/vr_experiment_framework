@@ -90,6 +90,7 @@ public class LocalizationTask : BaseTask
         if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
             pen.SetActive(true);
             baseObject.GetComponent<Renderer>().enabled = false;
+            pen.transform.parent = ctrler.CursorController.RightHand.transform;
             activeCursor = pen;
         }
         else{
@@ -168,8 +169,9 @@ public class LocalizationTask : BaseTask
 
     void PenFollowMouse()
     {
+        pen.transform.parent = ctrler.CursorController.RightHand.transform;
         pen.transform.position = new Vector3(baseObject.transform.position.x, baseObject.transform.position.y, baseObject.transform.position.z);
-        pen.transform.eulerAngles = new Vector3(ctrler.CursorController.GetHandRotation().x, ctrler.CursorController.GetHandRotation().y-90, ctrler.CursorController.GetHandRotation().z);
+        pen.transform.localEulerAngles = new Vector3(0, -90, 0);
         locPos = pen.transform.GetChild(0).transform.position;
     }
 
@@ -347,6 +349,9 @@ public class LocalizationTask : BaseTask
         }
 
         if (Finished){
+            if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
+                pen.transform.parent = localizationPrefab.transform;
+            }
             finalReachAngle = Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized);
             finalCursorAngle = Vector3.Angle(targets[1].transform.right, ctrler.CursorController.Model.transform.position);
             ctrler.EndAndPrepare();

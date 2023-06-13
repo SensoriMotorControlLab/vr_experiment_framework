@@ -1,10 +1,10 @@
 {
   "experiment_mode": "targetTrack",
-  "optional_params": ["cursor"
+  "optional_params": ["cursor", "vr", "return_visible"
   ],
   "track_score": true,
   "per_block_type": [
-"aligned",
+"localization",
 "aligned",
 "aligned"
     
@@ -22,9 +22,9 @@
   ],
 
   "per_block_cursor_visible": [
-    true,
-    true,
-    true
+    false,
+    false,
+    false
   ],
 
 
