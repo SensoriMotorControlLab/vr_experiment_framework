@@ -170,7 +170,7 @@ public class ReachToTargetTask : BaseTask
     void PenFollowMouse()
     {
         pen.transform.position = new Vector3(baseObject.transform.position.x, baseObject.transform.position.y, baseObject.transform.position.z);
-        pen.transform.localEulerAngles = new Vector3(0, -135, 0);
+        pen.transform.localEulerAngles = new Vector3(0, -225, 0);
         switch(currentStep){
             case 0: 
                 baseObject.GetComponent<BaseTarget>().enabled = true;
