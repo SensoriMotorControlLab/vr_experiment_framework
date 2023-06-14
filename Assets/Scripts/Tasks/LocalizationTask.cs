@@ -87,16 +87,18 @@ public class LocalizationTask : BaseTask
             ctrler.CursorController.SetCursorVisibility(false);
         }
 
+        Vector3 tempPos;
         if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
             pen.SetActive(true);
             baseObject.GetComponent<Renderer>().enabled = false;
-            pen.transform.parent = ctrler.CursorController.RightHand.transform;
             activeCursor = pen;
+            tempPos =new Vector3 (ctrler.TargetContainer.transform.position.x, ctrler.TargetContainer.transform.position.y + 0.03f, ctrler.TargetContainer.transform.position.z);
         }
         else{
             pen.SetActive(false);
             baseObject.GetComponent<Renderer>().enabled = true;
             activeCursor = baseObject;
+            tempPos = ctrler.TargetContainer.transform.position;
         }
         // Set up the dock position
         targets[0] = GameObject.Find("Dock");
@@ -105,7 +107,7 @@ public class LocalizationTask : BaseTask
 
         // Set up the home position
         targets[1] = GameObject.Find("Home");
-        targets[1].transform.localPosition = ctrler.TargetContainer.transform.position;
+        targets[1].transform.localPosition = tempPos + targets[1].transform.forward * 7f/100f;
         //targets[1].transform.position = new Vector3(ctrler.TargetContainer.transform.position.x, -0.250f, ctrler.TargetContainer.transform.position.z) + ctrler.transform.forward * 0.05f;
         targets[1].SetActive(false);
         Home = targets[1];
@@ -169,9 +171,8 @@ public class LocalizationTask : BaseTask
 
     void PenFollowMouse()
     {
-        pen.transform.parent = ctrler.CursorController.RightHand.transform;
         pen.transform.position = new Vector3(baseObject.transform.position.x, baseObject.transform.position.y, baseObject.transform.position.z);
-        pen.transform.localEulerAngles = new Vector3(0, -90, 0);
+        pen.transform.localEulerAngles = new Vector3(0, -135, 0);
         locPos = pen.transform.GetChild(0).transform.position;
     }
 
@@ -218,7 +219,7 @@ public class LocalizationTask : BaseTask
                 {
                     activeCursor.GetComponent<Renderer>().enabled = true;
                 }
-                if ((targets[0].transform.position - locPos).magnitude < 0.009f
+                if ((targets[0].transform.position - baseObject.transform.position).magnitude < 0.009f
                                 && ctrler.CursorController.stillTime > 0.3f)
                 {
                     activeCursor.GetComponent<Renderer>().enabled = true;

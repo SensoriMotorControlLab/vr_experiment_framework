@@ -92,7 +92,6 @@ public class ReachToTargetTask : BaseTask
         if(trial.settings.GetBool("per_block_penPresent")){
             pen.SetActive(true);
             baseObject.GetComponent<Renderer>().enabled = false;
-            pen.transform.parent = ctrler.CursorController.RightHand.transform;
         }
         else{
             pen.SetActive(false);
@@ -170,7 +169,6 @@ public class ReachToTargetTask : BaseTask
 
     void PenFollowMouse()
     {
-        pen.transform.parent = ctrler.CursorController.RightHand.transform;
         pen.transform.position = new Vector3(baseObject.transform.position.x, baseObject.transform.position.y, baseObject.transform.position.z);
         pen.transform.localEulerAngles = new Vector3(0, -135, 0);
         switch(currentStep){
@@ -260,9 +258,6 @@ public class ReachToTargetTask : BaseTask
             
 
         if (Finished){
-            if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
-                pen.transform.parent = reachPrefab.transform;
-            }
             finalReachAngle = Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized);
             finalCursorAngle = Vector3.Angle(targets[1].transform.right, ctrler.CursorController.Model.transform.position);
             ctrler.EndAndPrepare();
@@ -470,7 +465,16 @@ public class ReachToTargetTask : BaseTask
         // Set up hand and cursor
         ctrler.CursorController.SetHandVisibility(false);
         ctrler.CursorController.SetCursorVisibility(true);
-        Vector3 tempPos =new Vector3 (ctrler.TargetContainer.transform.position.x, ctrler.TargetContainer.transform.position.y + 0.03f, ctrler.TargetContainer.transform.position.z); 
+
+        Vector3 tempPos;
+        if (ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent"))
+        {
+            tempPos =new Vector3 (ctrler.TargetContainer.transform.position.x, ctrler.TargetContainer.transform.position.y + 0.03f, ctrler.TargetContainer.transform.position.z); 
+        }
+        else
+        {
+            tempPos = ctrler.TargetContainer.transform.position; 
+        } 
         // Set up the dock position
         targets.Add(GameObject.Find("Dock"));
         targets[0].transform.position = ctrler.TargetContainer.transform.position - ctrler.transform.forward * dock_dist;
@@ -482,12 +486,7 @@ public class ReachToTargetTask : BaseTask
         Home = targets[1];
 
         // Set up the target
-
-
-
         // Takes a target angle from the list and removes it
-
-
         targets.Add(GameObject.Find("Target"));
         targets[2].transform.rotation = Quaternion.Euler(
             0f, -targetAngle + 90f, 0f);
@@ -500,7 +499,7 @@ public class ReachToTargetTask : BaseTask
 
         // Disable collision detection for nocursor task
         if (trial.settings.GetString("per_block_type") == "nocursor")
-            targets[2].GetComponent<BaseTarget>().enabled = false;
+            // targets[2].GetComponent<BaseTarget>().enabled = false;
 
         targets[2].SetActive(false);
         Target = targets[2];
