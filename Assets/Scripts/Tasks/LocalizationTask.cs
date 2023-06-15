@@ -107,7 +107,7 @@ public class LocalizationTask : BaseTask
 
         // Set up the home position
         targets[1] = GameObject.Find("Home");
-        targets[1].transform.localPosition = tempPos + targets[1].transform.forward * 7f/100f;
+        targets[1].transform.localPosition = tempPos + targets[1].transform.forward * 5f/100f;
         //targets[1].transform.position = new Vector3(ctrler.TargetContainer.transform.position.x, -0.250f, ctrler.TargetContainer.transform.position.z) + ctrler.transform.forward * 0.05f;
         targets[1].SetActive(false);
         Home = targets[1];
@@ -171,6 +171,7 @@ public class LocalizationTask : BaseTask
 
     void PenFollowMouse()
     {
+        pen.transform.parent = ctrler.CursorController.RightHand.transform;
         pen.transform.position = new Vector3(baseObject.transform.position.x, baseObject.transform.position.y, baseObject.transform.position.z);
         pen.transform.localEulerAngles = new Vector3(0, -225, 0);
         locPos = pen.transform.GetChild(0).transform.position;

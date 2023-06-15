@@ -169,6 +169,7 @@ public class ReachToTargetTask : BaseTask
 
     void PenFollowMouse()
     {
+        pen.transform.parent = ctrler.CursorController.RightHand.transform;
         pen.transform.position = new Vector3(baseObject.transform.position.x, baseObject.transform.position.y, baseObject.transform.position.z);
         pen.transform.localEulerAngles = new Vector3(0, -225, 0);
         switch(currentStep){
@@ -223,7 +224,7 @@ public class ReachToTargetTask : BaseTask
                 }
                 break;
             case 2:
-                if(isNoCursor && baseObject.transform.position.z > 0f){
+                if(isNoCursor && activeCursor.transform.position.z > 0f){
                     arc.GetComponent<ArcScript>().TargetDistance = ctrler.CursorController.DistanceFromHome * 100;
                     arc.GetComponent<ArcScript>().GenerateArc();
                 }
@@ -251,7 +252,7 @@ public class ReachToTargetTask : BaseTask
 
         if (currentStep == 2 &&
             ctrler.CursorController.stillTime > 0.5f &&
-            trial.settings.GetString("per_block_type") == "nocursor" && ctrler.CursorController.DistanceFromHome > 0.03f){
+            trial.settings.GetString("per_block_type") == "nocursor" && (targets[0].transform.position - activeCursor.transform.position).magnitude > 0.03f){
                 Debug.Log(ctrler.CursorController.stillTime);
                 IncrementStep();
             }
@@ -336,9 +337,9 @@ public class ReachToTargetTask : BaseTask
                 }
 
                 if (trial.settings.GetString("per_block_type") == "nocursor" ){
-                    baseObject.GetComponent<Renderer>().enabled = false;
+                    activeCursor.GetComponent<Renderer>().enabled = false;
                     arc.SetActive(true);
-                    baseObject.GetComponent<BaseTarget>().enabled = false;
+                    activeCursor.GetComponent<BaseTarget>().enabled = false;
                 } 
                 else if(trial.settings.GetBool("per_block_penPresent")){
                     baseObject.GetComponent<Renderer>().enabled = false;
@@ -481,7 +482,7 @@ public class ReachToTargetTask : BaseTask
 
         // Set up the home position
         targets.Add(GameObject.Find("Home"));
-        targets[1].transform.localPosition = tempPos + targets[1].transform.forward * 7f/100f;
+        targets[1].transform.localPosition = tempPos + targets[1].transform.forward * 5f/100f;
         targets[1].SetActive(false);
         Home = targets[1];
 
