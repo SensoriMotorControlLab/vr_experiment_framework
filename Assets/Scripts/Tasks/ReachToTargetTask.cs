@@ -170,8 +170,8 @@ public class ReachToTargetTask : BaseTask
     void PenFollowMouse()
     {
         pen.transform.parent = ctrler.CursorController.RightHand.transform;
-        pen.transform.position = new Vector3(baseObject.transform.position.x, baseObject.transform.position.y, baseObject.transform.position.z);
-        pen.transform.localEulerAngles = new Vector3(0, -225, 0);
+        pen.transform.position = new Vector3(baseObject.transform.position.x, ctrler.CursorController.RightHand.transform.GetChild(0).transform.position.y, baseObject.transform.position.z);
+        pen.transform.localEulerAngles = new Vector3(0, -60, 20);
         switch(currentStep){
             case 0: 
                 baseObject.GetComponent<BaseTarget>().enabled = true;
@@ -188,7 +188,9 @@ public class ReachToTargetTask : BaseTask
         baseObject = GameObject.Find("BaseObject");
         pen = GameObject.Find("Pen");
         if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
-            baseObject.transform.position = ctrler.CursorController.ConvertPosition(ctrler.CursorController.GetHandPosition());
+            Vector3 mousePoint = GetMousePoint(baseObject.transform);
+            Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
+            baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
             baseObject.GetComponent<BaseTarget>().enabled = false;
             baseObject.GetComponent<Renderer>().enabled = false;
             pen.GetComponent<Renderer>().enabled = true;
@@ -205,6 +207,7 @@ public class ReachToTargetTask : BaseTask
         switch (currentStep)
         {
             case 0:
+                targets[2].SetActive(false);
                 if (!ctrler.Session.settings.GetObjectList("optional_params").Contains("return_visible") || isNoCursor)
                 {
                     // make the ball invisible
@@ -259,6 +262,9 @@ public class ReachToTargetTask : BaseTask
             
 
         if (Finished){
+            if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
+                pen.transform.parent = reachPrefab.transform;
+            }
             finalReachAngle = Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized);
             finalCursorAngle = Vector3.Angle(targets[1].transform.right, ctrler.CursorController.Model.transform.position);
             ctrler.EndAndPrepare();
@@ -325,6 +331,7 @@ public class ReachToTargetTask : BaseTask
             // If the user enters the home, start tracking time
             case 0:
                 VibrateController(0, 0.34f, 0.15f, devices);
+                targets[2].SetActive(false);
                 break;
             case 1:
                 ctrler.StartTimer();
@@ -348,7 +355,7 @@ public class ReachToTargetTask : BaseTask
                 else{
                     baseObject.GetComponent<Renderer>().enabled = true;
                 }
-
+                targets[2].SetActive(true);
                 break;
             case 2:
                 arc.SetActive(false);
@@ -470,7 +477,7 @@ public class ReachToTargetTask : BaseTask
         Vector3 tempPos;
         if (ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent"))
         {
-            tempPos =new Vector3 (ctrler.TargetContainer.transform.position.x, ctrler.TargetContainer.transform.position.y + 0.03f, ctrler.TargetContainer.transform.position.z); 
+            tempPos =new Vector3 (ctrler.TargetContainer.transform.position.x, ctrler.TargetContainer.transform.position.y + 0.1f, ctrler.TargetContainer.transform.position.z); 
         }
         else
         {
@@ -482,7 +489,7 @@ public class ReachToTargetTask : BaseTask
 
         // Set up the home position
         targets.Add(GameObject.Find("Home"));
-        targets[1].transform.localPosition = tempPos + targets[1].transform.forward * 5f/100f;
+        targets[1].transform.localPosition = tempPos + targets[1].transform.forward * 7f/100f;
         targets[1].SetActive(false);
         Home = targets[1];
 
