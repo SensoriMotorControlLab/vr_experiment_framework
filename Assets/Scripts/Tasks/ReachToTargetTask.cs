@@ -52,6 +52,8 @@ public class ReachToTargetTask : BaseTask
     GameObject arc;
     float finalReachAngle;
     float finalCursorAngle;
+    GameObject office;
+    GameObject lab;
 
     public override void Setup()
     {
@@ -92,9 +94,15 @@ public class ReachToTargetTask : BaseTask
         if(trial.settings.GetBool("per_block_penPresent")){
             pen.SetActive(true);
             baseObject.GetComponent<Renderer>().enabled = false;
+            office = Instantiate(ctrler.GetPrefab("office"), new Vector3(-3.4f, -0.71f, 8.1f), Quaternion.Euler(0, 180, 0));
+            office.SetActive(true);
+            office.transform.parent = reachPrefab.transform;
         }
         else{
             pen.SetActive(false);
+            lab = Instantiate(ctrler.GetPrefab("room"), new Vector3(-0.13f, 0.16f, 0.218f), Quaternion.identity);
+            lab.SetActive(true);
+            lab.transform.parent = reachPrefab.transform;
         }
 
         if(trial.settings.GetString("per_block_type") == "nocursor"){
@@ -171,7 +179,7 @@ public class ReachToTargetTask : BaseTask
     {
         pen.transform.parent = ctrler.CursorController.RightHand.transform;
         pen.transform.position = new Vector3(baseObject.transform.position.x, ctrler.CursorController.RightHand.transform.GetChild(0).transform.position.y, baseObject.transform.position.z);
-        pen.transform.localEulerAngles = new Vector3(0, -60, 20);
+        pen.transform.localEulerAngles = new Vector3(0, -60, 15);
         switch(currentStep){
             case 0: 
                 baseObject.GetComponent<BaseTarget>().enabled = true;
@@ -187,10 +195,12 @@ public class ReachToTargetTask : BaseTask
         base.Update();
         baseObject = GameObject.Find("BaseObject");
         pen = GameObject.Find("Pen");
+
+        Vector3 mousePoint = GetMousePoint(baseObject.transform);
+        Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
+        baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
+
         if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
-            Vector3 mousePoint = GetMousePoint(baseObject.transform);
-            Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
-            baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
             baseObject.GetComponent<BaseTarget>().enabled = false;
             baseObject.GetComponent<Renderer>().enabled = false;
             pen.GetComponent<Renderer>().enabled = true;
@@ -199,9 +209,6 @@ public class ReachToTargetTask : BaseTask
         }
         else{
             activeCursor = baseObject;
-            Vector3 mousePoint = GetMousePoint(baseObject.transform);
-            Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
-            baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
         }
         
         switch (currentStep)
