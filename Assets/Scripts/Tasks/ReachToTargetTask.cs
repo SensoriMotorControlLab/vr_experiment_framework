@@ -178,7 +178,7 @@ public class ReachToTargetTask : BaseTask
     void PenFollowMouse()
     {
         pen.transform.position = new Vector3(baseObject.transform.position.x, ctrler.CursorController.RightHand.transform.GetChild(0).transform.position.y, baseObject.transform.position.z);
-        pen.transform.localEulerAngles = new Vector3(0, -60, 15);
+        pen.transform.localEulerAngles = new Vector3(0, -60, 0);
         switch(currentStep){
             case 0: 
                 baseObject.GetComponent<BaseTarget>().enabled = true;
@@ -486,7 +486,7 @@ public class ReachToTargetTask : BaseTask
 
         // Set up the dock position
         targets.Add(GameObject.Find("Dock"));
-        targets[0].transform.position = ctrler.TargetContainer.transform.position - ctrler.transform.forward * dock_dist;
+        targets[0].transform.position = reachPrefab.transform.position - ctrler.transform.forward * dock_dist;
 
         // Set up the home position
         targets.Add(GameObject.Find("Home"));
