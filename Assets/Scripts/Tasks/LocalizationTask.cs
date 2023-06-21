@@ -55,9 +55,9 @@ public class LocalizationTask : BaseTask
 
         localizationPrefab = Instantiate(ctrler.GetPrefab("LocalizationPrefab"));
         
-        localizationPrefab.transform.position = Vector3.zero;
+        localizationPrefab.transform.position = new Vector3(0, -0.1f, 0);
         localizationPrefab.transform.SetParent(ctrler.transform);
-        ctrler.TargetContainer.transform.position = Vector3.zero;
+        ctrler.TargetContainer.transform.position = new Vector3(0, 0.1f, 0);
 
         localizationCam = GameObject.Find("LocalizationCamera");
         localizationSurface = GameObject.Find("Surface");
@@ -77,7 +77,7 @@ public class LocalizationTask : BaseTask
         }
 
         Vector3 tempPos;
-        tempPos =new Vector3 (ctrler.TargetContainer.transform.position.x, ctrler.TargetContainer.transform.position.y + 0.1f, ctrler.TargetContainer.transform.position.z);
+        tempPos =new Vector3 (ctrler.TargetContainer.transform.position.x, ctrler.TargetContainer.transform.position.y, ctrler.TargetContainer.transform.position.z);
         if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
             pen.SetActive(true);
             baseObject.GetComponent<Renderer>().enabled = false;
@@ -94,18 +94,18 @@ public class LocalizationTask : BaseTask
             lab.SetActive(true);
             lab.transform.parent = localizationPrefab.transform;
         }
-        // Set up the dock position
-        targets[0] = GameObject.Find("Dock");
-        targets[0].transform.position = ctrler.TargetContainer.transform.position - ctrler.transform.forward * dock_dist;
-        //targets[0].transform.position = new Vector3(ctrler.TargetContainer.transform.position.x, -0.250f, ctrler.TargetContainer.transform.position.z);
 
         // Set up the home position
         targets[1] = GameObject.Find("Home");
-        targets[1].transform.localPosition = tempPos + targets[1].transform.forward * 7f/100f;
+        targets[1].transform.localPosition = tempPos + ctrler.transform.forward * 0.07f;
         //targets[1].transform.position = new Vector3(ctrler.TargetContainer.transform.position.x, -0.250f, ctrler.TargetContainer.transform.position.z) + ctrler.transform.forward * 0.05f;
         targets[1].SetActive(false);
         Home = targets[1];
         homePos = targets[1].transform.position;
+
+        // Set up the dock position
+        targets[0] = GameObject.Find("Dock");
+        targets[0].transform.position = new Vector3(0, localizationPrefab.transform.position.y, 0) - ctrler.transform.forward * dock_dist;
 
         // Grab an angle from the list and then remove it
         targetAngle = Convert.ToSingle(ctrler.PseudoRandom("per_block_targetListToUse"));
@@ -114,12 +114,12 @@ public class LocalizationTask : BaseTask
         
         
         Debug.Log("Target Angle: " + targetAngle);
-        targets[2].transform.position = targets[1].transform.position;
-
+        arcRotation.transform.position = targets[1].transform.position;
         targets[2].GetComponent<ArcScript>().TargetDistance = ctrler.Session.CurrentTrial.settings.GetFloat("per_block_distance");
-        targets[2].GetComponent<ArcScript>().Angle = targets[2].transform.rotation.eulerAngles.y;
         Target = targets[2];
         sound = targets[2].GetComponent<AudioSource>();
+
+        arcError.transform.position = targets[1].transform.position;
 
         // Set up the GameObject that tracks the user's gaze
        
@@ -128,9 +128,10 @@ public class LocalizationTask : BaseTask
         locAim.GetComponent<BaseTarget>().enabled = false;
         locAim.SetActive(false);
 
-        locAim.transform.position =locAim.transform.position + Vector3.forward * 12.3f/100f;
+        locAim.transform.position =new Vector3(locAim.transform.position.x, 0f, locAim.transform.position.z) + Vector3.forward * 13f/100f;
         ctrler.TargetContainer.transform.rotation = Quaternion.Euler(0, 0, 0);       
         locAim.transform.SetParent(ctrler.TargetContainer.transform);
+        ctrler.TargetContainer.transform.position = new Vector3(0, 0.1f, 0) +  ctrler.TargetContainer.transform.forward * 7f/100f;
 
         Target.SetActive(false);
 
@@ -166,7 +167,7 @@ public class LocalizationTask : BaseTask
     void PenFollowMouse()
     {
         pen.transform.position = new Vector3(baseObject.transform.position.x, ctrler.CursorController.RightHand.transform.GetChild(0).transform.position.y, baseObject.transform.position.z);
-        pen.transform.localEulerAngles = new Vector3(0, -60, 15);
+        pen.transform.localEulerAngles = new Vector3(0, -60, 20);
         locPos = pen.transform.GetChild(0).transform.position;
     }
 
@@ -228,6 +229,7 @@ public class LocalizationTask : BaseTask
                     localizerLoc = Convert.ToSingle(ctrler.PseudoRandom("per_block_localizer_location"));
                     ctrler.TargetContainer.transform.rotation = Quaternion.Euler(0, localizerLoc, 0);
                     arcRotation = GameObject.Find("ArcRotation");
+                    arcRotation.transform.position = targets[1].transform.position;
                     arcRotation.transform.rotation = Quaternion.Euler(Vector3.up * (90 - targetAngle));
                     arcSpan = Convert.ToInt32(ctrler.PseudoRandom("per_block_arc_span"));
                     targets[2].GetComponent<ArcScript>().arcSpan = arcSpan;
@@ -253,13 +255,13 @@ public class LocalizationTask : BaseTask
 
                 if(ctrler.CursorController.stillTime > 0.5f &&
                         (targets[1].transform.position - locPos).magnitude > 0.1f && locPos.z > targets[1].transform.position.z
-                        && (targets[1].transform.position - locPos).magnitude < 0.125f)
+                        && (targets[1].transform.position - locPos).magnitude < 0.135f)
                         {
                             IncrementStep();
                             arcAquired = new Vector2(Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized), Time.time);
                         }
 
-                if((((targets[1].transform.position - locPos).magnitude > 0.005f && (targets[1].transform.position - locPos).magnitude < 0.12f) || ((targets[1].transform.position - locPos).magnitude > 0.125f)) 
+                if((((targets[1].transform.position - locPos).magnitude > 0.005f && (targets[1].transform.position - locPos).magnitude < 0.13f) || ((targets[1].transform.position - locPos).magnitude > 0.135f)) 
                     && locPos.z > targets[1].transform.position.z){
                     
                     arcError.SetActive(true);

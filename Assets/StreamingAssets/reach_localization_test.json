@@ -1,11 +1,11 @@
 {
   "experiment_mode": "targetTrack",
-  "optional_params": ["cursor"
+  "optional_params": ["cursor", "vr"
   ],
   "track_score": true,
   "per_block_type": [
 "localization",
-"localization",
+"aligned",
 "aligned"
     
   ],
@@ -16,7 +16,7 @@
     
   ],
   "per_block_penPresent": [
-    false,
+    true,
     true,
     true
   ],
@@ -104,12 +104,12 @@ null
     100
   ],
   "tl2": [
-    110,
-    130
+    100,
+    100
   ],
   "tl1": [
-    70,
-    90
+    100,
+    100
   ],
   "ct1": [
     20,
