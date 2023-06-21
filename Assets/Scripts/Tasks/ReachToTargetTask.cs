@@ -177,7 +177,6 @@ public class ReachToTargetTask : BaseTask
 
     void PenFollowMouse()
     {
-        pen.transform.parent = ctrler.CursorController.RightHand.transform;
         pen.transform.position = new Vector3(baseObject.transform.position.x, ctrler.CursorController.RightHand.transform.GetChild(0).transform.position.y, baseObject.transform.position.z);
         pen.transform.localEulerAngles = new Vector3(0, -60, 15);
         switch(currentStep){
@@ -196,9 +195,8 @@ public class ReachToTargetTask : BaseTask
         baseObject = GameObject.Find("BaseObject");
         pen = GameObject.Find("Pen");
 
-        Vector3 mousePoint = GetMousePoint(baseObject.transform);
-        Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
-        baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
+        
+        
 
         if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
             baseObject.GetComponent<BaseTarget>().enabled = false;
@@ -215,6 +213,9 @@ public class ReachToTargetTask : BaseTask
         {
             case 0:
                 targets[2].SetActive(false);
+                Vector3 mousePoint = GetMousePoint(baseObject.transform);
+                Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
+                baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
                 if (!ctrler.Session.settings.GetObjectList("optional_params").Contains("return_visible") || isNoCursor)
                 {
                     // make the ball invisible
@@ -226,6 +227,7 @@ public class ReachToTargetTask : BaseTask
                 }
                 break;
             case 1:
+                baseObject.transform.position = ctrler.CursorController.ConvertPosition(ctrler.CursorController.GetHandPosition());
                 if(isNoCursor){
                     activeCursor.GetComponent<Renderer>().enabled = false;
                 }
@@ -234,6 +236,7 @@ public class ReachToTargetTask : BaseTask
                 }
                 break;
             case 2:
+                baseObject.transform.position = ctrler.CursorController.ConvertPosition(ctrler.CursorController.GetHandPosition());
                 if(isNoCursor && activeCursor.transform.position.z > 0f){
                     arc.GetComponent<ArcScript>().TargetDistance = ctrler.CursorController.DistanceFromHome * 100;
                     arc.GetComponent<ArcScript>().GenerateArc();
@@ -269,9 +272,6 @@ public class ReachToTargetTask : BaseTask
             
 
         if (Finished){
-            if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
-                pen.transform.parent = reachPrefab.transform;
-            }
             finalReachAngle = Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized);
             finalCursorAngle = Vector3.Angle(targets[1].transform.right, ctrler.CursorController.Model.transform.position);
             ctrler.EndAndPrepare();
@@ -482,14 +482,8 @@ public class ReachToTargetTask : BaseTask
         ctrler.CursorController.SetCursorVisibility(true);
 
         Vector3 tempPos;
-        if (ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent"))
-        {
-            tempPos =new Vector3 (ctrler.TargetContainer.transform.position.x, ctrler.TargetContainer.transform.position.y + 0.1f, ctrler.TargetContainer.transform.position.z); 
-        }
-        else
-        {
-            tempPos = ctrler.TargetContainer.transform.position; 
-        } 
+        tempPos =new Vector3 (ctrler.TargetContainer.transform.position.x, ctrler.TargetContainer.transform.position.y + 0.1f, ctrler.TargetContainer.transform.position.z); 
+
         // Set up the dock position
         targets.Add(GameObject.Find("Dock"));
         targets[0].transform.position = ctrler.TargetContainer.transform.position - ctrler.transform.forward * dock_dist;

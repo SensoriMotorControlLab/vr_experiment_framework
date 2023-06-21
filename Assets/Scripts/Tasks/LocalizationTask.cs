@@ -77,11 +77,11 @@ public class LocalizationTask : BaseTask
         }
 
         Vector3 tempPos;
+        tempPos =new Vector3 (ctrler.TargetContainer.transform.position.x, ctrler.TargetContainer.transform.position.y + 0.1f, ctrler.TargetContainer.transform.position.z);
         if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
             pen.SetActive(true);
             baseObject.GetComponent<Renderer>().enabled = false;
             activeCursor = pen;
-            tempPos =new Vector3 (ctrler.TargetContainer.transform.position.x, ctrler.TargetContainer.transform.position.y + 0.1f, ctrler.TargetContainer.transform.position.z);
             office = Instantiate(ctrler.GetPrefab("office"), new Vector3(-3.4f, -0.71f, 8.1f), Quaternion.Euler(0, 180, 0));
             office.SetActive(true);
             office.transform.parent = localizationPrefab.transform; 
@@ -90,7 +90,6 @@ public class LocalizationTask : BaseTask
             pen.SetActive(false);
             baseObject.GetComponent<Renderer>().enabled = true;
             activeCursor = baseObject;
-            tempPos = ctrler.TargetContainer.transform.position;
             lab = Instantiate(ctrler.GetPrefab("room"), new Vector3(-0.13f, 0.16f, 0.218f), Quaternion.identity);
             lab.SetActive(true);
             lab.transform.parent = localizationPrefab.transform;
@@ -166,7 +165,6 @@ public class LocalizationTask : BaseTask
 
     void PenFollowMouse()
     {
-        pen.transform.parent = ctrler.CursorController.RightHand.transform;
         pen.transform.position = new Vector3(baseObject.transform.position.x, ctrler.CursorController.RightHand.transform.GetChild(0).transform.position.y, baseObject.transform.position.z);
         pen.transform.localEulerAngles = new Vector3(0, -60, 15);
         locPos = pen.transform.GetChild(0).transform.position;
@@ -180,10 +178,6 @@ public class LocalizationTask : BaseTask
         baseObject = GameObject.Find("BaseObject");
         pen = GameObject.Find("Pen");
         handPos2D = new Vector2(ctrler.CursorController.transform.position.x, ctrler.CursorController.transform.position.z);
-
-        Vector3 mousePoint = GetMousePoint(baseObject.transform);
-        Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
-        baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
         
         if(ctrler.CursorController.IsTriggerDown("l") || Input.GetKey(KeyCode.S)){
             pressedTime += Time.deltaTime;
@@ -205,6 +199,10 @@ public class LocalizationTask : BaseTask
         switch (currentStep)
         {
             case 0:
+                Vector3 mousePoint = GetMousePoint(baseObject.transform);
+                Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
+                baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
+
                 targets[0].SetActive(true);
                 if (!ctrler.Session.settings.GetObjectList("optional_params").Contains("return_visible"))
                 {
@@ -223,6 +221,7 @@ public class LocalizationTask : BaseTask
                 }
                 break;
             case 1:
+                baseObject.transform.position = ctrler.CursorController.ConvertPosition(ctrler.CursorController.GetHandPosition());
                 if ((targets[1].transform.position - locPos).magnitude < 0.005f)
                 {
                     IncrementStep();
@@ -238,6 +237,7 @@ public class LocalizationTask : BaseTask
                 break;
             // When the user holds their hand and they are outside the home, begin the next phase of localization
             case 2:
+                baseObject.transform.position = ctrler.CursorController.ConvertPosition(ctrler.CursorController.GetHandPosition());
                 activeCursor.GetComponent<Renderer>().enabled = false;
                 if(outEvent){
                     if((locPos - targets[1].transform.position).magnitude > 0.03){
@@ -276,6 +276,7 @@ public class LocalizationTask : BaseTask
                 
                 break;
             case 3:
+                baseObject.transform.position = ctrler.CursorController.ConvertPosition(ctrler.CursorController.GetHandPosition());
                 activeCursor.GetComponent<Renderer>().enabled = false;
                 // VR: User uses their head to localize their hand
                 // Non-VR: User uses horizontal axis to localize their mouse
@@ -346,9 +347,6 @@ public class LocalizationTask : BaseTask
         }
 
         if (Finished){
-            if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
-                pen.transform.parent = localizationPrefab.transform;
-            }
             finalReachAngle = Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized);
             finalCursorAngle = Vector3.Angle(targets[1].transform.right, ctrler.CursorController.Model.transform.position);
             ctrler.EndAndPrepare();
