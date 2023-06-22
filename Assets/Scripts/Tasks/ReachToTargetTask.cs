@@ -66,7 +66,9 @@ public class ReachToTargetTask : BaseTask
 
         reachPrefab = Instantiate(ctrler.GetPrefab("ReachPrefab"));
         reachPrefab.transform.SetParent(ctrler.transform);
-        reachPrefab.transform.position = Vector3.zero;
+        reachPrefab.transform.position = new Vector3(0, -0.1f, 0);
+        ctrler.TargetContainer.transform.position = new Vector3(0, 0.1f, 0);
+
 
         reachCam = GameObject.Find("ReachCam");
         reachSurface = GameObject.Find("Surface");
@@ -178,7 +180,7 @@ public class ReachToTargetTask : BaseTask
     void PenFollowMouse()
     {
         pen.transform.position = new Vector3(baseObject.transform.position.x, ctrler.CursorController.RightHand.transform.GetChild(0).transform.position.y, baseObject.transform.position.z);
-        pen.transform.localEulerAngles = new Vector3(0, -60, 15);
+        pen.transform.localEulerAngles = new Vector3(0, -60, 0);
         switch(currentStep){
             case 0: 
                 baseObject.GetComponent<BaseTarget>().enabled = true;
@@ -201,8 +203,8 @@ public class ReachToTargetTask : BaseTask
         if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
             baseObject.GetComponent<BaseTarget>().enabled = false;
             baseObject.GetComponent<Renderer>().enabled = false;
-            pen.GetComponent<Renderer>().enabled = true;
-            activeCursor = pen;
+            pen.transform.GetChild(0).GetComponent<Renderer>().enabled = true;
+            activeCursor = pen.transform.GetChild(0).gameObject;
             PenFollowMouse();
         }
         else{
@@ -482,11 +484,11 @@ public class ReachToTargetTask : BaseTask
         ctrler.CursorController.SetCursorVisibility(true);
 
         Vector3 tempPos;
-        tempPos =new Vector3 (ctrler.TargetContainer.transform.position.x, ctrler.TargetContainer.transform.position.y + 0.1f, ctrler.TargetContainer.transform.position.z); 
+        tempPos =new Vector3 (ctrler.TargetContainer.transform.position.x, ctrler.TargetContainer.transform.position.y, ctrler.TargetContainer.transform.position.z); 
 
         // Set up the dock position
         targets.Add(GameObject.Find("Dock"));
-        targets[0].transform.position = ctrler.TargetContainer.transform.position - ctrler.transform.forward * dock_dist;
+        targets[0].transform.position = reachPrefab.transform.position - ctrler.transform.forward * dock_dist;
 
         // Set up the home position
         targets.Add(GameObject.Find("Home"));
