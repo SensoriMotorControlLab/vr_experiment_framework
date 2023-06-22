@@ -212,9 +212,17 @@ public class ReachToTargetTask : BaseTask
         }
         else{
             activeCursor = baseObject;
-            Vector3 mousePoint = GetMousePoint(baseObject.transform);
-            Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
-            baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
+            switch(currentStep){
+                case 0: 
+                    Vector3 mousePoint = GetMousePoint(baseObject.transform);
+                    Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
+                    baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
+                    break;
+                default:
+
+                    baseObject.transform.position = ctrler.CursorController.ConvertPosition(ctrler.CursorController.GetHandPosition());
+                    break;
+            }
         }
         
         switch (currentStep)
