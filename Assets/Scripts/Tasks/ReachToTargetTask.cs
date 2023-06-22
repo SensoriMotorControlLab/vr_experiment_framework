@@ -54,6 +54,7 @@ public class ReachToTargetTask : BaseTask
     float finalCursorAngle;
     GameObject office;
     GameObject lab;
+    Vector3 rotatePoint;
 
     public override void Setup()
     {
@@ -180,15 +181,20 @@ public class ReachToTargetTask : BaseTask
     void PenFollowMouse()
     {
         pen.transform.position = new Vector3(baseObject.transform.position.x, ctrler.CursorController.RightHand.transform.GetChild(0).transform.position.y, baseObject.transform.position.z);
-        pen.transform.localEulerAngles = new Vector3(0, -60, 0);
+        pen.transform.localEulerAngles = new Vector3(0, -165, 20);
         switch(currentStep){
             case 0: 
                 baseObject.GetComponent<BaseTarget>().enabled = true;
+                Vector3 mousePoint = GetMousePoint(baseObject.transform);
+                Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
+                baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
                 break;
             default:
                 baseObject.GetComponent<BaseTarget>().enabled = false;
+                baseObject.transform.position = ctrler.CursorController.ConvertPosition(ctrler.CursorController.GetHandPosition(), rotatePoint);
                 break;
         }
+        Debug.Log((baseObject.transform.position - pen.transform.GetChild(0).gameObject.transform.position).magnitude);
     }
 
     public override void Update()
@@ -197,27 +203,24 @@ public class ReachToTargetTask : BaseTask
         baseObject = GameObject.Find("BaseObject");
         pen = GameObject.Find("Pen");
 
-        
-        
-
         if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
             baseObject.GetComponent<BaseTarget>().enabled = false;
             baseObject.GetComponent<Renderer>().enabled = false;
-            pen.transform.GetChild(0).GetComponent<Renderer>().enabled = true;
-            activeCursor = pen.transform.GetChild(0).gameObject;
+            pen.GetComponent<Renderer>().enabled = true;
+            activeCursor = pen;
             PenFollowMouse();
         }
         else{
             activeCursor = baseObject;
+            Vector3 mousePoint = GetMousePoint(baseObject.transform);
+            Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
+            baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
         }
         
         switch (currentStep)
         {
             case 0:
                 targets[2].SetActive(false);
-                Vector3 mousePoint = GetMousePoint(baseObject.transform);
-                Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
-                baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
                 if (!ctrler.Session.settings.GetObjectList("optional_params").Contains("return_visible") || isNoCursor)
                 {
                     // make the ball invisible
@@ -229,7 +232,6 @@ public class ReachToTargetTask : BaseTask
                 }
                 break;
             case 1:
-                baseObject.transform.position = ctrler.CursorController.ConvertPosition(ctrler.CursorController.GetHandPosition());
                 if(isNoCursor){
                     activeCursor.GetComponent<Renderer>().enabled = false;
                 }
@@ -238,7 +240,7 @@ public class ReachToTargetTask : BaseTask
                 }
                 break;
             case 2:
-                baseObject.transform.position = ctrler.CursorController.ConvertPosition(ctrler.CursorController.GetHandPosition());
+                
                 if(isNoCursor && activeCursor.transform.position.z > 0f){
                     arc.GetComponent<ArcScript>().TargetDistance = ctrler.CursorController.DistanceFromHome * 100;
                     arc.GetComponent<ArcScript>().GenerateArc();
@@ -343,6 +345,7 @@ public class ReachToTargetTask : BaseTask
                 targets[2].SetActive(false);
                 break;
             case 1:
+                rotatePoint = baseObject.transform.position;
                 ctrler.StartTimer();
                 ctrler.CursorController.SetMovementType(reachType[2]);
                 VibrateController(0, 0.34f, 0.15f, devices);

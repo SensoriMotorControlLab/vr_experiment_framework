@@ -167,7 +167,7 @@ public class LocalizationTask : BaseTask
     void PenFollowMouse()
     {
         pen.transform.position = new Vector3(baseObject.transform.position.x, ctrler.CursorController.RightHand.transform.GetChild(0).transform.position.y, baseObject.transform.position.z);
-        pen.transform.localEulerAngles = new Vector3(0, -60, 0);
+        pen.transform.localEulerAngles = new Vector3(0, -165, 20);
         locPos = pen.transform.GetChild(0).transform.position;
     }
 

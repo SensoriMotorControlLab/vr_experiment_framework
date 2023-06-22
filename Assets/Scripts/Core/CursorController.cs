@@ -436,6 +436,56 @@ public class CursorController : MonoBehaviour
         }
     }
 
+    public Vector3 ConvertPosition(Vector3 position, Vector3 rotatePoint)
+    {
+        ExperimentController ctrler = ExperimentController.Instance();
+
+        // Get home position. Returns Vector3.zero when task doesn't use a home position
+        // Vector3 home = ctrler.CurrentTask.Home != null ?
+        //     ctrler.CurrentTask.Home.transform.position : Vector3.zero;
+
+        switch (MoveType)
+        {
+            case MovementType.aligned:
+                // Debug.Log("aligned");
+                return position;
+            case MovementType.rotated:
+
+                if (ctrler.Session.CurrentBlock.settings.GetString("per_block_rotation") is string)
+                {
+                    float angle = ctrler.CurrentTask.GetRotation();
+                    Debug.Log(angle);
+                    return Quaternion.Euler(0, -angle, 0) * (position - rotatePoint) + rotatePoint;
+                }
+                else
+                {
+                    float angle = ctrler.Session.CurrentTrial.settings
+                    .GetFloat("per_block_rotation");
+
+                    return Quaternion.Euler(0, -angle, 0) * (position - rotatePoint) + rotatePoint;
+                }
+
+            case MovementType.clamped:
+                // Get vector between home position and target
+                Vector3 target = ctrler.CurrentTask.Target.transform.position;
+                Vector3 normal = target - rotatePoint;
+
+                // Rotate vector by 90 degrees to get plane parallel to the vector
+                normal = Quaternion.Euler(0f, -90f, 0f) * normal;
+
+                //  o   < target
+                //  |
+                // -|   < normal
+                //  |
+                //  x   < dock / center of experiment
+
+                // Project position using this new vector as the plane normal
+                return Vector3.ProjectOnPlane(position - rotatePoint, normal.normalized) + rotatePoint;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
     /// <summary>
     /// Maps the mouse cursor position to the plane's Y coordinate.
     /// A camera must be provided to determine the mouse position.
