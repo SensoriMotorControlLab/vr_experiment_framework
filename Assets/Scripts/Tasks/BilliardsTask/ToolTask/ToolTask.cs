@@ -626,7 +626,7 @@ public class ToolTask : BilliardsTask
         Vector2 lastPos = new Vector2(lastPositionNearTarget.x, lastPositionNearTarget.z);
         Vector2 targetPos = new Vector2(Target.transform.position.x, Target.transform.position.z);
         ctrler.Session.CurrentTrial.result["Trial_Type"] = ctrler.Session.CurrentBlock.settings.GetString("per_block_type");
-        ctrler.Session.CurrentTrial.result["target_list"] = targetAngle;
+        ctrler.Session.CurrentTrial.result["per_block_targetListToUse"] = targetAngle;
         Vector2 dist = lastPos - targetPos; //To Fix: Cast to plane here instead to accound for tilts
         // Debug.Log("error: " + dist.magnitude.ToString("F5"));
 
