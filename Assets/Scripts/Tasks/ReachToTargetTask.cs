@@ -43,6 +43,7 @@ public class ReachToTargetTask : BaseTask
     protected string tintColur;
     public float rotation = 0;
     List<Vector4> handPos = new List<Vector4>();
+    List<Vector4> penPos = new List<Vector4>();
     List<Vector4> cursorPos = new List<Vector4>();
     Vector2 pos_3cm_out = new Vector2(0, 0);
     Vector2 cursor_3cm_out = new Vector2(0, 0);
@@ -67,7 +68,7 @@ public class ReachToTargetTask : BaseTask
 
         reachPrefab = Instantiate(ctrler.GetPrefab("ReachPrefab"));
         reachPrefab.transform.SetParent(ctrler.transform);
-        reachPrefab.transform.position = new Vector3(0, -0.1f, 0);
+        reachPrefab.transform.position = new Vector3(0, 0, 0);
         ctrler.TargetContainer.transform.position = new Vector3(0, 0.1f, 0);
 
 
@@ -194,7 +195,7 @@ public class ReachToTargetTask : BaseTask
                 baseObject.transform.position = ctrler.CursorController.ConvertPosition(ctrler.CursorController.GetHandPosition(), rotatePoint);
                 break;
         }
-        Debug.Log((baseObject.transform.position - pen.transform.GetChild(0).gameObject.transform.position).magnitude);
+        penPos.Add(new Vector4(pen.transform.position.x, pen.transform.position.y, pen.transform.position.z, Time.time));
     }
 
     public override void Update()
@@ -204,8 +205,7 @@ public class ReachToTargetTask : BaseTask
         pen = GameObject.Find("Pen");
 
         if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
-            baseObject.GetComponent<BaseTarget>().enabled = false;
-            baseObject.GetComponent<Renderer>().enabled = false;
+
             pen.GetComponent<Renderer>().enabled = true;
             activeCursor = pen;
             PenFollowMouse();
@@ -215,7 +215,7 @@ public class ReachToTargetTask : BaseTask
             switch(currentStep){
                 case 0: 
                     Vector3 mousePoint = GetMousePoint(baseObject.transform);
-                    Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
+                    Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, 0, ctrler.CursorController.Model.transform.position.z);
                     baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
                     break;
                 default:
@@ -351,6 +351,7 @@ public class ReachToTargetTask : BaseTask
             case 0:
                 VibrateController(0, 0.34f, 0.15f, devices);
                 targets[2].SetActive(false);
+                targets[1].SetActive(true);
                 break;
             case 1:
                 rotatePoint = baseObject.transform.position;
@@ -379,6 +380,7 @@ public class ReachToTargetTask : BaseTask
                 break;
             case 2:
                 arc.SetActive(false);
+                targets[2].SetActive(false);
                 VibrateController(0, 0.34f, 0.15f, devices);
                 if (trackScore && ctrler.Session.settings.GetString("experiment_mode") != "targetTrack")
                 {
@@ -394,10 +396,6 @@ public class ReachToTargetTask : BaseTask
             if (currentStep == 1)
             {
                 targets[1].SetActive(false);
-            }
-            else if (currentStep < 3)
-            {
-                targets[currentStep].SetActive(true);
             }
 
 
@@ -517,14 +515,14 @@ public class ReachToTargetTask : BaseTask
                                         targets[2].transform.forward.normalized *
                                         (trial.settings.GetFloat("per_block_distance") / 100f);
 
-
-
-        // Disable collision detection for nocursor task
-        if (trial.settings.GetString("per_block_type") == "nocursor")
-            // targets[2].GetComponent<BaseTarget>().enabled = false;
-
         targets[2].SetActive(false);
         Target = targets[2];
+
+        // Disable collision detection for nocursor task
+        // if (trial.settings.GetString("per_block_type") == "nocursor")
+            // targets[2].GetComponent<BaseTarget>().enabled = false;
+
+        
 
         // Use static camera for non-vr version
         if (ctrler.Session.settings.GetObjectList("optional_params").Contains("vr"))
@@ -556,6 +554,7 @@ public class ReachToTargetTask : BaseTask
         session.CurrentTrial.result["arc_radius_or_target_distance_m"] = ctrler.Session.CurrentBlock.settings.GetFloat("per_block_distance") / 100;
         ctrler.LogVector4List("hand_pos", handPos);
         ctrler.LogVector4List("cursor_pos", cursorPos);
+        ctrler.LogVector4List("pen_pos", penPos);
         session.CurrentTrial.result["hand_3cm_out_angle"] = pos_3cm_out.x;
         session.CurrentTrial.result["hand_3cm_out_time"] = pos_3cm_out.y;
         session.CurrentTrial.result["cursor_3cm_out_angle"] = cursor_3cm_out.x;
