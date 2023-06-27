@@ -16,7 +16,7 @@
     
   ],
   "per_block_penPresent": [
-    false,
+    true,
     false,
     true
   ],

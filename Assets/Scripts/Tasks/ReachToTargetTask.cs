@@ -69,7 +69,7 @@ public class ReachToTargetTask : BaseTask
         reachPrefab = Instantiate(ctrler.GetPrefab("ReachPrefab"));
         reachPrefab.transform.SetParent(ctrler.transform);
         reachPrefab.transform.position = new Vector3(0, 0, 0);
-        ctrler.TargetContainer.transform.position = new Vector3(0, 0.1f, 0);
+        ctrler.TargetContainer.transform.position = new Vector3(0, 0.08f, 0);
 
 
         reachCam = GameObject.Find("ReachCam");
@@ -86,7 +86,7 @@ public class ReachToTargetTask : BaseTask
         SetSetup();
         arc.SetActive(false);
 
-         if (ctrler.Session.settings.GetObjectList("optional_params").Contains("cursor") && ctrler.Session.CurrentTrial.settings.GetBool("per_block_cursor_visible")){
+        if (ctrler.Session.settings.GetObjectList("optional_params").Contains("cursor") && ctrler.Session.CurrentTrial.settings.GetBool("per_block_cursor_visible")){
             ctrler.CursorController.SetCursorVisibility(true);
         }
         else{
@@ -101,6 +101,7 @@ public class ReachToTargetTask : BaseTask
             office = Instantiate(ctrler.GetPrefab("office"), new Vector3(-3.4f, -0.71f, 8.1f), Quaternion.Euler(0, 180, 0));
             office.SetActive(true);
             office.transform.parent = reachPrefab.transform;
+            pen.GetComponent<Renderer>().enabled = false;
         }
         else{
             pen.SetActive(false);
@@ -187,7 +188,7 @@ public class ReachToTargetTask : BaseTask
             case 0: 
                 baseObject.GetComponent<BaseTarget>().enabled = true;
                 Vector3 mousePoint = GetMousePoint(baseObject.transform);
-                Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
+                Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, 0, ctrler.CursorController.Model.transform.position.z);
                 baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
                 break;
             default:
