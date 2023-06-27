@@ -56,6 +56,7 @@ public class ReachToTargetTask : BaseTask
     GameObject office;
     GameObject lab;
     Vector3 rotatePoint;
+    float penHeight;
 
     public override void Setup()
     {
@@ -69,7 +70,7 @@ public class ReachToTargetTask : BaseTask
         reachPrefab = Instantiate(ctrler.GetPrefab("ReachPrefab"));
         reachPrefab.transform.SetParent(ctrler.transform);
         reachPrefab.transform.position = new Vector3(0, 0, 0);
-        ctrler.TargetContainer.transform.position = new Vector3(0, 0.08f, 0);
+        ctrler.TargetContainer.transform.position = new Vector3(0, 0.06f, 0);
 
 
         reachCam = GameObject.Find("ReachCam");
@@ -102,6 +103,8 @@ public class ReachToTargetTask : BaseTask
             office.SetActive(true);
             office.transform.parent = reachPrefab.transform;
             pen.GetComponent<Renderer>().enabled = false;
+            pen.transform.localEulerAngles = new Vector3(0, -165, 0);
+            penHeight = Mathf.Abs(pen.transform.position.y - pen.transform.GetChild(0).transform.position.y);
         }
         else{
             pen.SetActive(false);
@@ -182,8 +185,7 @@ public class ReachToTargetTask : BaseTask
 
     void PenFollowMouse()
     {
-        pen.transform.position = new Vector3(baseObject.transform.position.x, ctrler.CursorController.RightHand.transform.GetChild(0).transform.position.y, baseObject.transform.position.z);
-        pen.transform.localEulerAngles = new Vector3(0, -165, 20);
+        pen.transform.position = new Vector3(baseObject.transform.position.x, ctrler.TargetContainer.transform.position.y + penHeight, baseObject.transform.position.z);
         switch(currentStep){
             case 0: 
                 baseObject.GetComponent<BaseTarget>().enabled = true;
@@ -192,8 +194,9 @@ public class ReachToTargetTask : BaseTask
                 baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
                 break;
             default:
+                Vector3 temp = ctrler.CursorController.GetHandPosition();
                 baseObject.GetComponent<BaseTarget>().enabled = false;
-                baseObject.transform.position = ctrler.CursorController.ConvertPosition(ctrler.CursorController.GetHandPosition(), rotatePoint);
+                baseObject.transform.position = ctrler.CursorController.ConvertPosition(new Vector3 (temp.x, ctrler.TargetContainer.transform.position.y, temp.z), rotatePoint);
                 break;
         }
         penPos.Add(new Vector4(pen.transform.position.x, pen.transform.position.y, pen.transform.position.z, Time.time));
@@ -220,8 +223,8 @@ public class ReachToTargetTask : BaseTask
                     baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
                     break;
                 default:
-
-                    baseObject.transform.position = ctrler.CursorController.ConvertPosition(ctrler.CursorController.GetHandPosition());
+                    Vector3 temp = ctrler.CursorController.GetHandPosition();
+                    baseObject.transform.position = ctrler.CursorController.ConvertPosition(new Vector3 (temp.x, ctrler.TargetContainer.transform.position.y, temp.z));
                     break;
             }
         }

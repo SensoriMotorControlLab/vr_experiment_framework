@@ -159,6 +159,7 @@ public class ExperimentController : MonoBehaviour
 
     void FixedUpdate()
     {
+        // Vector3 pos = CursorController.GetHandPosition();
         dummyCamera.transform.position = CursorController.GetHandPosition();
         
         if (IsTracking && !isPaused)
