@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.22603749, g: 0.2152517, b: 0.23884736, a: 1}
+  m_IndirectSpecularColor: {r: 0.2260375, g: 0.2152517, b: 0.23884736, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1642,12 +1642,16 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 5af672584fe86624185c4b403aca7163, type: 2}
   - {fileID: 2100000, guid: 0c1a0b9acb480184fbe1df2bb7eed345, type: 2}
   - {fileID: 2100000, guid: e317ea3e4e4d3f04998f89ed7699e9a4, type: 2}
+  - {fileID: 2100000, guid: 5cceb3d51528fb1419fb61ba8512d536, type: 2}
   CursorController: {fileID: 693741413}
   Score: 0
   IsTracking: 1
   StepTimer: []
   curves: {fileID: 1000910856}
   room: {fileID: 624970418}
+  lights:
+  - {fileID: 1437577094}
+  - {fileID: 1162905649}
   isPaused: 0
   pauseTimeLength: 10
 --- !u!114 &1000910855
@@ -4565,6 +4569,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7387544290799179304, guid: 2674676cf85be874a815c303fe819ea1,
         type: 3}
+      propertyPath: m_Lightmapping
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7387544290799179304, guid: 2674676cf85be874a815c303fe819ea1,
+        type: 3}
       propertyPath: m_BoundingSphereOverride.w
       value: 4.3689593e-36
       objectReference: {fileID: 0}
@@ -4582,6 +4591,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_BoundingSphereOverride.z
       value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 7387544290799179305, guid: 2674676cf85be874a815c303fe819ea1,
+        type: 3}
+      propertyPath: m_Name
+      value: light2
       objectReference: {fileID: 0}
     - target: {fileID: 7387544290799179305, guid: 2674676cf85be874a815c303fe819ea1,
         type: 3}
@@ -4615,6 +4629,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7387544291869197396, guid: 2674676cf85be874a815c303fe819ea1,
         type: 3}
+      propertyPath: m_Name
+      value: light1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7387544291869197396, guid: 2674676cf85be874a815c303fe819ea1,
+        type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
@@ -4622,6 +4641,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_StaticEditorFlags
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7387544291869197398, guid: 2674676cf85be874a815c303fe819ea1,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.116
+      objectReference: {fileID: 0}
+    - target: {fileID: 7387544291869197399, guid: 2674676cf85be874a815c303fe819ea1,
+        type: 3}
+      propertyPath: m_Lightmapping
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 7387544291869197399, guid: 2674676cf85be874a815c303fe819ea1,
         type: 3}

@@ -40,6 +40,7 @@ public class ToolTask : BilliardsTask
     protected GameObject puckobj;
     protected GameObject curlingStone;
     protected GameObject slingShotBall;
+    List<GameObject> lights = new List<GameObject>();
      
     protected GameObject centre;
 
@@ -472,34 +473,35 @@ public class ToolTask : BilliardsTask
         XRPosLock = GameObject.Find("XRPosLock");
         centre = GameObject.Find("centre");
         surfaceParent = GameObject.Find("SurfaceParent");
-
         bonusText = GameObject.Find("BonusText");
-
         curlingStone = GameObject.Find("curlingStone");
         slingShotBall = GameObject.Find("slingShotBall");
         puckobj = GameObject.Find("impactPuck");
         ballobj = GameObject.Find("impactBall");
         ray = GameObject.Find("ray");
         barrier = GameObject.Find("barrier");
-
         toolBox = GameObject.Find("paddle");
         toolCylinder = GameObject.Find("slingshot");
         toolSphere = GameObject.Find("squeegee");
-
         toolObjects = GameObject.Find("ToolObjects");
-   
         baseObject = GameObject.Find("BaseObject");
-
         ballObjects = GameObject.Find("BallObjects");
         fireLocation = GameObject.Find("fireLocation");
-
         // Set up home position
         Home = GameObject.Find("HomePosition");
-
         line = GameObject.Find("DefaultLine").GetComponent<LineRenderer>();
 
+        if(ctrler.Session.CurrentBlock.settings.GetBool("per_block_lights")){
+            ctrler.lights[0].SetActive(true);
+            ctrler.lights[1].SetActive(true);
+        }
+        else{
+            ctrler.lights[0].SetActive(false);
+            ctrler.lights[1].SetActive(false);
+        }
+        
         timerIndicator.transform.rotation = Quaternion.LookRotation(
-            timerIndicator.transform.position - toolCamera.transform.position);
+        timerIndicator.transform.position - toolCamera.transform.position);
         timerIndicator.Timer = ctrler.Session.CurrentBlock.settings.GetFloat("per_block_timerTime");
 
         // Set up target
@@ -523,6 +525,9 @@ public class ToolTask : BilliardsTask
         switch (ctrler.PollPseudorandomList("per_block_list_tool_type"))
         {
             case "paddle":
+                if(!ctrler.Session.CurrentBlock.settings.GetBool("per_block_lights")){
+                    toolBox.GetComponent<MeshRenderer>().material = ctrler.Materials["paddleLight"];
+                }
                 toolCylinder.SetActive(false);
                 toolSphere.SetActive(false);
                 selectedObject = toolBox;

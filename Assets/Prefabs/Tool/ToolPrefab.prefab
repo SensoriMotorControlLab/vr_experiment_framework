@@ -3711,6 +3711,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: paddle
       objectReference: {fileID: 0}
+    - target: {fileID: 8113591683629688334, guid: 3c3667308705ef947ad18a68a1397809,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 435d696a8ee86404bb1c652256b83049, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3c3667308705ef947ad18a68a1397809, type: 3}
 --- !u!4 &3822174902174836546 stripped

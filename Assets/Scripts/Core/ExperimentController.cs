@@ -76,6 +76,7 @@ public class ExperimentController : MonoBehaviour
     public CurveController curves;
 
     public GameObject room;
+    public List<GameObject> lights = new List<GameObject>();
 
     public bool isPaused = false;
     public float pauseTimeLength = 10;
