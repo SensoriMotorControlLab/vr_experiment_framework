@@ -103,7 +103,7 @@ public class ReachToTargetTask : BaseTask
             office.SetActive(true);
             office.transform.parent = reachPrefab.transform;
             pen.GetComponent<Renderer>().enabled = false;
-            pen.transform.localEulerAngles = new Vector3(0, -165, 0);
+            pen.transform.localEulerAngles = new Vector3(0, -165, -15);
             penHeight = Mathf.Abs(pen.transform.position.y - pen.transform.GetChild(0).transform.position.y);
         }
         else{

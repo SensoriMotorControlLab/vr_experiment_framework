@@ -37,11 +37,11 @@ false
 
 
   "per_block_distance": [
-    15,
-    15,
-    15,
-    15,
-    15
+    13,
+    13,
+    13,
+    13,
+    13
     
   ],
   "per_block_n": [
