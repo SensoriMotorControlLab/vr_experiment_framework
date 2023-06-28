@@ -552,7 +552,7 @@ PrefabInstance:
     - target: {fileID: 1498660887713978037, guid: 7dd5bfdd1a595ba49a69c10ad37c93e4,
         type: 3}
       propertyPath: arcSpan
-      value: 60
+      value: 180
       objectReference: {fileID: 0}
     - target: {fileID: 1498660887713978037, guid: 7dd5bfdd1a595ba49a69c10ad37c93e4,
         type: 3}

@@ -29,6 +29,7 @@ public class LocalizationTask : BaseTask
     List<Vector4> handPos = new List<Vector4>();
     List<Vector4> cursorPos = new List<Vector4>();
     List<Vector4> indicatorPos = new List<Vector4>();
+    List<Vector4> penPos = new List<Vector4>();
     Vector2 pos_3cm_out = new Vector2(0, 0);
     Vector2 cursor_3cm_out = new Vector2(0, 0);
     Vector2 arcAquired = new Vector2(0, 0);
@@ -44,6 +45,7 @@ public class LocalizationTask : BaseTask
     Vector3 locPos;
     GameObject office;
     GameObject lab;
+    float penHeight;
     public override void Setup()
     {
 
@@ -55,9 +57,9 @@ public class LocalizationTask : BaseTask
 
         localizationPrefab = Instantiate(ctrler.GetPrefab("LocalizationPrefab"));
         
-        localizationPrefab.transform.position = new Vector3(0, -0.1f, 0);
+        localizationPrefab.transform.position = new Vector3(0, 0, 0);
         localizationPrefab.transform.SetParent(ctrler.transform);
-        ctrler.TargetContainer.transform.position = new Vector3(0, 0.1f, 0);
+        ctrler.TargetContainer.transform.position = new Vector3(0, 0.06f, 0);
 
         localizationCam = GameObject.Find("LocalizationCamera");
         localizationSurface = GameObject.Find("Surface");
@@ -82,9 +84,11 @@ public class LocalizationTask : BaseTask
             pen.SetActive(true);
             baseObject.GetComponent<Renderer>().enabled = false;
             activeCursor = pen;
+            pen.transform.localEulerAngles = new Vector3(0, -165, -15);
             office = Instantiate(ctrler.GetPrefab("office"), new Vector3(-3.4f, -0.71f, 8.1f), Quaternion.Euler(0, 180, 0));
             office.SetActive(true);
             office.transform.parent = localizationPrefab.transform; 
+            penHeight = Mathf.Abs(pen.transform.position.y - pen.transform.GetChild(0).transform.position.y);
         }
         else{
             pen.SetActive(false);
@@ -128,10 +132,10 @@ public class LocalizationTask : BaseTask
         locAim.GetComponent<BaseTarget>().enabled = false;
         locAim.SetActive(false);
 
-        locAim.transform.position =new Vector3(locAim.transform.position.x, 0f, locAim.transform.position.z) + Vector3.forward * 13f/100f;
+        locAim.transform.position =new Vector3(locAim.transform.position.x, ctrler.TargetContainer.transform.position.y, locAim.transform.position.z) + Vector3.forward * 13f/100f;
         ctrler.TargetContainer.transform.rotation = Quaternion.Euler(0, 0, 0);       
         locAim.transform.SetParent(ctrler.TargetContainer.transform);
-        ctrler.TargetContainer.transform.position = new Vector3(0, 0.1f, 0) +  ctrler.TargetContainer.transform.forward * 7f/100f;
+        ctrler.TargetContainer.transform.position = ctrler.TargetContainer.transform.position +  ctrler.TargetContainer.transform.forward * 7f/100f;
 
         Target.SetActive(false);
 
@@ -166,9 +170,11 @@ public class LocalizationTask : BaseTask
 
     void PenFollowMouse()
     {
-        pen.transform.position = new Vector3(baseObject.transform.position.x, ctrler.CursorController.RightHand.transform.GetChild(0).transform.position.y, baseObject.transform.position.z);
-        pen.transform.localEulerAngles = new Vector3(0, -165, 20);
+        pen.transform.position = new Vector3(baseObject.transform.position.x, ctrler.TargetContainer.transform.position.y + penHeight, baseObject.transform.position.z);
+        pen.transform.localEulerAngles = new Vector3(0, -165, -15);
         locPos = pen.transform.GetChild(0).transform.position;
+        Vector3 tempPenPos = pen.transform.GetChild(0).transform.position;
+        penPos.Add(new Vector4(tempPenPos.x, tempPenPos.y, tempPenPos.z, Time.time));
     }
 
     public override void Update()
@@ -193,10 +199,10 @@ public class LocalizationTask : BaseTask
             PenFollowMouse();
         }
         else{    
-            locPos = ctrler.CursorController.transform.position;
+            locPos = baseObject.transform.position;
             activeCursor = baseObject;
         }
-
+        Vector3 temp = ctrler.CursorController.GetHandPosition();
         switch (currentStep)
         {
             case 0:
@@ -222,7 +228,7 @@ public class LocalizationTask : BaseTask
                 }
                 break;
             case 1:
-                baseObject.transform.position = ctrler.CursorController.ConvertPosition(ctrler.CursorController.GetHandPosition());
+                baseObject.transform.position = ctrler.CursorController.ConvertPosition(new Vector3 (temp.x, ctrler.TargetContainer.transform.position.y, temp.z));
                 if ((targets[1].transform.position - locPos).magnitude < 0.005f)
                 {
                     IncrementStep();
@@ -239,7 +245,8 @@ public class LocalizationTask : BaseTask
                 break;
             // When the user holds their hand and they are outside the home, begin the next phase of localization
             case 2:
-                baseObject.transform.position = ctrler.CursorController.ConvertPosition(ctrler.CursorController.GetHandPosition());
+                
+                baseObject.transform.position = ctrler.CursorController.ConvertPosition(new Vector3 (temp.x, ctrler.TargetContainer.transform.position.y, temp.z));
                 activeCursor.GetComponent<Renderer>().enabled = false;
                 if(outEvent){
                     if((locPos - targets[1].transform.position).magnitude > 0.03){
@@ -278,7 +285,7 @@ public class LocalizationTask : BaseTask
                 
                 break;
             case 3:
-                baseObject.transform.position = ctrler.CursorController.ConvertPosition(ctrler.CursorController.GetHandPosition());
+                baseObject.transform.position = ctrler.CursorController.ConvertPosition(new Vector3 (temp.x, ctrler.TargetContainer.transform.position.y, temp.z));
                 activeCursor.GetComponent<Renderer>().enabled = false;
                 // VR: User uses their head to localize their hand
                 // Non-VR: User uses horizontal axis to localize their mouse
@@ -403,7 +410,7 @@ public class LocalizationTask : BaseTask
                 break;
             case 1: // Enter home
                 Home.SetActive(false);
-
+                VibrateController(0, 0.34f, 0.15f, devices);
                 ctrler.StartTimer();
 
                 Target.SetActive(true);
@@ -449,6 +456,7 @@ public class LocalizationTask : BaseTask
         session.CurrentTrial.result["arc_radius_or_target_distance_m"] = targets[2].GetComponent<ArcScript>().TargetDistance / 100;
         ctrler.LogVector4List("hand_pos", handPos);
         ctrler.LogVector4List("cursor_pos", cursorPos);
+        ctrler.LogVector4List("pen_pos", penPos);
         session.CurrentTrial.result["hand_3cm_out_angle"] = pos_3cm_out.x;
         session.CurrentTrial.result["hand_3cm_out_time"] = pos_3cm_out.y;
         session.CurrentTrial.result["cursor_3cm_out_angle"] = cursor_3cm_out.x;

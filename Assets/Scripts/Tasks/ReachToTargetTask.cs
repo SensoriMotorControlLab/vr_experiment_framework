@@ -66,7 +66,7 @@ public class ReachToTargetTask : BaseTask
         trial = ctrler.Session.CurrentTrial;
 
         Cursor.visible = false;
-
+        Debug.Log("ReachToTargetTask Setup");
         reachPrefab = Instantiate(ctrler.GetPrefab("ReachPrefab"));
         reachPrefab.transform.SetParent(ctrler.transform);
         reachPrefab.transform.position = new Vector3(0, 0, 0);
@@ -185,6 +185,8 @@ public class ReachToTargetTask : BaseTask
 
     void PenFollowMouse()
     {
+        pen.transform.localEulerAngles = new Vector3(0, -165, -15);
+        penHeight = Mathf.Abs(pen.transform.position.y - pen.transform.GetChild(0).transform.position.y);
         pen.transform.position = new Vector3(baseObject.transform.position.x, ctrler.TargetContainer.transform.position.y + penHeight, baseObject.transform.position.z);
         switch(currentStep){
             case 0: 
@@ -212,6 +214,7 @@ public class ReachToTargetTask : BaseTask
         if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
 
             pen.GetComponent<Renderer>().enabled = true;
+            baseObject.GetComponent<Renderer>().enabled = false;
             activeCursor = pen;
             PenFollowMouse();
         }
@@ -253,10 +256,20 @@ public class ReachToTargetTask : BaseTask
                 }
                 break;
             case 2:
+                if(isNoCursor){
+                    pen.GetComponent<Renderer>().enabled = false;
+                }
                 
-                if(isNoCursor && activeCursor.transform.position.z > 0f){
-                    arc.GetComponent<ArcScript>().TargetDistance = ctrler.CursorController.DistanceFromHome * 100;
-                    arc.GetComponent<ArcScript>().GenerateArc();
+                if(isNoCursor && activeCursor.transform.position.z > targets[1].transform.position.z){
+                    if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
+                        arc.GetComponent<ArcScript>().TargetDistance = (activeCursor.transform.GetChild(0).transform.position - arc.transform.position).magnitude * 100;
+                        arc.GetComponent<ArcScript>().GenerateArc();
+                    }
+                    else{
+                        arc.GetComponent<ArcScript>().TargetDistance = (activeCursor.transform.position - arc.transform.position).magnitude * 100;
+                        arc.GetComponent<ArcScript>().GenerateArc();
+                    }
+                    
                 }
                 break;
         }
@@ -372,7 +385,7 @@ public class ReachToTargetTask : BaseTask
                 if (trial.settings.GetString("per_block_type") == "nocursor" ){
                     activeCursor.GetComponent<Renderer>().enabled = false;
                     arc.SetActive(true);
-                    activeCursor.GetComponent<BaseTarget>().enabled = false;
+                    activeCursor.transform.GetChild(0).GetComponent<BaseTarget>().enabled = false;
                 } 
                 else if(trial.settings.GetBool("per_block_penPresent")){
                     baseObject.GetComponent<Renderer>().enabled = false;
@@ -509,6 +522,7 @@ public class ReachToTargetTask : BaseTask
         targets[1].transform.localPosition = tempPos + targets[1].transform.forward * 7f/100f;
         targets[1].SetActive(false);
         Home = targets[1];
+        arc.transform.position = targets[1].transform.position;
 
         // Set up the target
         // Takes a target angle from the list and removes it
