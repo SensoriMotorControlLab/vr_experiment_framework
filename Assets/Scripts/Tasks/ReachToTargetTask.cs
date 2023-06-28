@@ -199,7 +199,8 @@ public class ReachToTargetTask : BaseTask
                 baseObject.transform.position = ctrler.CursorController.ConvertPosition(new Vector3 (temp.x, ctrler.TargetContainer.transform.position.y, temp.z), rotatePoint);
                 break;
         }
-        penPos.Add(new Vector4(pen.transform.position.x, pen.transform.position.y, pen.transform.position.z, Time.time));
+        Vector3 tempPenPos = pen.transform.GetChild(0).transform.position;
+        penPos.Add(new Vector4(tempPenPos.x, tempPenPos.y, tempPenPos.z, Time.time));
     }
 
     public override void Update()
