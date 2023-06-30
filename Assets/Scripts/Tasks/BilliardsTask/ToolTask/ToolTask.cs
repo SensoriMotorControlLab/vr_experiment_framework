@@ -105,6 +105,7 @@ public class ToolTask : BilliardsTask
     // Used to keep track of the rotation of the surface, when using dynamic tilt
     private List<float> dynamicTiltRotations = new List<float>();
     float targetAngle;
+    float lightintensity = 0.2f;
 
     private void FixedUpdate()
     {
@@ -494,10 +495,12 @@ public class ToolTask : BilliardsTask
         if(ctrler.Session.CurrentBlock.settings.GetBool("per_block_lights")){
             ctrler.lights[0].SetActive(true);
             ctrler.lights[1].SetActive(true);
+            RenderSettings.ambientIntensity = 1.0f;
         }
         else{
             ctrler.lights[0].SetActive(false);
             ctrler.lights[1].SetActive(false);
+            RenderSettings.ambientIntensity = lightintensity;
         }
         
         timerIndicator.transform.rotation = Quaternion.LookRotation(
@@ -525,22 +528,22 @@ public class ToolTask : BilliardsTask
         switch (ctrler.PollPseudorandomList("per_block_list_tool_type"))
         {
             case "paddle":
-                if(!ctrler.Session.CurrentBlock.settings.GetBool("per_block_lights")){
-                    toolBox.GetComponent<MeshRenderer>().material = ctrler.Materials["paddleLight"];
-                }
                 toolCylinder.SetActive(false);
                 toolSphere.SetActive(false);
                 selectedObject = toolBox;
                 sound = toolBox.GetComponentInChildren<AudioSource>();
                 break;
             case "squeegee":
+            if(!ctrler.Session.CurrentBlock.settings.GetBool("per_block_lights")){
+                    toolSphere.GetComponent<MeshRenderer>().material = ctrler.Materials["wood_glow"];
+                }  
                 Home.transform.position = new Vector3(Home.transform.position.x, Home.transform.position.y, -0.15f);
                 toolCylinder.SetActive(false);
                 toolBox.SetActive(false);
                 selectedObject = toolSphere;
                 sound = toolSphere.GetComponentInChildren<AudioSource>();
                 break;
-            case "slingshot":          
+            case "slingshot":        
                 toolSphere.SetActive(false);
                 toolBox.SetActive(false);
                 selectedObject = toolCylinder;
