@@ -105,6 +105,7 @@ public class ReachToTargetTask : BaseTask
             pen.GetComponent<Renderer>().enabled = false;
             pen.transform.localEulerAngles = new Vector3(0, -165, -15);
             penHeight = Mathf.Abs(pen.transform.position.y - pen.transform.GetChild(0).transform.position.y);
+            reachSurface.GetComponent<Renderer>().material = ctrler.Materials["wood"];
         }
         else{
             pen.SetActive(false);
@@ -188,6 +189,7 @@ public class ReachToTargetTask : BaseTask
         pen.transform.localEulerAngles = new Vector3(0, -165, -15);
         penHeight = Mathf.Abs(pen.transform.position.y - pen.transform.GetChild(0).transform.position.y);
         pen.transform.position = new Vector3(baseObject.transform.position.x, ctrler.TargetContainer.transform.position.y + penHeight, baseObject.transform.position.z);
+        Vector3 temp = ctrler.CursorController.GetHandPosition();
         switch(currentStep){
             case 0: 
                 baseObject.GetComponent<BaseTarget>().enabled = true;
@@ -195,8 +197,14 @@ public class ReachToTargetTask : BaseTask
                 Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, 0, ctrler.CursorController.Model.transform.position.z);
                 baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
                 break;
+            case 1:
+                if(isNoCursor && (pen.transform.GetChild(0).transform.position - targets[1].transform.position).magnitude < 0.06f){
+                    VibrateController(0, 0.6f - ((pen.transform.GetChild(0).transform.position - targets[1].transform.position).magnitude * 10), Time.deltaTime, devices);
+                }
+                baseObject.GetComponent<BaseTarget>().enabled = false;
+                baseObject.transform.position = ctrler.CursorController.ConvertPosition(new Vector3 (temp.x, ctrler.TargetContainer.transform.position.y, temp.z), rotatePoint);
+                break;
             default:
-                Vector3 temp = ctrler.CursorController.GetHandPosition();
                 baseObject.GetComponent<BaseTarget>().enabled = false;
                 baseObject.transform.position = ctrler.CursorController.ConvertPosition(new Vector3 (temp.x, ctrler.TargetContainer.transform.position.y, temp.z), rotatePoint);
                 break;
@@ -210,6 +218,7 @@ public class ReachToTargetTask : BaseTask
         base.Update();
         baseObject = GameObject.Find("BaseObject");
         pen = GameObject.Find("Pen");
+        reachSurface = GameObject.Find("Surface");
 
         if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
 
@@ -217,17 +226,25 @@ public class ReachToTargetTask : BaseTask
             baseObject.GetComponent<Renderer>().enabled = false;
             activeCursor = pen;
             PenFollowMouse();
+            reachSurface.GetComponent<Renderer>().material = ctrler.Materials["wood"];
         }
         else{
             activeCursor = baseObject;
+            Vector3 temp = ctrler.CursorController.GetHandPosition();
             switch(currentStep){
                 case 0: 
                     Vector3 mousePoint = GetMousePoint(baseObject.transform);
                     Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, 0, ctrler.CursorController.Model.transform.position.z);
                     baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
                     break;
+                case 1:
+                    if(isNoCursor && (baseObject.transform.position - targets[1].transform.position).magnitude < 0.06f){
+                        VibrateController(0, 0.6f - ((baseObject.transform.position - targets[1].transform.position).magnitude * 10), Time.deltaTime, devices);
+                    }
+                    baseObject.transform.position = ctrler.CursorController.ConvertPosition(new Vector3 (temp.x, ctrler.TargetContainer.transform.position.y, temp.z));
+                    break;
                 default:
-                    Vector3 temp = ctrler.CursorController.GetHandPosition();
+                    
                     baseObject.transform.position = ctrler.CursorController.ConvertPosition(new Vector3 (temp.x, ctrler.TargetContainer.transform.position.y, temp.z));
                     break;
             }
@@ -257,10 +274,10 @@ public class ReachToTargetTask : BaseTask
                 break;
             case 2:
                 if(isNoCursor){
-                    pen.GetComponent<Renderer>().enabled = false;
+                    activeCursor.GetComponent<Renderer>().enabled = false;
                 }
-                
                 if(isNoCursor && activeCursor.transform.position.z > targets[1].transform.position.z){
+                    arc.SetActive(true);
                     if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
                         arc.GetComponent<ArcScript>().TargetDistance = (activeCursor.transform.GetChild(0).transform.position - arc.transform.position).magnitude * 100;
                         arc.GetComponent<ArcScript>().GenerateArc();
@@ -271,21 +288,25 @@ public class ReachToTargetTask : BaseTask
                     }
                     
                 }
+                else {
+                    arc.GetComponent<ArcScript>().TargetDistance = 0;
+                    arc.GetComponent<ArcScript>().GenerateArc();
+                    arc.SetActive(false);
+                }
                 break;
         }
 
-        reachSurface = GameObject.Find("Surface");
-        switch(trial.settings.GetString("per_block_type")){
-            case "rotated":
-                reachSurface.GetComponent<Renderer>().material.color = new Color(0f, 0f, 0.1f, 1f);
-                break;
-            case "aligned":
-                reachSurface.GetComponent<Renderer>().material.color = new Color(0f, 0.1f, 0f, 1f);
-                break;
-            case "nocursor":
-                reachSurface.GetComponent<Renderer>().material.color = new Color(0.1f, 0f, 0f, 1f);
-                break;
-        }
+        // switch(trial.settings.GetString("per_block_type")){
+        //     case "rotated":
+        //         reachSurface.GetComponent<Renderer>().material.color = new Color(0f, 0f, 0.1f, 1f);
+        //         break;
+        //     case "aligned":
+        //         reachSurface.GetComponent<Renderer>().material.color = new Color(0f, 0.1f, 0f, 1f);
+        //         break;
+        //     case "nocursor":
+        //         reachSurface.GetComponent<Renderer>().material.color = new Color(0.1f, 0f, 0f, 1f);
+        //         break;
+        // }
 
         if (!trackScore) scoreboard.ManualScoreText = "Practice Round";
 
@@ -296,7 +317,6 @@ public class ReachToTargetTask : BaseTask
         if (currentStep == 2 &&
             ctrler.CursorController.stillTime > 0.5f &&
             trial.settings.GetString("per_block_type") == "nocursor" && (targets[0].transform.position - activeCursor.transform.position).magnitude > 0.03f){
-                Debug.Log(ctrler.CursorController.stillTime);
                 IncrementStep();
             }
             
@@ -385,7 +405,13 @@ public class ReachToTargetTask : BaseTask
                 if (trial.settings.GetString("per_block_type") == "nocursor" ){
                     activeCursor.GetComponent<Renderer>().enabled = false;
                     arc.SetActive(true);
-                    activeCursor.transform.GetChild(0).GetComponent<BaseTarget>().enabled = false;
+                    if (ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
+                        activeCursor.transform.GetChild(0).GetComponent<BaseTarget>().enabled = false;
+                    }
+                    else{
+                        activeCursor.GetComponent<BaseTarget>().enabled = false;
+                    }
+                    
                 } 
                 else if(trial.settings.GetBool("per_block_penPresent")){
                     baseObject.GetComponent<Renderer>().enabled = false;
