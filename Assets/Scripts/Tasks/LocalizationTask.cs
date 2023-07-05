@@ -89,7 +89,7 @@ public class LocalizationTask : BaseTask
             office.SetActive(true);
             office.transform.parent = localizationPrefab.transform; 
             penHeight = Mathf.Abs(pen.transform.position.y - pen.transform.GetChild(0).transform.position.y);
-            localizationSurface.GetComponent<Renderer>().material = ctrler.Materials["wood 4"];
+            localizationSurface.GetComponent<Renderer>().material = ctrler.Materials["wood"];
         }
         else{
             pen.SetActive(false);
@@ -199,7 +199,7 @@ public class LocalizationTask : BaseTask
             baseObject.GetComponent<Renderer>().enabled = false;
             activeCursor = pen;
             PenFollowMouse();
-            localizationSurface.GetComponent<Renderer>().material = ctrler.Materials["wood 4"];
+            localizationSurface.GetComponent<Renderer>().material = ctrler.Materials["wood"];
         }
         else{    
             locPos = baseObject.transform.position;

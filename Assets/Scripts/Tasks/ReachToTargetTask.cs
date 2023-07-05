@@ -105,7 +105,7 @@ public class ReachToTargetTask : BaseTask
             pen.GetComponent<Renderer>().enabled = false;
             pen.transform.localEulerAngles = new Vector3(0, -165, -15);
             penHeight = Mathf.Abs(pen.transform.position.y - pen.transform.GetChild(0).transform.position.y);
-            reachSurface.GetComponent<Renderer>().material = ctrler.Materials["wood 4"];
+            reachSurface.GetComponent<Renderer>().material = ctrler.Materials["wood"];
         }
         else{
             pen.SetActive(false);
@@ -199,7 +199,7 @@ public class ReachToTargetTask : BaseTask
                 break;
             case 1:
                 if(isNoCursor && (pen.transform.GetChild(0).transform.position - targets[1].transform.position).magnitude < 0.06f){
-                    VibrateController(0, 0.6f - ((pen.transform.GetChild(0).transform.position - targets[1].transform.position).magnitude * 10), Time.deltaTime, devices);
+                    VibrateController(0, (0.6f - ((pen.transform.GetChild(0).transform.position - targets[1].transform.position).magnitude * 10))/2, Time.deltaTime, devices);
                 }
                 baseObject.GetComponent<BaseTarget>().enabled = false;
                 baseObject.transform.position = ctrler.CursorController.ConvertPosition(new Vector3 (temp.x, ctrler.TargetContainer.transform.position.y, temp.z), rotatePoint);
@@ -226,7 +226,7 @@ public class ReachToTargetTask : BaseTask
             baseObject.GetComponent<Renderer>().enabled = false;
             activeCursor = pen;
             PenFollowMouse();
-            reachSurface.GetComponent<Renderer>().material = ctrler.Materials["wood 4"];
+            reachSurface.GetComponent<Renderer>().material = ctrler.Materials["wood"];
         }
         else{
             activeCursor = baseObject;
