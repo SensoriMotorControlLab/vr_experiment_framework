@@ -70,7 +70,7 @@ public class ReachToTargetTask : BaseTask
         reachPrefab = Instantiate(ctrler.GetPrefab("ReachPrefab"));
         reachPrefab.transform.SetParent(ctrler.transform);
         reachPrefab.transform.position = new Vector3(0, 0, 0);
-        ctrler.TargetContainer.transform.position = new Vector3(0, 0.06f, 0);
+        ctrler.TargetContainer.transform.position = new Vector3(0, 0.05f, 0);
 
 
         reachCam = GameObject.Find("ReachCam");

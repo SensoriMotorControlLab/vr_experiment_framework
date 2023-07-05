@@ -196,7 +196,7 @@ public class ExperimentController : MonoBehaviour
     {
         Transform temp = cameraOffset.transform.parent;
         cameraOffset.transform.parent = dummyCamera.transform;
-        dummyCamera.transform.position = new Vector3(centre.x, 0, centre.z);
+        dummyCamera.transform.position = new Vector3(centre.x, 0.07f, centre.z);
         cameraOffset.transform.parent = null;
         cameraOffset.transform.parent = temp;
         //StartCoroutine(TempDisableCursor());

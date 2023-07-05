@@ -7,6 +7,7 @@
     "aligned",
     "aligned",
     "rotated",
+    "localization",
     "nocursor",
     "nocursor"
     
@@ -16,11 +17,13 @@
 null,
 "br1",
 null,
+null,
 null
     
   ],
   "per_block_penPresent": [
-    false,
+    true,
+true,
 true,
 true,
 false,
@@ -29,6 +32,7 @@ true
 
   "per_block_cursor_visible": [
     false,
+false,
 false,
 false,
 false,
@@ -41,10 +45,12 @@ false
     13,
     13,
     13,
+    13,
     13
     
   ],
   "per_block_n": [
+    4,
     4,
     4,
     4,
@@ -57,10 +63,12 @@ false
 null,
 null,
 null,
+null,
 null
 
   ],
   "per_block_hand": [
+    "r",
     "r",
     "r",
     "r",
@@ -73,10 +81,12 @@ null
     "tl1",
     "tl1",
     "tl1",
+    "tl1",
     "tl1"
     
   ],
   "per_block_waterPresent": [
+    null,
     null,
     null,
     null,
@@ -88,10 +98,12 @@ null
 false,
 false,
 false,
+false,
 false
   ],
   "per_block_tintPresent": [
     null,
+null,
 null,
 null,
 null,
@@ -100,6 +112,7 @@ null
   ],
   "per_block_timerTime": [
     0,
+0,
 0,
 0,
 0,
@@ -112,10 +125,12 @@ null
 "ll1",
 "ll1",
 "ll1",
+"ll1",
 "ll1"
   ],
   "per_block_arc_span":[
     "as1",
+"as1",
 "as1",
 "as1",
 "as1",
