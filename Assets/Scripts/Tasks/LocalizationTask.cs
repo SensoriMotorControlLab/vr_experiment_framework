@@ -89,7 +89,7 @@ public class LocalizationTask : BaseTask
             office.SetActive(true);
             office.transform.parent = localizationPrefab.transform; 
             penHeight = Mathf.Abs(pen.transform.position.y - pen.transform.GetChild(0).transform.position.y);
-            localizationSurface.GetComponent<Renderer>().material = ctrler.Materials["wood"];
+            localizationSurface.GetComponent<Renderer>().material = ctrler.Materials["wood 4"];
         }
         else{
             pen.SetActive(false);
@@ -185,6 +185,7 @@ public class LocalizationTask : BaseTask
         Vector3 tempCursorPos;
         baseObject = GameObject.Find("BaseObject");
         pen = GameObject.Find("Pen");
+        localizationSurface = GameObject.Find("Surface");
         handPos2D = new Vector2(ctrler.CursorController.transform.position.x, ctrler.CursorController.transform.position.z);
         
         if(ctrler.CursorController.IsTriggerDown("l") || Input.GetKey(KeyCode.S)){
@@ -198,7 +199,7 @@ public class LocalizationTask : BaseTask
             baseObject.GetComponent<Renderer>().enabled = false;
             activeCursor = pen;
             PenFollowMouse();
-            localizationSurface.GetComponent<Renderer>().material = ctrler.Materials["wood"];
+            localizationSurface.GetComponent<Renderer>().material = ctrler.Materials["wood 4"];
         }
         else{    
             locPos = baseObject.transform.position;
