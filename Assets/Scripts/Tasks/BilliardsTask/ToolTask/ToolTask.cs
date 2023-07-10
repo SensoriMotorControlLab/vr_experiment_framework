@@ -175,7 +175,7 @@ public class ToolTask : BilliardsTask
             // Used to determine if the triggerd object is heading away from the target or not
             case 2:
                 // Track a points for feedback trail 
-                if (ctrler.Session.CurrentTrial.settings.GetBool("per_block_visual_feedback"))
+                if (ctrler.Session.CurrentTrial.settings.GetBool("per_block_visual_feedback") && ctrler.Session.CurrentBlock.settings.GetString("per_block_type") != "invisible")
                 {
                     ballPoints.Add(ballObjects.transform.position);
                     dynamicTiltRotations.Add(Surface.transform.parent.rotation.eulerAngles.z);
@@ -286,7 +286,7 @@ public class ToolTask : BilliardsTask
                     float CurrentDistanceToTarget = Vector3.Distance(previousPosition, Target.transform.position);
                     if (CurrentDistanceToTarget < 0.05f)
                     {
-                        if (ctrler.Session.CurrentTrial.settings.GetBool("per_block_visual_feedback"))
+                        if (ctrler.Session.CurrentTrial.settings.GetBool("per_block_visual_feedback") && ctrler.Session.CurrentBlock.settings.GetString("per_block_type") != "invisible")
                         {
                             line.startColor =
                                 line.endColor =
@@ -318,8 +318,12 @@ public class ToolTask : BilliardsTask
 
                     }
 
-                    bonusText.transform.position = ballObjects.transform.position + toolCamera.transform.up * 0.05f;
-                    LeanTween.move(bonusText, bonusText.transform.position + (toolCamera.transform.up * 0.05f), 1.5f);
+                    
+                    if(ctrler.Session.CurrentBlock.settings.GetString("per_block_type") != "invisible"){
+                        bonusText.transform.position = ballObjects.transform.position + toolCamera.transform.up * 0.05f;
+                        LeanTween.move(bonusText, bonusText.transform.position + (toolCamera.transform.up * 0.05f), 1.5f);
+                    }
+                    
 
                     // If the participant fired the pinball within the allowed time & score tracking is enabled in json
                     if (!missed && timerIndicator.GetComponent<TimerIndicator>().Timer >= 0.0f)
@@ -391,7 +395,7 @@ public class ToolTask : BilliardsTask
                         }
 
                     }
-                    else if (ctrler.Session.CurrentTrial.settings.GetBool("per_block_visual_feedback"))
+                    else if (ctrler.Session.CurrentTrial.settings.GetBool("per_block_visual_feedback") && ctrler.Session.CurrentBlock.settings.GetString("per_block_type") != "invisible")
                     {
                         ballPoints.Add(ballObjects.transform.position);
                         dynamicTiltRotations.Add(Surface.transform.parent.rotation.eulerAngles.z);
