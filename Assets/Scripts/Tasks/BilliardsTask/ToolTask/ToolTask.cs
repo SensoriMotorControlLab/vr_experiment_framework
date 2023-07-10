@@ -388,7 +388,7 @@ public class ToolTask : BilliardsTask
                         {
                             ballObjects.transform.position = previousPosition;
                         }
-                        else
+                        else if(ctrler.Session.CurrentBlock.settings.GetString("per_block_type") != "invisible")
                         {
                             ballObjects.transform.position = line.GetPosition(
                                 line.positionCount - 1);
