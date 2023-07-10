@@ -67,6 +67,8 @@
   "invisible",
   "rotated",
    "invisible",
+  "rotated",
+  "invisible",
   "rotated"
 ],
 
@@ -117,6 +119,8 @@
   30,
   30,
   0,
+  0,
+  30,
   0,
   30,
   0,
@@ -198,10 +202,14 @@
   8,
   8,
   8,
+  8,
+  8,
   8
 ],
 
 "per_block_hand": [
+  "r",
+  "r",
   "r",
   "r",
   "r",
@@ -328,6 +336,8 @@
   "tl2",
   "tl2",
   "tl2",
+  "tl2",
+  "tl2",
   "tl2"
 ],
 
@@ -340,6 +350,8 @@
 "tl1": [ 30, 45, 60 ],
 
 "per_block_visual_feedback": [
+  true,
+  true,
   true,
   true,
   true,
@@ -466,6 +478,8 @@
   "fabric",
   "ice",
   "fabric",
+  "ice",
+  "fabric",
   "ice"
 ],
 "per_block_lights": [
@@ -514,6 +528,8 @@
    true,
    true,
    true,
+   true,
+   false,
    true,
    false,
    true,
@@ -580,6 +596,8 @@
   "tT_s2",
   "tT_s2",
   "",
+  "tT_s2",
+  "tT_s2",
   "tT_s2",
   "tT_s2",
   "tT_s2",
@@ -666,6 +684,8 @@
   "pt1",
   "pt1",
   "pt1",
+  "pt1",
+  "pt1",
   "pt1"
 ],
 
@@ -733,6 +753,8 @@
       "tT_i",
       "tT_i",
       "tT_i",
+      "tT_i",
+      "tT_i",
       "tT_i"
   ],
   "tT_i": [
@@ -744,6 +766,8 @@
 
 
 "per_block_surface_dynamic_friction": [
+  0.1,
+  0.1,
   0.1,
   0.1,
   0.1,
@@ -869,6 +893,8 @@
   0.1,
   0.1,
   0.1,
+  0.1,
+  0.1,
   0.1
 ],
 "per_block_tool_dynamic_friction": [
@@ -933,9 +959,13 @@
   0.3,
   0.3,
   0.3,
+  0.3,
+  0.3,
   0.3
 ],
 "per_block_tool_static_friction": [
+  0.3,
+  0.3,
   0.3,
   0.3,
   0.3,
@@ -1062,10 +1092,14 @@
   true,
   true,
   true,
+  true,
+  true,
   true
 ],
 "per_block_timerTime": [
   3,
+  1,
+  1,
   1,
   1,
   1,
@@ -1175,7 +1209,9 @@ null,
 null,
 null,
 null,
-"break_instr_f",
+"break_instr_d",
+null,
+null,
 null,
 null,
 null,
@@ -1195,6 +1231,8 @@ null
 ],
 
 "per_block_tilt_after_fire": [
+  false,
+  false,
   false,
   false,
   false,
@@ -1320,9 +1358,13 @@ null
   null,
   null,
   null,
+  null,
+  null,
   null
 ],
 "per_block_list_surface_tilt":[ 
+null,
+null,
 null,
 null,
 null,
@@ -1403,5 +1445,7 @@ null
   0
 ],
   "break_instr_i": "Ice is Next. Thanks for participating!",
-  "break_instr_f": "Fabric is Next. Thanks for participating!"
+  "break_instr_f": "Fabric is Next. Thanks for participating!",
+  "break_instr_d": "When the lights are out, aim to the target, when the lights are continue attempting to get the ball to the target. DO NOT Use any explicit strategies." 
+  
 }
