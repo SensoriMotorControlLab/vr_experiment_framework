@@ -232,7 +232,7 @@ public class LocalizationTask : BaseTask
                 break;
             case 1:
                 baseObject.transform.position = ctrler.CursorController.ConvertPosition(new Vector3 (temp.x, ctrler.TargetContainer.transform.position.y, temp.z));
-                if ((targets[1].transform.position - locPos).magnitude < 0.005f)
+                if ((targets[1].transform.position - locPos).magnitude < 0.005f && ctrler.CursorController.stillTime > 0.5f)
                 {
                     IncrementStep();
                     localizerLoc = Convert.ToSingle(ctrler.PseudoRandom("per_block_localizer_location"));

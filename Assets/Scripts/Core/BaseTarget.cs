@@ -58,7 +58,17 @@ public class BaseTarget : MonoBehaviour
                 case "Target":
                     if(ctrler.CursorController.useHand == true)
                     {
-                        AdvanceStep();
+                        switch(ctrler.CurrentTask.GetCurrentStep)
+                        {
+                            case 1:
+                                if(ctrler.CursorController.stillTime > 0.5f){
+                                    AdvanceStep();
+                                }
+                                break;
+                            default:
+                                AdvanceStep();
+                                break;
+                        }
                     }
                     break;
                 case "Car":
