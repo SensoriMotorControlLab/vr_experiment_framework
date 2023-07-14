@@ -106,12 +106,14 @@ public class ReachToTargetTask : BaseTask
             pen.transform.localEulerAngles = new Vector3(0, -165, -15);
             penHeight = Mathf.Abs(pen.transform.position.y - pen.transform.GetChild(0).transform.position.y);
             reachSurface.GetComponent<Renderer>().material = ctrler.Materials["wood"];
+            reachSurface.transform.localScale = new Vector3(1.5f, 0.1f, 1.5f);
         }
         else{
             pen.SetActive(false);
             lab = Instantiate(ctrler.GetPrefab("room"), new Vector3(-0.13f, 0.16f, 0.218f), Quaternion.identity);
             lab.SetActive(true);
             lab.transform.parent = reachPrefab.transform;
+            reachSurface.transform.localScale = new Vector3(4f, 0.1f, 4f);
         }
 
         if(trial.settings.GetString("per_block_type") == "nocursor"){
@@ -227,9 +229,11 @@ public class ReachToTargetTask : BaseTask
             activeCursor = pen;
             PenFollowMouse();
             reachSurface.GetComponent<Renderer>().material = ctrler.Materials["wood"];
+            reachSurface.transform.localScale = new Vector3(1.5f, 0.1f, 1.5f);
         }
         else{
             activeCursor = baseObject;
+            reachSurface.transform.localScale = new Vector3(4f, 0.1f, 4f);
             Vector3 temp = ctrler.CursorController.GetHandPosition();
             switch(currentStep){
                 case 0: 

@@ -90,6 +90,7 @@ public class LocalizationTask : BaseTask
             office.transform.parent = localizationPrefab.transform; 
             penHeight = Mathf.Abs(pen.transform.position.y - pen.transform.GetChild(0).transform.position.y);
             localizationSurface.GetComponent<Renderer>().material = ctrler.Materials["wood"];
+            localizationSurface.transform.localScale = new Vector3(1.5f, 0.1f, 1.5f);
         }
         else{
             pen.SetActive(false);
@@ -98,6 +99,7 @@ public class LocalizationTask : BaseTask
             lab = Instantiate(ctrler.GetPrefab("room"), new Vector3(-0.13f, 0.16f, 0.218f), Quaternion.identity);
             lab.SetActive(true);
             lab.transform.parent = localizationPrefab.transform;
+            localizationSurface.transform.localScale = new Vector3(4f, 0.1f, 4f);
         }
 
         // Set up the home position
@@ -200,10 +202,12 @@ public class LocalizationTask : BaseTask
             activeCursor = pen;
             PenFollowMouse();
             localizationSurface.GetComponent<Renderer>().material = ctrler.Materials["wood"];
+            localizationSurface.transform.localScale = new Vector3(1.5f, 0.1f, 1.5f);
         }
         else{    
             locPos = baseObject.transform.position;
             activeCursor = baseObject;
+            localizationSurface.transform.localScale = new Vector3(4f, 0.1f, 4f);
         }
         Vector3 temp = ctrler.CursorController.GetHandPosition();
         switch (currentStep)
