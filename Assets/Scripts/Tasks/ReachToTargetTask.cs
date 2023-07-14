@@ -57,6 +57,7 @@ public class ReachToTargetTask : BaseTask
     GameObject lab;
     Vector3 rotatePoint;
     float penHeight;
+    GameObject dummyDock;
 
     public override void Setup()
     {
@@ -84,6 +85,7 @@ public class ReachToTargetTask : BaseTask
         baseObject = GameObject.Find("BaseObject");
         arc = GameObject.Find("ArcError");
         pen = GameObject.Find("Pen");
+        dummyDock = GameObject.Find("DummyDock");
         SetSetup();
         arc.SetActive(false);
 
@@ -392,6 +394,7 @@ public class ReachToTargetTask : BaseTask
             // If the user enters the home, start tracking time
             case 0:
                 VibrateController(0, 0.34f, 0.15f, devices);
+                dummyDock.SetActive(false);
                 targets[2].SetActive(false);
                 targets[1].SetActive(true);
                 break;
@@ -546,7 +549,8 @@ public class ReachToTargetTask : BaseTask
         // Set up the dock position
         targets.Add(GameObject.Find("Dock"));
         targets[0].transform.position = reachPrefab.transform.position - ctrler.transform.forward * dock_dist;
-
+        dummyDock.transform.position = new Vector3(targets[0].transform.position.x, ctrler.TargetContainer.transform.position.y, targets[0].transform.position.z);
+        targets[0].GetComponent<MeshRenderer>().enabled = false;
         // Set up the home position
         targets.Add(GameObject.Find("Home"));
         targets[1].transform.localPosition = tempPos + targets[1].transform.forward * 7f/100f;

@@ -46,6 +46,7 @@ public class LocalizationTask : BaseTask
     GameObject office;
     GameObject lab;
     float penHeight;
+    GameObject dummyDock;
     public override void Setup()
     {
 
@@ -70,6 +71,7 @@ public class LocalizationTask : BaseTask
         targets[2] = GameObject.Find("ArcTarget");
         locAim = GameObject.Find("Localizer");
         locAngle = GameObject.Find("locAngle");
+        dummyDock = GameObject.Find("DummyDock");
 
         if (ctrler.Session.settings.GetObjectList("optional_params").Contains("cursor") && ctrler.Session.CurrentTrial.settings.GetBool("per_block_cursor_visible")){
             ctrler.CursorController.SetCursorVisibility(true);
@@ -113,7 +115,8 @@ public class LocalizationTask : BaseTask
         // Set up the dock position
         targets[0] = GameObject.Find("Dock");
         targets[0].transform.position = new Vector3(0, localizationPrefab.transform.position.y, 0) - ctrler.transform.forward * dock_dist;
-
+        targets[0].GetComponent<MeshRenderer>().enabled = false;
+        dummyDock.transform.position = new Vector3 (targets[0].transform.position.x, ctrler.TargetContainer.transform.position.y, targets[0].transform.position.z);
         // Grab an angle from the list and then remove it
         targetAngle = Convert.ToSingle(ctrler.PseudoRandom("per_block_targetListToUse"));
         baseObject.GetComponent<Renderer>().enabled = false;
@@ -412,6 +415,7 @@ public class LocalizationTask : BaseTask
         {
             case 0: // Enter dock
                 targets[0].SetActive(false);
+                dummyDock.SetActive(false);
                 Home.SetActive(true);
                 VibrateController(0, 0.34f, 0.15f, devices);
                 break;
