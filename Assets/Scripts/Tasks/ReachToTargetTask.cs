@@ -204,6 +204,8 @@ public class ReachToTargetTask : BaseTask
             case 1:
                 if(isNoCursor && (pen.transform.GetChild(0).transform.position - targets[1].transform.position).magnitude < 0.06f){
                     VibrateController(0, (0.6f - ((pen.transform.GetChild(0).transform.position - targets[1].transform.position).magnitude * 10))/2, Time.deltaTime, devices);
+                    float color = 1 - ((pen.transform.GetChild(0).transform.position - targets[1].transform.position).magnitude)/0.06f;
+                    targets[1].gameObject.GetComponent<Renderer>().material.color = (new Color(1, color, color, 1f));
                 }
                 baseObject.GetComponent<BaseTarget>().enabled = false;
                 baseObject.transform.position = ctrler.CursorController.ConvertPosition(new Vector3 (temp.x, ctrler.TargetContainer.transform.position.y, temp.z), rotatePoint);
@@ -245,7 +247,9 @@ public class ReachToTargetTask : BaseTask
                     break;
                 case 1:
                     if(isNoCursor && (baseObject.transform.position - targets[1].transform.position).magnitude < 0.06f){
-                        VibrateController(0, 0.6f - ((baseObject.transform.position - targets[1].transform.position).magnitude * 10), Time.deltaTime, devices);
+                        VibrateController(0, (0.6f - ((baseObject.transform.position - targets[1].transform.position).magnitude * 10))/2, Time.deltaTime, devices);
+                        float color = 1 - ((baseObject.transform.position - targets[1].transform.position).magnitude)/0.06f;
+                        targets[1].gameObject.GetComponent<Renderer>().material.color = (new Color(1, color, color, 1f));
                     }
                     baseObject.transform.position = ctrler.CursorController.ConvertPosition(new Vector3 (temp.x, ctrler.TargetContainer.transform.position.y, temp.z));
                     break;
