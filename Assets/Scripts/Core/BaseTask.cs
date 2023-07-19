@@ -8,6 +8,7 @@ public abstract class BaseTask : MonoBehaviour
     protected int currentStep;    // Current step of the task
     protected bool finished;      // Are we out of steps
     protected int maxSteps;       // Number of steps this task has
+    protected bool isNoCursor = false;
 
     /// <summary>
     /// Increments the current step in this task
@@ -55,6 +56,8 @@ public abstract class BaseTask : MonoBehaviour
 
     public int GetCurrentStep => currentStep;
     public bool Finished => finished;
+
+    public bool GetIsNoCursor => isNoCursor;
 
     /// <summary>
     /// Logic for setting up a specific trial type

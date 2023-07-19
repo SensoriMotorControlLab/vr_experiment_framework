@@ -12,6 +12,7 @@ public class BaseTarget : MonoBehaviour
     [SerializeField]
     public bool Collided { get; private set; }
     public Collider CollidedWith { get; private set; }
+    public bool isStillTime = false;
 
     /// <summary>
     /// When true, objects attached with this script will not increment the step upon collision
@@ -26,6 +27,13 @@ public class BaseTarget : MonoBehaviour
     private void AdvanceStep()
     {
         ctrler.CurrentTask.IncrementStep();
+    }
+
+    public void Update(){
+        if(isStillTime && ctrler.CursorController.stillTime > 0.5f){
+            AdvanceStep();
+            isStillTime = false;
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -61,7 +69,10 @@ public class BaseTarget : MonoBehaviour
                         switch(ctrler.CurrentTask.GetCurrentStep)
                         {
                             case 1:
-                                if(ctrler.CursorController.stillTime > 0.5f){
+                                if(ctrler.CurrentTask.GetIsNoCursor){
+                                    isStillTime = true;
+                                }
+                                else {
                                     AdvanceStep();
                                 }
                                 break;

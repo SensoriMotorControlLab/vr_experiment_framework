@@ -49,7 +49,6 @@ public class ReachToTargetTask : BaseTask
     Vector2 cursor_3cm_out = new Vector2(0, 0);
     bool outEvent = true;
     GameObject baseObject;
-    bool isNoCursor = false;
     GameObject arc;
     float finalReachAngle;
     float finalCursorAngle;
@@ -325,8 +324,8 @@ public class ReachToTargetTask : BaseTask
 
 
         if (currentStep == 2 &&
-            ctrler.CursorController.stillTime > 0.5f &&
-            trial.settings.GetString("per_block_type") == "nocursor" && (targets[0].transform.position - activeCursor.transform.position).magnitude > 0.03f){
+            ctrler.CursorController.stillTime > 0.5f && (targets[1].transform.position - activeCursor.transform.GetChild(0).transform.position).magnitude > 0.03f &&
+            trial.settings.GetString("per_block_type") == "nocursor" && (targets[0].transform.position - activeCursor.transform.GetChild(0).transform.position).magnitude > 0.03f){
                 IncrementStep();
             }
             

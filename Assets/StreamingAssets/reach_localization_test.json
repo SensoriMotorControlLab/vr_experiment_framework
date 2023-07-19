@@ -1,6 +1,6 @@
 {
   "experiment_mode": "targetTrack",
-  "optional_params": ["cursor", "vr", "return_visible"
+  "optional_params": ["cursor", "return_visible"
   ],
   "track_score": true,
   "per_block_type": [
