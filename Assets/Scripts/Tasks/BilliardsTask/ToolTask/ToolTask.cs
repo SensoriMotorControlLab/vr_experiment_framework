@@ -166,9 +166,12 @@ public class ToolTask : BilliardsTask
                 {
                     missed = true;
                     toolSpace.GetComponent<AudioSource>().clip = ctrler.AudioClips["incorrect"];
-                    toolSpace.GetComponent<AudioSource>().Play();
-                }
+                    if(ctrler.Session.CurrentBlock.settings.GetString("per_block_type") != "invisible"){
+                        toolSpace.GetComponent<AudioSource>().Play();
+                    }
 
+                
+                }
                 break;
 
             // After the user hits the object
@@ -295,9 +298,9 @@ public class ToolTask : BilliardsTask
                             if (!missed) Target.transform.GetChild(0).GetComponent<ParticleSystem>().Play();
                         }
 
-                        if(ctrler.Session.CurrentBlock.settings.GetString("per_block_type") != "invisible"){
-                            toolSpace.GetComponent<AudioSource>().clip = ctrler.AudioClips["correct"];
-                        }
+
+                        toolSpace.GetComponent<AudioSource>().clip = ctrler.AudioClips["correct"];
+
                         
                         // set pinball trail
                         line.positionCount = ballPoints.Count;
@@ -334,9 +337,9 @@ public class ToolTask : BilliardsTask
                         // Scoring. Note that running out of time yields no points
                         if (Target.GetComponent<BaseTarget>().Collided)
                         {
-                            if(ctrler.Session.CurrentBlock.settings.GetString("per_block_type") != "invisible"){
-                                toolSpace.GetComponent<AudioSource>().clip = ctrler.AudioClips["correct"];
-                            }
+
+                            toolSpace.GetComponent<AudioSource>().clip = ctrler.AudioClips["correct"];
+
                             if (trackScore) ctrler.Score += MAX_POINTS + BONUS_POINTS;
                             bonusText.GetComponentInChildren<Text>().color = Color.green;
 
@@ -350,7 +353,9 @@ public class ToolTask : BilliardsTask
                             bonusText.GetComponentInChildren<Text>().text = score + "pts";
                             bonusText.GetComponentInChildren<Text>().color = score == 0 ? Color.red : Color.white;
                         }
-                        toolSpace.GetComponent<AudioSource>().Play();
+                        if(ctrler.Session.CurrentBlock.settings.GetString("per_block_type") != "invisible"){
+                            toolSpace.GetComponent<AudioSource>().Play();
+                        }
                     }
                     else // missed
                     {
