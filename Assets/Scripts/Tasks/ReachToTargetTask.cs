@@ -57,6 +57,7 @@ public class ReachToTargetTask : BaseTask
     Vector3 rotatePoint;
     float penHeight;
     GameObject dummyDock;
+    GameObject handImg;
 
     public override void Setup()
     {
@@ -85,6 +86,7 @@ public class ReachToTargetTask : BaseTask
         arc = GameObject.Find("ArcError");
         pen = GameObject.Find("Pen");
         dummyDock = GameObject.Find("DummyDock");
+        handImg = GameObject.Find("hand");
         SetSetup();
         arc.SetActive(false);
 
@@ -108,6 +110,7 @@ public class ReachToTargetTask : BaseTask
             penHeight = Mathf.Abs(pen.transform.position.y - pen.transform.GetChild(0).transform.position.y);
             reachSurface.GetComponent<Renderer>().material = ctrler.Materials["wood"];
             reachSurface.transform.localScale = new Vector3(1.5f, 0.1f, 1.5f);
+            handImg.GetComponent<SpriteRenderer>().enabled = false;
         }
         else{
             pen.SetActive(false);
@@ -115,14 +118,14 @@ public class ReachToTargetTask : BaseTask
             lab.SetActive(true);
             lab.transform.parent = reachPrefab.transform;
             reachSurface.transform.localScale = new Vector3(4f, 0.1f, 4f);
+            handImg.GetComponent<SpriteRenderer>().enabled = true;
+            handImg.transform.position = targets[0].transform.position;
         }
 
         if(trial.settings.GetString("per_block_type") == "nocursor"){
             isNoCursor = true;
-            
             reachSurface.GetComponent<Renderer>().material.color = new Color(0.1f, 0f, 0f, 1f);
         }
-
         else if (trial.settings.GetString("per_block_type") == "rotated"){
             rotation = Convert.ToSingle(ctrler.PseudoRandom("per_block_rotation"));
             reachSurface.GetComponent<Renderer>().material.color = new Color(0f, 0f, 0.1f, 1f);
@@ -195,6 +198,7 @@ public class ReachToTargetTask : BaseTask
         Vector3 temp = ctrler.CursorController.GetHandPosition();
         switch(currentStep){
             case 0: 
+                handImg.GetComponent<SpriteRenderer>().enabled = false;
                 baseObject.GetComponent<BaseTarget>().enabled = true;
                 Vector3 mousePoint = GetMousePoint(baseObject.transform);
                 Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, 0, ctrler.CursorController.Model.transform.position.z);
@@ -224,9 +228,17 @@ public class ReachToTargetTask : BaseTask
         baseObject = GameObject.Find("BaseObject");
         pen = GameObject.Find("Pen");
         reachSurface = GameObject.Find("Surface");
+        handImg = GameObject.Find("hand");
+
+        if(trial.settings.GetString("per_block_type") == "nocursor"){
+            isNoCursor = true;
+            
+        }
+        else{
+            isNoCursor = false;
+        }
 
         if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
-
             pen.GetComponent<Renderer>().enabled = true;
             baseObject.GetComponent<Renderer>().enabled = false;
             activeCursor = pen;
@@ -235,16 +247,20 @@ public class ReachToTargetTask : BaseTask
             reachSurface.transform.localScale = new Vector3(1.5f, 0.1f, 1.5f);
         }
         else{
+            
             activeCursor = baseObject;
             reachSurface.transform.localScale = new Vector3(4f, 0.1f, 4f);
             Vector3 temp = ctrler.CursorController.GetHandPosition();
             switch(currentStep){
                 case 0: 
+                    handImg.GetComponent<SpriteRenderer>().enabled = true;
+                    handImg.transform.position = targets[0].transform.position;
                     Vector3 mousePoint = GetMousePoint(baseObject.transform);
                     Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, 0, ctrler.CursorController.Model.transform.position.z);
                     baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
                     break;
                 case 1:
+                    handImg.GetComponent<SpriteRenderer>().enabled = false;
                     if(isNoCursor && (baseObject.transform.position - targets[1].transform.position).magnitude < 0.06f){
                         VibrateController(0, (0.6f - ((baseObject.transform.position - targets[1].transform.position).magnitude * 10))/2, Time.deltaTime, devices);
                         float color = 1 - ((baseObject.transform.position - targets[1].transform.position).magnitude)/0.06f;
@@ -325,7 +341,13 @@ public class ReachToTargetTask : BaseTask
 
         if (currentStep == 2 &&
             ctrler.CursorController.stillTime > 0.5f && (targets[1].transform.position - activeCursor.transform.GetChild(0).transform.position).magnitude > 0.03f &&
-            trial.settings.GetString("per_block_type") == "nocursor" && (targets[0].transform.position - activeCursor.transform.GetChild(0).transform.position).magnitude > 0.03f){
+            trial.settings.GetString("per_block_type") == "nocursor" && (targets[0].transform.position - activeCursor.transform.GetChild(0).transform.position).magnitude > 0.03f
+            && ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
+                IncrementStep();
+            }
+        else if(currentStep == 2 &&
+            ctrler.CursorController.stillTime > 0.5f && (targets[1].transform.position - activeCursor.transform.position).magnitude > 0.03f &&
+            trial.settings.GetString("per_block_type") == "nocursor" && (targets[0].transform.position - activeCursor.transform.position).magnitude > 0.03f){
                 IncrementStep();
             }
             
