@@ -58,6 +58,7 @@ public class ReachToTargetTask : BaseTask
     float penHeight;
     GameObject dummyDock;
     GameObject handImg;
+    GameObject penIndicator;
 
     public override void Setup()
     {
@@ -87,6 +88,7 @@ public class ReachToTargetTask : BaseTask
         pen = GameObject.Find("Pen");
         dummyDock = GameObject.Find("DummyDock");
         handImg = GameObject.Find("hand");
+        penIndicator = GameObject.Find("PenIndicator");
         SetSetup();
         arc.SetActive(false);
 
@@ -111,6 +113,13 @@ public class ReachToTargetTask : BaseTask
             reachSurface.GetComponent<Renderer>().material = ctrler.Materials["wood"];
             reachSurface.transform.localScale = new Vector3(1.5f, 0.1f, 1.5f);
             handImg.GetComponent<SpriteRenderer>().enabled = false;
+            if(trial.settings.GetString("per_block_type") == "nocursor"){
+                penIndicator.GetComponent<Renderer>().enabled = true;
+                penIndicator.transform.position = targets[0].transform.position;
+            }
+            else{
+                penIndicator.GetComponent<Renderer>().enabled = false;
+            }
         }
         else{
             pen.SetActive(false);
@@ -120,6 +129,7 @@ public class ReachToTargetTask : BaseTask
             reachSurface.transform.localScale = new Vector3(4f, 0.1f, 4f);
             handImg.GetComponent<SpriteRenderer>().enabled = true;
             handImg.transform.position = targets[0].transform.position;
+            penIndicator.GetComponent<Renderer>().enabled = false;
         }
 
         if(trial.settings.GetString("per_block_type") == "nocursor"){
@@ -198,6 +208,10 @@ public class ReachToTargetTask : BaseTask
         Vector3 temp = ctrler.CursorController.GetHandPosition();
         switch(currentStep){
             case 0: 
+                if(trial.settings.GetString("per_block_type") == "nocursor"){
+                    penIndicator.GetComponent<Renderer>().enabled = true;
+                    penIndicator.transform.position = targets[0].transform.position;
+                }
                 handImg.GetComponent<SpriteRenderer>().enabled = false;
                 baseObject.GetComponent<BaseTarget>().enabled = true;
                 Vector3 mousePoint = GetMousePoint(baseObject.transform);
@@ -205,11 +219,15 @@ public class ReachToTargetTask : BaseTask
                 baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
                 break;
             case 1:
-                if(isNoCursor && (pen.transform.GetChild(0).transform.position - targets[1].transform.position).magnitude < 0.06f){
+            if (isNoCursor){
+                penIndicator.GetComponent<Renderer>().enabled = false;
+                if((pen.transform.GetChild(0).transform.position - targets[1].transform.position).magnitude < 0.06f){
                     VibrateController(0, (0.6f - ((pen.transform.GetChild(0).transform.position - targets[1].transform.position).magnitude * 10))/2, Time.deltaTime, devices);
                     float color = 1 - ((pen.transform.GetChild(0).transform.position - targets[1].transform.position).magnitude)/0.06f;
                     targets[1].gameObject.GetComponent<Renderer>().material.color = (new Color(1, color, color, 1f));
                 }
+            }
+                
                 baseObject.GetComponent<BaseTarget>().enabled = false;
                 baseObject.transform.position = ctrler.CursorController.ConvertPosition(new Vector3 (temp.x, ctrler.TargetContainer.transform.position.y, temp.z), rotatePoint);
                 break;
@@ -232,7 +250,7 @@ public class ReachToTargetTask : BaseTask
 
         if(trial.settings.GetString("per_block_type") == "nocursor"){
             isNoCursor = true;
-            
+            reachSurface.GetComponent<Renderer>().material.color = new Color(0.1f, 0f, 0f, 1f);
         }
         else{
             isNoCursor = false;
@@ -347,7 +365,8 @@ public class ReachToTargetTask : BaseTask
             }
         else if(currentStep == 2 &&
             ctrler.CursorController.stillTime > 0.5f && (targets[1].transform.position - activeCursor.transform.position).magnitude > 0.03f &&
-            trial.settings.GetString("per_block_type") == "nocursor" && (targets[0].transform.position - activeCursor.transform.position).magnitude > 0.03f){
+            trial.settings.GetString("per_block_type") == "nocursor" && (targets[0].transform.position - activeCursor.transform.position).magnitude > 0.03f 
+            && !ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
                 IncrementStep();
             }
             
