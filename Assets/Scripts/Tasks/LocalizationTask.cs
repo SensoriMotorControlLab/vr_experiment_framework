@@ -467,7 +467,7 @@ public class LocalizationTask : BaseTask
         Session session = ctrler.Session;
         
         session.CurrentTrial.result["type"] = session.CurrentTrial.settings.GetString("per_block_type");
-        session.CurrentTrial.result["penPresent"] = session.CurrentTrial.settings.GetBool("per_block_penPresent");
+        session.CurrentTrial.result["pen_present"] = session.CurrentTrial.settings.GetBool("per_block_penPresent");
         session.CurrentTrial.result["hand"] = session.CurrentTrial.settings.GetString("per_block_hand");
         session.CurrentTrial.result["home_x"] = targets[1].transform.position.x;
         session.CurrentTrial.result["home_y"] = targets[1].transform.position.y;
