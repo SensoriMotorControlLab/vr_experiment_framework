@@ -4,8 +4,8 @@
   ],
   "track_score": true,
   "per_block_type": [
-"localization",
-"localization",
+"aligned",
+"aligned",
 "aligned"
     
   ],
@@ -16,7 +16,7 @@
     
   ],
   "per_block_penPresent": [
-    false,
+    true,
     true,
     true
   ],
@@ -29,9 +29,9 @@
 
 
   "per_block_distance": [
-13,
-13,
-13
+10,
+10,
+10
     
   ],
   "per_block_n": [
@@ -104,8 +104,8 @@ null
     100
   ],
   "tl2": [
-    110,
-    130
+    150,
+    15
   ],
   "tl1": [
     70,

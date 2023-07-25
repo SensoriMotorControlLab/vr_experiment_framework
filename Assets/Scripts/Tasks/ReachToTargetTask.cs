@@ -47,6 +47,7 @@ public class ReachToTargetTask : BaseTask
     List<Vector4> cursorPos = new List<Vector4>();
     Vector2 pos_3cm_out = new Vector2(0, 0);
     Vector2 pen_3cm_out = new Vector2(0, 0);
+    float pen_3cm_out_float = 0;
     Vector2 cursor_3cm_out = new Vector2(0, 0);
     bool outEvent = true;
     GameObject baseObject;
@@ -406,13 +407,16 @@ public class ReachToTargetTask : BaseTask
         {
             case 2:
                 if(outEvent){
-                    if(ctrler.CursorController.DistanceFromHome > 0.03){
-                        if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
-                            pen_3cm_out = new Vector2(Vector3.Angle(targets[1].transform.right, pen.transform.GetChild(0).transform.position), Time.time);
-                        }
+                    if((targets[1].transform.position - activeCursor.transform.position).magnitude > 0.03f && !ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
                         pos_3cm_out = new Vector2(Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized), Time.time);
                         cursor_3cm_out = new Vector2(Vector3.Angle(targets[1].transform.right, ctrler.CursorController.Model.transform.position), Time.time);
                         outEvent = false;
+                    }
+                    else if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent") && (targets[1].transform.position - activeCursor.transform.GetChild(0).transform.position).magnitude > 0.03f){
+                        pos_3cm_out = new Vector2(Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized), Time.time);
+                        cursor_3cm_out = new Vector2(Vector3.Angle(targets[1].transform.right, ctrler.CursorController.Model.transform.position), Time.time);
+                        outEvent = false;
+                        pen_3cm_out = new Vector2(Vector3.Angle(targets[1].transform.right, activeCursor.transform.GetChild(0).transform.position), Time.time);
                     }
                 }
                 Vector3 tempHandPos = ctrler.CursorController.transform.position;
