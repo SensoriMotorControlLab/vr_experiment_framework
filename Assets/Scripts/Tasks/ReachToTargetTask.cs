@@ -111,7 +111,7 @@ public class ReachToTargetTask : BaseTask
             pen.transform.localEulerAngles = new Vector3(0, -165, -15);
             penHeight = Mathf.Abs(pen.transform.position.y - pen.transform.GetChild(0).transform.position.y);
             reachSurface.GetComponent<Renderer>().material = ctrler.Materials["wood"];
-            reachSurface.transform.localScale = new Vector3(1.5f, 0.1f, 1.5f);
+            reachSurface.transform.localScale = new Vector3(1.22f, 0.1f, 1.9f);
             handImg.GetComponent<SpriteRenderer>().enabled = false;
             if(trial.settings.GetString("per_block_type") == "nocursor"){
                 penIndicator.GetComponent<Renderer>().enabled = true;
@@ -262,7 +262,7 @@ public class ReachToTargetTask : BaseTask
             activeCursor = pen;
             PenFollowMouse();
             reachSurface.GetComponent<Renderer>().material = ctrler.Materials["wood"];
-            reachSurface.transform.localScale = new Vector3(1.5f, 0.1f, 1.5f);
+            reachSurface.transform.localScale = new Vector3(1.22f, 0.1f, 1.9f);
         }
         else{
             
