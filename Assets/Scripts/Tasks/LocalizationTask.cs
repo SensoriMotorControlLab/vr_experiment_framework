@@ -263,7 +263,7 @@ public class LocalizationTask : BaseTask
                 if(outEvent){
                     if((locPos - targets[1].transform.position).magnitude > 0.03){
                         if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
-                            pen_3cm_out = new Vector2(Vector3.Angle(targets[1].transform.right, pen.transform.GetChild(0).transform.position), Time.time)
+                            pen_3cm_out = new Vector2(Vector3.Angle(targets[1].transform.right, pen.transform.GetChild(0).transform.position), Time.time);
                         }
                         else 
                         pos_3cm_out = new Vector2(Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized), Time.time);

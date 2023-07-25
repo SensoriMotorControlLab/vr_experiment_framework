@@ -374,7 +374,7 @@ public class ReachToTargetTask : BaseTask
             
 
         if (Finished){
-            ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent"){
+            if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
                 finalPenAngle = Vector3.Angle(targets[1].transform.right, activeCursor.transform.GetChild(0).transform.position);
             }
             finalReachAngle = Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized);
