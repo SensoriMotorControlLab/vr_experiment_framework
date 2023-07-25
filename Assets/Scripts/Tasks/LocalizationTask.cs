@@ -221,7 +221,7 @@ public class LocalizationTask : BaseTask
                 Vector3 mousePoint = GetMousePoint(baseObject.transform);
                 Vector3 mousePlane = new Vector3(ctrler.CursorController.Model.transform.position.x, mousePoint.y, ctrler.CursorController.Model.transform.position.z);
                 baseObject.transform.position = ctrler.CursorController.ConvertPosition(mousePlane);
-
+                
                 targets[0].SetActive(true);
                 if (!ctrler.Session.settings.GetObjectList("optional_params").Contains("return_visible"))
                 {
@@ -241,7 +241,9 @@ public class LocalizationTask : BaseTask
                 break;
             case 1:
                 baseObject.transform.position = ctrler.CursorController.ConvertPosition(new Vector3 (temp.x, ctrler.TargetContainer.transform.position.y, temp.z));
-                if ((targets[1].transform.position - locPos).magnitude < 0.005f && ctrler.CursorController.stillTime > 0.5f)
+                Vector2 tempHome = new Vector2(targets[1].transform.position.x, targets[1].transform.position.z);
+                Vector2 tempLocPos = new Vector2(locPos.x, locPos.z);
+                if ((tempHome - tempLocPos).magnitude < 0.005f && ctrler.CursorController.stillTime > 0.5f)
                 {
                     IncrementStep();
                     localizerLoc = Convert.ToSingle(ctrler.PseudoRandom("per_block_localizer_location"));
