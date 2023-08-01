@@ -276,12 +276,13 @@ public class LocalizationTask : BaseTask
                             pen_3cm_out = new Vector2((Vector3.Angle(targets[1].transform.right, pen.transform.GetChild(0).transform.position) - 180) * -1, Time.time);
                             pos_3cm_out = new Vector2((Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized)- 180) * -1, Time.time);
                             cursor_3cm_out = new Vector2((Vector3.Angle(targets[1].transform.right, ctrler.CursorController.Model.transform.position)- 180) * -1, Time.time);
+                            outEvent_3cm = false;
                         }
                         else 
                         pos_3cm_out = new Vector2((Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized)- 180) * -1, Time.time);
                         cursor_3cm_out = new Vector2((Vector3.Angle(targets[1].transform.right, ctrler.CursorController.Model.transform.position)- 180) * -1, Time.time); 
+                        outEvent_3cm = false;
                     }
-                    outEvent_3cm = false;
                 }
                 if(outEvent_2cm){
                     if((locPos - targets[1].transform.position).magnitude > 0.02){
@@ -289,12 +290,13 @@ public class LocalizationTask : BaseTask
                             pen_2cm_out = new Vector2((Vector3.Angle(targets[1].transform.right, pen.transform.GetChild(0).transform.position)- 180) * -1, Time.time);
                             pos_2cm_out = new Vector2((Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized)- 180) * -1, Time.time);
                             cursor_2cm_out = new Vector2((Vector3.Angle(targets[1].transform.right, ctrler.CursorController.Model.transform.position)- 180) * -1, Time.time);
+                            outEvent_2cm = false;
                         }
                         else 
                         pos_2cm_out = new Vector2((Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized)- 180) * -1, Time.time);
                         cursor_2cm_out = new Vector2((Vector3.Angle(targets[1].transform.right, ctrler.CursorController.Model.transform.position)- 180) * -1, Time.time); 
+                        outEvent_2cm = false;
                     }
-                    outEvent_2cm = false;
                 }
                 tempHandPos = ctrler.CursorController.transform.position;
                 tempCursorPos = ctrler.CursorController.Model.transform.position;
