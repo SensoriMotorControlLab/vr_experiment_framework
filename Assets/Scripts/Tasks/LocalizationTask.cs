@@ -32,9 +32,14 @@ public class LocalizationTask : BaseTask
     List<Vector4> penPos = new List<Vector4>();
     Vector2 pos_3cm_out = new Vector2(0, 0);
     Vector2 cursor_3cm_out = new Vector2(0, 0);
+    Vector2 pen_3cm_out = new Vector2(0, 0);
+    Vector2 pos_2cm_out = new Vector2(0, 0);
+    Vector2 cursor_2cm_out = new Vector2(0, 0);
+    Vector2 pen_2cm_out = new Vector2(0, 0);
     Vector2 arcAquired = new Vector2(0, 0);
     Vector2 localizingEvent = new Vector2(0, 0);
-    bool outEvent = true;
+    bool outEvent_3cm = true;
+    bool outEvent_2cm = true;
     float targetAngle = 0;
     GameObject baseObject;
     float pressedTime = 0;
@@ -48,7 +53,7 @@ public class LocalizationTask : BaseTask
     GameObject lab;
     float penHeight;
     GameObject dummyDock;
-    Vector2 pen_3cm_out = new Vector2(0, 0);
+    
     public override void Setup()
     {
 
@@ -182,7 +187,10 @@ public class LocalizationTask : BaseTask
         pen.transform.localEulerAngles = new Vector3(0, -165, -15);
         locPos = pen.transform.GetChild(0).transform.position;
         Vector3 tempPenPos = pen.transform.GetChild(0).transform.position;
-        penPos.Add(new Vector4(tempPenPos.x, tempPenPos.y, tempPenPos.z, Time.time));
+        if(currentStep != 0){
+            penPos.Add(new Vector4(tempPenPos.x, tempPenPos.y, tempPenPos.z, Time.time));
+        }
+        
     }
 
     public override void Update()
@@ -262,21 +270,38 @@ public class LocalizationTask : BaseTask
                 
                 baseObject.transform.position = ctrler.CursorController.ConvertPosition(new Vector3 (temp.x, ctrler.TargetContainer.transform.position.y, temp.z));
                 activeCursor.GetComponent<Renderer>().enabled = false;
-                if(outEvent){
+                if(outEvent_3cm){
                     if((locPos - targets[1].transform.position).magnitude > 0.03){
                         if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
-                            pen_3cm_out = new Vector2(Vector3.Angle(targets[1].transform.right, pen.transform.GetChild(0).transform.position), Time.time);
+                            pen_3cm_out = new Vector2((Vector3.Angle(targets[1].transform.right, pen.transform.GetChild(0).transform.position) - 180) * -1, Time.time);
+                            pos_3cm_out = new Vector2((Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized)- 180) * -1, Time.time);
+                            cursor_3cm_out = new Vector2((Vector3.Angle(targets[1].transform.right, ctrler.CursorController.Model.transform.position)- 180) * -1, Time.time);
                         }
                         else 
-                        pos_3cm_out = new Vector2(Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized), Time.time);
-                        cursor_3cm_out = new Vector2(Vector3.Angle(targets[1].transform.right, ctrler.CursorController.Model.transform.position), Time.time);
-                        outEvent = false;
+                        pos_3cm_out = new Vector2((Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized)- 180) * -1, Time.time);
+                        cursor_3cm_out = new Vector2((Vector3.Angle(targets[1].transform.right, ctrler.CursorController.Model.transform.position)- 180) * -1, Time.time); 
                     }
+                    outEvent_3cm = false;
+                }
+                if(outEvent_2cm){
+                    if((locPos - targets[1].transform.position).magnitude > 0.02){
+                        if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
+                            pen_2cm_out = new Vector2((Vector3.Angle(targets[1].transform.right, pen.transform.GetChild(0).transform.position)- 180) * -1, Time.time);
+                            pos_2cm_out = new Vector2((Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized)- 180) * -1, Time.time);
+                            cursor_2cm_out = new Vector2((Vector3.Angle(targets[1].transform.right, ctrler.CursorController.Model.transform.position)- 180) * -1, Time.time);
+                        }
+                        else 
+                        pos_2cm_out = new Vector2((Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized)- 180) * -1, Time.time);
+                        cursor_2cm_out = new Vector2((Vector3.Angle(targets[1].transform.right, ctrler.CursorController.Model.transform.position)- 180) * -1, Time.time); 
+                    }
+                    outEvent_2cm = false;
                 }
                 tempHandPos = ctrler.CursorController.transform.position;
                 tempCursorPos = ctrler.CursorController.Model.transform.position;
-                handPos.Add(new Vector4(tempHandPos.x, tempHandPos.y, tempHandPos.z, Time.time));
-                cursorPos.Add(new Vector4(tempCursorPos.x, tempCursorPos.y, tempCursorPos.z, Time.time));
+                if(currentStep != 0){
+                    handPos.Add(new Vector4(tempHandPos.x, tempHandPos.y, tempHandPos.z, Time.time));
+                    cursorPos.Add(new Vector4(tempCursorPos.x, tempCursorPos.y, tempCursorPos.z, Time.time));
+                }
 
                 if(ctrler.CursorController.stillTime > 0.5f &&
                         (targets[1].transform.position - locPos).magnitude > 0.1f && locPos.z > targets[1].transform.position.z
@@ -374,10 +399,10 @@ public class LocalizationTask : BaseTask
         }
 
         if (Finished){
-            finalReachAngle = Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized);
-            finalCursorAngle = Vector3.Angle(targets[1].transform.right, ctrler.CursorController.Model.transform.position);
+            finalReachAngle = (Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized)- 180) * -1;
+            finalCursorAngle = (Vector3.Angle(targets[1].transform.right, ctrler.CursorController.Model.transform.position)- 180) * -1;
             if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
-                finalPenAngle = Vector3.Angle(targets[1].transform.right, pen.transform.GetChild(0).transform.position);
+                finalPenAngle = (Vector3.Angle(targets[1].transform.right, pen.transform.GetChild(0).transform.position)- 180) * -1;
             }
             ctrler.EndAndPrepare();
         }
@@ -486,6 +511,12 @@ public class LocalizationTask : BaseTask
         session.CurrentTrial.result["cursor_3cm_out_time"] = cursor_3cm_out.y;
         session.CurrentTrial.result["pen_3cm_out_angle"] = pen_3cm_out.x;
         session.CurrentTrial.result["pen_3cm_out_time"] = pen_3cm_out.y;
+        session.CurrentTrial.result["hand_2cm_out_angle"] = pos_2cm_out.x;
+        session.CurrentTrial.result["hand_2cm_out_time"] = pos_2cm_out.y;
+        session.CurrentTrial.result["cursor_2cm_out_angle"] = cursor_2cm_out.x;
+        session.CurrentTrial.result["cursor_2cm_out_time"] = cursor_2cm_out.y;
+        session.CurrentTrial.result["pen_2cm_out_angle"] = pen_2cm_out.x;
+        session.CurrentTrial.result["pen_2cm_out_time"] = pen_2cm_out.y;
         session.CurrentTrial.result["hand_final_angle"] = finalReachAngle;
         session.CurrentTrial.result["cursor_final_angle"] = finalCursorAngle;
         session.CurrentTrial.result["pen_final_angle"] = finalPenAngle;
