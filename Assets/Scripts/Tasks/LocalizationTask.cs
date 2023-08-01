@@ -187,7 +187,7 @@ public class LocalizationTask : BaseTask
         pen.transform.localEulerAngles = new Vector3(0, -165, -15);
         locPos = pen.transform.GetChild(0).transform.position;
         Vector3 tempPenPos = pen.transform.GetChild(0).transform.position;
-        if(currentStep != 0){
+        if(currentStep != 0 && currentStep != 1){
             penPos.Add(new Vector4(tempPenPos.x, tempPenPos.y, tempPenPos.z, Time.time));
         }
         
@@ -300,7 +300,7 @@ public class LocalizationTask : BaseTask
                 }
                 tempHandPos = ctrler.CursorController.transform.position;
                 tempCursorPos = ctrler.CursorController.Model.transform.position;
-                if(currentStep != 0){
+                if(currentStep != 0 && currentStep != 1){
                     handPos.Add(new Vector4(tempHandPos.x, tempHandPos.y, tempHandPos.z, Time.time));
                     cursorPos.Add(new Vector4(tempCursorPos.x, tempCursorPos.y, tempCursorPos.z, Time.time));
                 }

@@ -243,7 +243,7 @@ public class ReachToTargetTask : BaseTask
                 break;
         }
         Vector3 tempPenPos = pen.transform.GetChild(0).transform.position;
-        if(currentStep !=0){
+        if(currentStep !=0 && currentStep != 1){
             penPos.Add(new Vector4(tempPenPos.x, tempPenPos.y, tempPenPos.z, Time.time));
         }
         
@@ -442,7 +442,7 @@ public class ReachToTargetTask : BaseTask
                 }
                 Vector3 tempHandPos = ctrler.CursorController.transform.position;
                 Vector3 tempCursorPos = ctrler.CursorController.Model.transform.position;
-                if(currentStep != 0){
+                if(currentStep != 0 && currentStep != 1){
                     handPos.Add(new Vector4(tempHandPos.x, tempHandPos.y, tempHandPos.z, Time.time));
                     cursorPos.Add(new Vector4(tempCursorPos.x, tempCursorPos.y, tempCursorPos.z, Time.time));
                 }
