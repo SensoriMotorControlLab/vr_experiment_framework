@@ -227,10 +227,14 @@ public class ReachToTargetTask : BaseTask
             case 1:
             if (isNoCursor){
                 penIndicator.GetComponent<Renderer>().enabled = false;
-                if((pen.transform.GetChild(0).transform.position - targets[1].transform.position).magnitude < 0.06f){
+                if((pen.transform.GetChild(0).transform.position - targets[1].transform.position).magnitude < 0.06f
+                && (pen.transform.GetChild(0).transform.position - targets[1].transform.position).magnitude > 0.005f){
                     VibrateController(0, (0.6f - ((pen.transform.GetChild(0).transform.position - targets[1].transform.position).magnitude * 10))/2, Time.deltaTime, devices);
                     float color = 1 - ((pen.transform.GetChild(0).transform.position - targets[1].transform.position).magnitude)/0.06f;
                     targets[1].gameObject.GetComponent<Renderer>().material.color = (new Color(1, color, color, 1f));
+                }
+                else if((pen.transform.GetChild(0).transform.position - targets[1].transform.position).magnitude < 0.005f){
+                    targets[1].gameObject.GetComponent<Renderer>().material.color = (new Color(0, 1, 0, 1f));
                 }
             }
                 
@@ -288,10 +292,14 @@ public class ReachToTargetTask : BaseTask
                     break;
                 case 1:
                     handImg.GetComponent<SpriteRenderer>().enabled = false;
-                    if(isNoCursor && (baseObject.transform.position - targets[1].transform.position).magnitude < 0.06f){
+                    if(isNoCursor && (baseObject.transform.position - targets[1].transform.position).magnitude < 0.06f
+                    && (baseObject.transform.position - targets[1].transform.position).magnitude > 0.005f){
                         VibrateController(0, (0.6f - ((baseObject.transform.position - targets[1].transform.position).magnitude * 10))/2, Time.deltaTime, devices);
                         float color = 1 - ((baseObject.transform.position - targets[1].transform.position).magnitude)/0.06f;
                         targets[1].gameObject.GetComponent<Renderer>().material.color = (new Color(1, color, color, 1f));
+                    }
+                    else if((baseObject.transform.position - targets[1].transform.position).magnitude < 0.005f){
+                        targets[1].gameObject.GetComponent<Renderer>().material.color = (new Color(0, 1, 0, 1f));
                     }
                     baseObject.transform.position = ctrler.CursorController.ConvertPosition(new Vector3 (temp.x, ctrler.TargetContainer.transform.position.y, temp.z));
                     break;
