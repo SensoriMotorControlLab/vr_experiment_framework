@@ -4,7 +4,7 @@
   ],
   "track_score": true,
   "per_block_type": [
-"nocursor",
+"aligned",
 "nocursor",
 "aligned"
     
@@ -16,7 +16,7 @@
     
   ],
   "per_block_penPresent": [
-    false,
+    true,
     true,
     true
   ],

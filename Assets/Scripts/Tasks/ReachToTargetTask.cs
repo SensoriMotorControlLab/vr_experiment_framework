@@ -399,10 +399,16 @@ public class ReachToTargetTask : BaseTask
 
         if (Finished){
             if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
-                finalPenAngle = Vector3.Angle(targets[1].transform.right, activeCursor.transform.GetChild(0).transform.position);
+                Vector3 penDiff = targets[1].transform.position - activeCursor.transform.GetChild(0).transform.position;
+                float penRad = MathF.Atan2(penDiff.z, penDiff.x);
+                finalPenAngle = penRad * Mathf.Rad2Deg + 180;
             }
-            finalReachAngle = Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized);
-            finalCursorAngle = Vector3.Angle(targets[1].transform.right, ctrler.CursorController.Model.transform.position);
+            Vector3 diff = targets[1].transform.position - ctrler.CursorController.transform.localPosition.normalized;
+            float rad = MathF.Atan2(diff.z, diff.x);
+            finalReachAngle = rad * Mathf.Rad2Deg + 180;
+            diff = targets[1].transform.position - baseObject.transform.position;
+            rad = MathF.Atan2(diff.z, diff.x);
+            finalCursorAngle = rad * Mathf.Rad2Deg + 180;
             ctrler.EndAndPrepare();
         }
             
@@ -429,36 +435,58 @@ public class ReachToTargetTask : BaseTask
         switch(currentStep)
         {
             case 2:
+                Vector3 diff;
+                float rad;
                 if(outEvent_3cm){
                     if((targets[1].transform.position - activeCursor.transform.position).magnitude > 0.03f && !ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
-                        pos_3cm_out = new Vector2(Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized), Time.time);
-                        cursor_3cm_out = new Vector2(Vector3.Angle(targets[1].transform.right, ctrler.CursorController.Model.transform.position), Time.time);
+                        diff = targets[1].transform.position - ctrler.CursorController.transform.localPosition.normalized;
+                        rad = MathF.Atan2(diff.z, diff.x);
+                        pos_3cm_out = new Vector2((rad * Mathf.Rad2Deg + 180), Time.time);
+                        diff = targets[1].transform.position - baseObject.transform.position;
+                        rad = MathF.Atan2(diff.z, diff.x);
+                        cursor_3cm_out = new Vector2((rad * Mathf.Rad2Deg + 180), Time.time);
                         outEvent_3cm = false;
                     }
                     else if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent") && (targets[1].transform.position - activeCursor.transform.GetChild(0).transform.position).magnitude > 0.03f){
-                        pos_3cm_out = new Vector2(Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized), Time.time);
-                        cursor_3cm_out = new Vector2(Vector3.Angle(targets[1].transform.right, ctrler.CursorController.Model.transform.position), Time.time);
-                        pen_3cm_out = new Vector2(Vector3.Angle(targets[1].transform.right, activeCursor.transform.GetChild(0).transform.position), Time.time);
+                        diff = targets[1].transform.position - activeCursor.transform.GetChild(0).transform.position;
+                        rad = MathF.Atan2(diff.z, diff.x);
+                        pen_3cm_out = new Vector2((rad * Mathf.Rad2Deg + 180), Time.time);
+                        diff = targets[1].transform.position - ctrler.CursorController.transform.localPosition.normalized;
+                        rad = MathF.Atan2(diff.z, diff.x);
+                        pos_3cm_out = new Vector2((rad * Mathf.Rad2Deg + 180), Time.time);
+                        diff = targets[1].transform.position - baseObject.transform.position;
+                        rad = MathF.Atan2(diff.z, diff.x);
+                        cursor_3cm_out = new Vector2((rad * Mathf.Rad2Deg + 180), Time.time);
                         outEvent_3cm = false;
                     }
                     
                 }
                 if(outEvent_2cm){
                     if((targets[1].transform.position - activeCursor.transform.position).magnitude > 0.02f && !ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
-                        pos_2cm_out = new Vector2(Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized), Time.time);
-                        cursor_2cm_out = new Vector2(Vector3.Angle(targets[1].transform.right, ctrler.CursorController.Model.transform.position), Time.time);
+                        diff = targets[1].transform.position - ctrler.CursorController.transform.localPosition.normalized;
+                        rad = MathF.Atan2(diff.z, diff.x);
+                        pos_2cm_out = new Vector2((rad * Mathf.Rad2Deg + 180), Time.time);
+                        diff = targets[1].transform.position - baseObject.transform.position;
+                        rad = MathF.Atan2(diff.z, diff.x);
+                        cursor_2cm_out = new Vector2((rad * Mathf.Rad2Deg + 180), Time.time);
                         outEvent_2cm = false;
                     }
                     else if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent") && (targets[1].transform.position - activeCursor.transform.GetChild(0).transform.position).magnitude > 0.02f){
-                        pos_2cm_out = new Vector2(Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized), Time.time);
-                        cursor_2cm_out = new Vector2(Vector3.Angle(targets[1].transform.right, ctrler.CursorController.Model.transform.position), Time.time);
-                        pen_2cm_out = new Vector2(Vector3.Angle(targets[1].transform.right, activeCursor.transform.GetChild(0).transform.position), Time.time);
+                        diff = targets[1].transform.position - activeCursor.transform.GetChild(0).transform.position;
+                        rad = MathF.Atan2(diff.z, diff.x);
+                        pen_2cm_out = new Vector2((rad * Mathf.Rad2Deg + 180), Time.time);
+                        diff = targets[1].transform.position - ctrler.CursorController.transform.localPosition.normalized;
+                        rad = MathF.Atan2(diff.z, diff.x);
+                        pos_2cm_out = new Vector2((rad * Mathf.Rad2Deg + 180), Time.time);
+                        diff = targets[1].transform.position - baseObject.transform.position;
+                        rad = MathF.Atan2(diff.z, diff.x);
+                        cursor_2cm_out = new Vector2((rad * Mathf.Rad2Deg + 180), Time.time);
                         outEvent_2cm = false;
                     }
                     
                 }
                 Vector3 tempHandPos = ctrler.CursorController.transform.position;
-                Vector3 tempCursorPos = ctrler.CursorController.Model.transform.position;
+                Vector3 tempCursorPos = baseObject.transform.position;
                 if(currentStep != 0 && currentStep != 1){
                     handPos.Add(new Vector4(tempHandPos.x, tempHandPos.y, tempHandPos.z, Time.time));
                     cursorPos.Add(new Vector4(tempCursorPos.x, tempCursorPos.y, tempCursorPos.z, Time.time));
