@@ -4,8 +4,8 @@
   ],
   "track_score": true,
   "per_block_type": [
-"localization",
-"localization",
+"aligned",
+"aligned",
 "aligned"
     
   ],
@@ -16,9 +16,9 @@
     
   ],
   "per_block_penPresent": [
-    true,
     false,
-    true
+    false,
+    false
   ],
 
   "per_block_cursor_visible": [

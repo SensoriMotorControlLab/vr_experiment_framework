@@ -307,7 +307,7 @@ public class ReachToTargetTask : BaseTask
                         float color = 1 - ((baseObject.transform.position - targets[1].transform.position).magnitude)/0.06f;
                         targets[1].gameObject.GetComponent<Renderer>().material.color = (new Color(1, color, color, 1f));
                     }
-                    else if((baseObject.transform.position - targets[1].transform.position).magnitude < 0.005f){
+                    else if(isNoCursor && ((baseObject.transform.position - targets[1].transform.position).magnitude < 0.005f)){
                         targets[1].gameObject.GetComponent<Renderer>().material.color = (new Color(0, 1, 0, 1f));
                     }
                     baseObject.transform.position = ctrler.CursorController.ConvertPosition(new Vector3 (temp.x, ctrler.TargetContainer.transform.position.y, temp.z));
