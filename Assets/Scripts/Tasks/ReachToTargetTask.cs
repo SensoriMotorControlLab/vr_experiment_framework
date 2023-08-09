@@ -403,7 +403,7 @@ public class ReachToTargetTask : BaseTask
                 float penRad = MathF.Atan2(penDiff.z, penDiff.x);
                 finalPenAngle = penRad * Mathf.Rad2Deg + 180;
             }
-            Vector3 diff = targets[1].transform.position - ctrler.CursorController.transform.localPosition.normalized;
+            Vector3 diff = targets[1].transform.position - ctrler.CursorController.transform.position;
             float rad = MathF.Atan2(diff.z, diff.x);
             finalReachAngle = rad * Mathf.Rad2Deg + 180;
             diff = targets[1].transform.position - baseObject.transform.position;
