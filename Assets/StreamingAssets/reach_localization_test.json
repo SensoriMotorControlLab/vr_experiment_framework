@@ -1,6 +1,6 @@
 {
   "experiment_mode": "targetTrack",
-  "optional_params": ["cursor", "return_visible"
+  "optional_params": ["return_visible"
   ],
   "track_score": true,
   "per_block_type": [
@@ -16,7 +16,7 @@
     
   ],
   "per_block_penPresent": [
-    false,
+    true,
     false,
     false
   ],
@@ -104,12 +104,12 @@ null
     100
   ],
   "tl2": [
-    130,
+    30,
     130
   ],
   "tl1": [
-    130,
-    130
+    150,
+    45
   ],
   "ct1": [
     20,

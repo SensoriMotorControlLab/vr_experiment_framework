@@ -435,52 +435,56 @@ public class ReachToTargetTask : BaseTask
         switch(currentStep)
         {
             case 2:
-                Vector3 diff;
-                float rad;
+                Vector3 diff_hand;
+                float rad_hand;
+                Vector3 diff_cursor;
+                float rad_cursor;
+                Vector3 diff_pen;
+                float rad_pen;
                 if(outEvent_3cm){
                     if((targets[1].transform.position - activeCursor.transform.position).magnitude > 0.03f && !ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
-                        diff = targets[1].transform.position - ctrler.CursorController.transform.localPosition.normalized;
-                        rad = MathF.Atan2(diff.z, diff.x);
-                        pos_3cm_out = new Vector2((rad * Mathf.Rad2Deg + 180), Time.time);
-                        diff = targets[1].transform.position - baseObject.transform.position;
-                        rad = MathF.Atan2(diff.z, diff.x);
-                        cursor_3cm_out = new Vector2((rad * Mathf.Rad2Deg + 180), Time.time);
+                        diff_hand = targets[1].transform.position - ctrler.CursorController.transform.position;
+                        rad_hand = MathF.Atan2(diff_hand.z, diff_hand.x);
+                        pos_3cm_out = new Vector2((rad_hand * Mathf.Rad2Deg + 180), Time.time);
+                        diff_cursor = targets[1].transform.position - baseObject.transform.position;
+                        rad_cursor = MathF.Atan2(diff_cursor.z, diff_cursor.x);
+                        cursor_3cm_out = new Vector2((rad_cursor * Mathf.Rad2Deg + 180), Time.time);
                         outEvent_3cm = false;
                     }
                     else if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent") && (targets[1].transform.position - activeCursor.transform.GetChild(0).transform.position).magnitude > 0.03f){
-                        diff = targets[1].transform.position - activeCursor.transform.GetChild(0).transform.position;
-                        rad = MathF.Atan2(diff.z, diff.x);
-                        pen_3cm_out = new Vector2((rad * Mathf.Rad2Deg + 180), Time.time);
-                        diff = targets[1].transform.position - ctrler.CursorController.transform.localPosition.normalized;
-                        rad = MathF.Atan2(diff.z, diff.x);
-                        pos_3cm_out = new Vector2((rad * Mathf.Rad2Deg + 180), Time.time);
-                        diff = targets[1].transform.position - baseObject.transform.position;
-                        rad = MathF.Atan2(diff.z, diff.x);
-                        cursor_3cm_out = new Vector2((rad * Mathf.Rad2Deg + 180), Time.time);
+                        diff_pen = targets[1].transform.position - activeCursor.transform.GetChild(0).transform.position;
+                        rad_pen = MathF.Atan2(diff_pen.z, diff_pen.x);
+                        pen_3cm_out = new Vector2((rad_pen * Mathf.Rad2Deg + 180), Time.time);
+                        diff_hand = targets[1].transform.position - ctrler.CursorController.transform.position;
+                        rad_hand = MathF.Atan2(diff_hand.z, diff_hand.x);
+                        pos_3cm_out = new Vector2((rad_hand * Mathf.Rad2Deg + 180), Time.time);
+                        diff_cursor = targets[1].transform.position - baseObject.transform.position;
+                        rad_cursor = MathF.Atan2(diff_cursor.z, diff_cursor.x);
+                        cursor_3cm_out = new Vector2((rad_cursor * Mathf.Rad2Deg + 180), Time.time);
                         outEvent_3cm = false;
                     }
                     
                 }
                 if(outEvent_2cm){
                     if((targets[1].transform.position - activeCursor.transform.position).magnitude > 0.02f && !ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
-                        diff = targets[1].transform.position - ctrler.CursorController.transform.localPosition.normalized;
-                        rad = MathF.Atan2(diff.z, diff.x);
-                        pos_2cm_out = new Vector2((rad * Mathf.Rad2Deg + 180), Time.time);
-                        diff = targets[1].transform.position - baseObject.transform.position;
-                        rad = MathF.Atan2(diff.z, diff.x);
-                        cursor_2cm_out = new Vector2((rad * Mathf.Rad2Deg + 180), Time.time);
+                        diff_hand = targets[1].transform.position - ctrler.CursorController.transform.position;
+                        rad_hand = MathF.Atan2(diff_hand.z, diff_hand.x);
+                        pos_2cm_out = new Vector2((rad_hand * Mathf.Rad2Deg + 180), Time.time);
+                        diff_cursor = targets[1].transform.position - baseObject.transform.position;
+                        rad_cursor = MathF.Atan2(diff_cursor.z, diff_cursor.x);
+                        cursor_2cm_out = new Vector2((rad_cursor * Mathf.Rad2Deg + 180), Time.time);
                         outEvent_2cm = false;
                     }
                     else if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent") && (targets[1].transform.position - activeCursor.transform.GetChild(0).transform.position).magnitude > 0.02f){
-                        diff = targets[1].transform.position - activeCursor.transform.GetChild(0).transform.position;
-                        rad = MathF.Atan2(diff.z, diff.x);
-                        pen_2cm_out = new Vector2((rad * Mathf.Rad2Deg + 180), Time.time);
-                        diff = targets[1].transform.position - ctrler.CursorController.transform.localPosition.normalized;
-                        rad = MathF.Atan2(diff.z, diff.x);
-                        pos_2cm_out = new Vector2((rad * Mathf.Rad2Deg + 180), Time.time);
-                        diff = targets[1].transform.position - baseObject.transform.position;
-                        rad = MathF.Atan2(diff.z, diff.x);
-                        cursor_2cm_out = new Vector2((rad * Mathf.Rad2Deg + 180), Time.time);
+                        diff_pen = targets[1].transform.position - activeCursor.transform.GetChild(0).transform.position;
+                        rad_pen = MathF.Atan2(diff_pen.z, diff_pen.x);
+                        pen_2cm_out = new Vector2((rad_pen * Mathf.Rad2Deg + 180), Time.time);
+                        diff_hand = targets[1].transform.position - ctrler.CursorController.transform.position;
+                        rad_hand = MathF.Atan2(diff_hand.z, diff_hand.x);
+                        pos_2cm_out = new Vector2((rad_hand * Mathf.Rad2Deg + 180), Time.time);
+                        diff_cursor = targets[1].transform.position - baseObject.transform.position;
+                        rad_cursor = MathF.Atan2(diff_cursor.z, diff_cursor.x);
+                        cursor_2cm_out = new Vector2((rad_cursor * Mathf.Rad2Deg + 180), Time.time);
                         outEvent_2cm = false;
                     }
                     
