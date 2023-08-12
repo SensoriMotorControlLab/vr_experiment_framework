@@ -32,6 +32,16 @@ public class GatePlacement : MonoBehaviour
                 v.Add(m.vertices[i]);
         }        
     }
+    public void ObstructionPlacement(GameObject obst, float percent){
+        // Get a vertex position in array from percent
+        int placement = Mathf.RoundToInt((1f - percent) * (v.Count - 3));
+        obst.transform.position = v[placement] + (Vector3.up * 0.5f);
+        Vector3 diff = v[placement] - v[placement + 1];
+        float rad = MathF.Atan2(diff.z, diff.x);
+        float angle = Mathf.Rad2Deg * rad;
+        obst.transform.Rotate(0, 180 - angle, 0, Space.Self);
+
+    }
 
     public void SetGatePosition(GameObject gateParent, GameObject gate1, GameObject gate2, LineRenderer lr, BoxCollider col, float percent)
     {

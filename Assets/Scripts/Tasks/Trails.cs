@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +8,7 @@ public class Trails : BaseTask
 {
     private ExperimentController ctrler;
     private GameObject trailSpace;
+    protected Trial trial;
 
     private GameObject trailGate1, trailGate2;
 
@@ -19,7 +21,9 @@ public class Trails : BaseTask
 
     private GatePlacement gatePlacement; 
 
-    private GameObject roadSegments; 
+    private GameObject roadSegments;
+    private GameObject track; 
+    private GameObject obst;
 
     private float startPoint, endPoint, midPoint; // Percentages between 0-1 where the start, mid, and end gates will be placed along the track (clockwise)
 
@@ -89,6 +93,9 @@ public class Trails : BaseTask
         roadSegments = GameObject.Find("generated_by_SplineExtrusion");
 
         scoreboard = GameObject.Find("Scoreboard").GetComponent<Scoreboard>();
+        track = GameObject.Find("Track");
+        obst = GameObject.Find("Occlusion");
+        car = GameObject.Find("Car");
 
         for (int i = 0; i < roadSegments.transform.childCount; i++)
         { // add road segments to gatePlacement list of meshes
@@ -98,9 +105,9 @@ public class Trails : BaseTask
 
         /* TrailGate children:
         * 0: pole1
-        * 2: pole2 
-        * 3: checkered line (line renderer component)
-        * 4: trigger (collider component)
+        * 1: pole2 
+        * 2: checkered line (line renderer component)
+        * 3: trigger (collider component)
         */
 
         startPoint = ctrler.Session.CurrentBlock.settings.GetFloat("per_block_startPoint");
@@ -110,6 +117,8 @@ public class Trails : BaseTask
         endPoint = ctrler.Session.CurrentBlock.settings.GetFloat("per_block_endPoint");
         gatePlacement.SetGatePosition(trailGate2, trailGate2.transform.GetChild(0).gameObject, trailGate2.transform.GetChild(1).gameObject,
             trailGate2.transform.GetChild(2).GetComponent<LineRenderer>(), trailGate2.transform.GetChild(3).GetComponent<BoxCollider>(), endPoint);
+
+        
 
         // Place midway triggers throughout the track
         for (int i = 0; i < NUM_MID_TRIGGERS; i++)
@@ -137,6 +146,7 @@ public class Trails : BaseTask
             }
 
             gatePlacement.SetColliderPosition(midwayTriggers[i].GetComponent<BoxCollider>(), midPoint);
+            midwayTriggers[i].transform.parent = track.transform;
         }
 
 
@@ -168,13 +178,6 @@ public class Trails : BaseTask
             railing2.transform.GetChild(i).gameObject.AddComponent<BaseTarget>();
         }
 
-        car = GameObject.Find("Car");
-
-        car.transform.position = trailGate1.transform.position;
-
-        raycastOrigins.AddRange(car.GetComponentsInChildren<Transform>());
-
-
         innerTrackColliders.AddRange(GameObject.Find("innertrack").transform.GetComponentsInChildren<BaseTarget>());
 
         if (ctrler.Session.currentTrialNum > 1)
@@ -195,6 +198,32 @@ public class Trails : BaseTask
         {
 
         }
+        
+        //check is obstruction is TRUE on the JSON and places it on the track
+        if(ctrler.Session.CurrentBlock.settings.GetBool("per_block_track_occlusion")){
+            obst.SetActive(true);
+            gatePlacement.ObstructionPlacement(obst, ctrler.Session.CurrentBlock.settings.GetFloat("per_block_occlusion_location"));
+        }
+        else{
+            obst.SetActive(false);
+        }
+
+        // rotate track according to JSON
+        float trackRot = Convert.ToSingle(ctrler.PseudoRandom("per_block_track_rotation"));
+        track.transform.Rotate(0, trackRot , 0, Space.Self);
+        
+        //check if mirror on JSON is TRUE and mirror the track on the z-axis and changes the position and rotation of the gates so the track still runs clockwise
+        if(ctrler.Session.CurrentBlock.settings.GetBool("per_block_track_mirror")){
+            track.transform.localScale = new Vector3(1,1,-1);
+            Vector3 tempPos1 = trailGate1.transform.position;
+            Quaternion tempRot1 = trailGate1.transform.rotation;
+            trailGate1.transform.position = trailGate2.transform.position;
+            trailGate1.transform.rotation = trailGate2.transform.rotation;
+            trailGate2.transform.rotation = tempRot1;
+            trailGate2.transform.position = tempPos1;
+        }
+        car.transform.position = trailGate1.transform.position;
+        raycastOrigins.AddRange(car.GetComponentsInChildren<Transform>());
 
     }
 
@@ -259,22 +288,16 @@ public class Trails : BaseTask
     // Update is called once per frame
     void Update()
     {
+        
         switch (currentStep)
         {
             case 0:
-
                 // mouse is inside gate 1 collider
                 if (trailGate1.transform.GetChild(3).GetComponent<BoxCollider>().ClosestPoint
                     (ctrler.CursorController.MouseToPlanePoint(transform.up, car.transform.position, Camera.main)) ==
                     ctrler.CursorController.MouseToPlanePoint(transform.up, car.transform.position, Camera.main))
                 {
                     IncrementStep();
-                }
-
-                // mouse gets near car
-                if ((ctrler.CursorController.MouseToPlanePoint(transform.up, car.transform.position, Camera.main) - car.transform.position).magnitude < 0.15f)
-                {
-                    //IncrementStep();
                 }
                 break;
 
@@ -299,6 +322,11 @@ public class Trails : BaseTask
                     inTrackTime += Time.deltaTime;
                 else
                     outTrackTime += Time.deltaTime;
+
+                // checks if car has gone through finish line
+                if(carPastMidpoint && trailGate2.transform.GetChild(3).GetComponent<BaseTarget>().Collided){
+                    IncrementStep();
+                }
 
                 break;
             case 2:

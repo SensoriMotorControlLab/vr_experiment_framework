@@ -81,6 +81,7 @@ public class ExperimentController : MonoBehaviour
     public float pauseTimeLength = 10;
 
     private Vector3 exp_centre_pos;
+    private bool roomHidden = false;
 
 
     /// <summary>
@@ -384,7 +385,12 @@ public class ExperimentController : MonoBehaviour
             case "trail":
 
                 CurrentTask = gameObject.AddComponent<Trails>();
-
+                //hides experiment room
+                if(!roomHidden){
+                    GameObject.Find("room").SetActive(false);
+                    roomHidden = true;
+                }
+                
                 break;
             default:
                 Debug.LogWarning("Experiment Type not implemented: " +
@@ -648,7 +654,7 @@ public class ExperimentController : MonoBehaviour
 
             if (list.Count == 1)
             {
-                return lists[listk][0];
+                return list[0];
 
             }
             else if (list.Count == 0)
