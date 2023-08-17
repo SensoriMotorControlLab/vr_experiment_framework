@@ -4,7 +4,7 @@
   "exp_record_score": true,
   "per_block_n": [ 1, 1, 4 ],
   "per_block_hand": [ "r", "r", "r" ],
-  "per_block_type": [ "", "", "" ],
+  "per_block_type": [ "aligned", "rotated", "rotated" ],
   "per_block_instruction": [ "ins1", null, "ins3" ],
   "per_block_track_score": [ null, true, null ],
   "per_block_timerTime": [ 1, 1, 1 ],
@@ -14,6 +14,7 @@
   "per_block_track_rotation": ["tr1", "tr2", "tr3"],
   "per_block_track_mirror":[false, true, false],
   "per_block_track_occlusion": [true, false, true],
+  "per_block_rotation": [ 0, 30, 30 ],
   "tr1": [90],
   "tr2": [90],
   "tr3": [45, 90, 130, 180]

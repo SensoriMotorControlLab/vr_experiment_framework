@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UXF;
+using MovementType = CursorController.MovementType;
 
 public class Trails : BaseTask
 {
@@ -96,6 +97,21 @@ public class Trails : BaseTask
         track = GameObject.Find("Track");
         obst = GameObject.Find("Occlusion");
         car = GameObject.Find("Car");
+
+        Home = trailGate1;
+
+        switch(ctrler.Session.CurrentBlock.settings.GetString("per_block_type")){
+            case "aligned":
+                ctrler.CursorController.SetMovementType(MovementType.aligned);
+                break;
+
+            case "rotated":
+                print("rotated");
+                ctrler.CursorController.SetMovementType(MovementType.rotated);
+                break;
+
+
+        }
 
         for (int i = 0; i < roadSegments.transform.childCount; i++)
         { // add road segments to gatePlacement list of meshes
@@ -227,6 +243,11 @@ public class Trails : BaseTask
 
     }
 
+    public override float GetRotation()
+    {
+        return ctrler.Session.CurrentBlock.settings.GetFloat("per_block_rotation");
+    }
+
     private void FixedUpdate()
     {
         switch (currentStep)
@@ -316,7 +337,8 @@ public class Trails : BaseTask
                     carPastMidpoint = false;
 
                 // car position = mouse position
-                car.transform.position = ctrler.CursorController.MouseToPlanePoint(transform.up, car.transform.position, Camera.main);
+                Vector3 mousePoint = ctrler.CursorController.MouseToPlanePoint(transform.up, car.transform.position, Camera.main);
+                car.transform.position = ctrler.CursorController.ConvertPosition(mousePoint);
 
                 if (isOnTrack)
                     inTrackTime += Time.deltaTime;

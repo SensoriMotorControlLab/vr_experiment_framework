@@ -124,7 +124,7 @@ public class CursorController : MonoBehaviour
         //    Debug.Log("Found Device: " + device.name);
         //}
 
-        MoveType = MovementType.aligned;
+        // MoveType = MovementType.aligned;
     }
 
     void Update()
@@ -282,7 +282,7 @@ public class CursorController : MonoBehaviour
         }
 
         // Default movement type to aligned
-        MoveType = MovementType.aligned;
+        // MoveType = MovementType.aligned;
     }
 
     public void SetMovementType(MovementType moveType)
