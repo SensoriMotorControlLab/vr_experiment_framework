@@ -87,15 +87,18 @@ public class GatePlacement : MonoBehaviour
         gateParent.transform.forward = forward;
         col.transform.forward = forward;
 
-        // Stretch line renderer between gate poles
-        lr.SetPosition(0, gate1.transform.position + Vector3.up * 0.45f);
-        lr.SetPosition(1, gate2.transform.position + Vector3.up * 0.45f);
-
         // Reparent to gateParent
         foreach (Transform child in gateChildren)
         {
             child.SetParent(gateParent.transform);
         }
+    }
+
+    public void SetCheckeredFlags(LineRenderer lr, GameObject gate1, GameObject gate2)
+    {
+        // Stretch line renderer between gate poles
+        lr.SetPosition(0, gate1.transform.position + Vector3.up * 0.45f);
+        lr.SetPosition(1, gate2.transform.position + Vector3.up * 0.45f);
     }
 
     public void SetColliderPosition(BoxCollider col, float percent)

@@ -241,6 +241,12 @@ public class Trails : BaseTask
         car.transform.position = trailGate1.transform.position;
         raycastOrigins.AddRange(car.GetComponentsInChildren<Transform>());
 
+        gatePlacement.SetCheckeredFlags(trailGate1.transform.GetChild(2).GetComponent<LineRenderer>(), trailGate1.transform.GetChild(0).gameObject,
+        trailGate1.transform.GetChild(1).gameObject);
+
+        gatePlacement.SetCheckeredFlags(trailGate2.transform.GetChild(2).GetComponent<LineRenderer>(), trailGate2.transform.GetChild(0).gameObject,
+        trailGate2.transform.GetChild(1).gameObject);
+
     }
 
     public override float GetRotation()
