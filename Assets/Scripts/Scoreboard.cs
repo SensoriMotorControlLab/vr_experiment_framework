@@ -14,6 +14,7 @@ public class Scoreboard : MonoBehaviour
     public Text CamSpaceText, WorldSpaceText, TrialTrackText;
 
     public String ManualScoreText = "";
+    public string scorePrefixText = "";
 
     /// <summary>
     /// When true, the score will not update based on the ExperimentController's score
@@ -24,6 +25,7 @@ public class Scoreboard : MonoBehaviour
     /// When true, the score text will be prefaced with "Score: "
     /// </summary>
     public bool ScorePrefix = true;
+    public bool overideScorePrefix = false;
 
     // Start is called before the first frame update
     void Start()
@@ -63,6 +65,7 @@ public class Scoreboard : MonoBehaviour
         else
         {
             if (ScorePrefix) target.text = "Score: " + ExperimentController.Instance().Score;
+            else if (overideScorePrefix) target.text = scorePrefixText + " " + ExperimentController.Instance().Score;
             else target.text = "" + ExperimentController.Instance().Score;
         }
     }

@@ -253,7 +253,7 @@ public class Trails : BaseTask
         switch (currentStep)
         {
             case 0:
-
+                ctrler.Score = 0;
                 break;
 
             case 1:
