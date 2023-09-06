@@ -4,9 +4,9 @@
   ],
   "track_score": true,
   "per_block_type": [
-"aligned",
-"aligned",
-"aligned"
+"localization",
+"localization",
+"localization"
     
   ],
   "per_block_rotation": [
@@ -16,9 +16,9 @@
     
   ],
   "per_block_penPresent": [
-    true,
     false,
-    false
+    true,
+    true
   ],
 
   "per_block_cursor_visible": [

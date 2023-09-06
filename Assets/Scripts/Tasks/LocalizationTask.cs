@@ -150,7 +150,7 @@ public class LocalizationTask : BaseTask
         locAim.GetComponent<BaseTarget>().enabled = false;
         locAim.SetActive(false);
 
-        locAim.transform.position =new Vector3(locAim.transform.position.x, ctrler.TargetContainer.transform.position.y, locAim.transform.position.z) + Vector3.forward * 13f/100f;
+        locAim.transform.position =new Vector3(locAim.transform.position.x, ctrler.TargetContainer.transform.position.y, locAim.transform.position.z) + Vector3.forward * ctrler.Session.CurrentTrial.settings.GetFloat("per_block_distance")/100f;
         ctrler.TargetContainer.transform.rotation = Quaternion.Euler(0, 0, 0);       
         locAim.transform.SetParent(ctrler.TargetContainer.transform);
         ctrler.TargetContainer.transform.position = ctrler.TargetContainer.transform.position +  ctrler.TargetContainer.transform.forward * 7f/100f;
@@ -168,7 +168,7 @@ public class LocalizationTask : BaseTask
         {
             ctrler.CursorController.SetVRCamera(false);
             localizationPrefab.transform.localPosition = Vector3.zero;
-            ctrler.TargetContainer.transform.localPosition = Vector3.zero;
+            // ctrler.TargetContainer.transform.localPosition = Vector3.zero;
 
         }
         arcError.SetActive(false);
@@ -315,7 +315,12 @@ public class LocalizationTask : BaseTask
                         && (targets[1].transform.position - locPos).magnitude < 0.135f)
                         {
                             IncrementStep();
-                            arcAquired = new Vector2(Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized), Time.time);
+                            if(ctrler.Session.CurrentTrial.settings.GetBool("per_block_penPresent")){
+                                arcAquired = new Vector2(Vector3.Angle(targets[1].transform.right, pen.transform.GetChild(0).transform.position), Time.time);
+                            }
+                            else {
+                                arcAquired = new Vector2(Vector3.Angle(targets[1].transform.right, ctrler.CursorController.transform.localPosition.normalized), Time.time);
+                            } 
                         }
 
                 if((((targets[1].transform.position - locPos).magnitude > 0.005f && (targets[1].transform.position - locPos).magnitude < 0.13f) || ((targets[1].transform.position - locPos).magnitude > 0.135f)) 
