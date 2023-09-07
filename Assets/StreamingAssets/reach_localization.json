@@ -831,7 +831,7 @@ null
     "Reach to the target \n Use the pen's tip to reach to the red target \n Make straight, fast, and accurate reaches"
   ,
   "ins2":
-    "Reach arc with pen tip /n Hold still \n Indicate pen tip"
+    "Reach arc with pen tip \n Hold still \n Indicate pen tip"
   ,
   "ins3":
     "Pen No Cursor Reach \n Reach to the target using the tip of the pen"
@@ -846,7 +846,7 @@ null
     "BREAK \n 2/3 completed"
   ,
   "ins7":
-    "Thank you for participating"
+    "Part 1 of 2 completed \n Please remove the headset"
   ,
 
   "as1":[
