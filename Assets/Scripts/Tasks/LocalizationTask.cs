@@ -102,7 +102,7 @@ public class LocalizationTask : BaseTask
             localizationSurface.GetComponent<Renderer>().material = ctrler.Materials["wood"];
             localizationSurface.transform.localScale = new Vector3(1.22f, 0.1f, 1.9f);
             audioCue = GameObject.Find("pen_to_target");
-            audioCue.GetComponent<AudioSource>().Play();
+            // audioCue.GetComponent<AudioSource>().Play();
         }
         else{
             pen.SetActive(false);
@@ -113,7 +113,7 @@ public class LocalizationTask : BaseTask
             lab.transform.parent = localizationPrefab.transform;
             localizationSurface.transform.localScale = new Vector3(4f, 0.1f, 4f);
             audioCue = GameObject.Find("thumb_to_target");
-            audioCue.GetComponent<AudioSource>().Play();
+            // audioCue.GetComponent<AudioSource>().Play();
         }
 
         // Set up the home position

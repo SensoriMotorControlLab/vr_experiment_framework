@@ -144,11 +144,11 @@ public class ReachToTargetTask : BaseTask
             reachSurface.GetComponent<Renderer>().material.color = new Color(0.1f, 0f, 0f, 1f);
             if(trial.settings.GetBool("per_block_penPresent")){
                 audioCue = GameObject.Find("pen_to_target");
-                audioCue.GetComponent<AudioSource>().Play();
+                // audioCue.GetComponent<AudioSource>().Play();
             }
             else{
                 audioCue = GameObject.Find("thumb_to_target");
-                audioCue.GetComponent<AudioSource>().Play();
+                // audioCue.GetComponent<AudioSource>().Play();
             }
         }
         else if (trial.settings.GetString("per_block_type") == "rotated"){
