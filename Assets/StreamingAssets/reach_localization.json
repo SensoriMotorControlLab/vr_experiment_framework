@@ -281,7 +281,7 @@ null
   ],
   "per_block_n": [
     1,
-50,
+48,
 1,
 8,
 1,
@@ -390,13 +390,7 @@ null,
 
   ],
   "per_block_hand": [
-    null,
-"r",
-null,
-"r",
-null,
-"r",
-null,
+    "r",
 "r",
 "r",
 "r",
@@ -406,12 +400,6 @@ null,
 "r",
 "r",
 "r",
-null,
-"r",
-"r",
-null,
-"r",
-null,
 "r",
 "r",
 "r",
@@ -421,12 +409,6 @@ null,
 "r",
 "r",
 "r",
-null,
-"r",
-"r",
-null,
-"r",
-null,
 "r",
 "r",
 "r",
@@ -436,12 +418,30 @@ null,
 "r",
 "r",
 "r",
-null,
 "r",
 "r",
-null,
 "r",
-null
+"r",
+"r",
+"r",
+"r",
+"r",
+"r",
+"r",
+"r",
+"r",
+"r",
+"r",
+"r",
+"r",
+"r",
+"r",
+"r",
+"r",
+"r",
+"r",
+"r",
+"r"
   
   ],
   "per_block_targetListToUse": [
@@ -828,19 +828,19 @@ null
     
   ],
   "ins1": 
-    "Reach to the target \n Use the pen's tip to reach to the red target \n Make straight, fast, and accurate reaches"
+    "Reach to target \n Use the pen's tip to reach to the red target \n Make straight, fast, and accurate reaches"
   ,
   "ins2":
     "Reach arc with pen tip \n Hold still \n Indicate pen tip"
   ,
   "ins3":
-    "Pen No Cursor Reach \n Reach to the target using the tip of the pen"
+    "No Pen Reach \n Reach to the target using the tip of the pen"
   ,
   "ins4":
-    "Hand No Cursor Reach \n Reach to the target using your right thumb"
+    "No Hand Reach \n Reach to the target using your right thumb"
   ,
   "ins5":
-    " BREAK \n 1/3 completed"
+    "BREAK \n 1/3 completed"
   ,
   "ins6":
     "BREAK \n 2/3 completed"
