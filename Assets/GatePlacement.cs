@@ -43,7 +43,7 @@ public class GatePlacement : MonoBehaviour
 
     }
 
-    public void SetGatePosition(GameObject gateParent, GameObject gate1, GameObject gate2, LineRenderer lr, BoxCollider col, float percent)
+    public void SetGatePosition(GameObject gateParent, GameObject gate1, GameObject gate2, LineRenderer lr, BoxCollider col, float percent, GameObject track)
     {
         // Detach children
         List<Transform> gateChildren = new List<Transform>();
@@ -53,9 +53,9 @@ public class GatePlacement : MonoBehaviour
         // Get a vertex position in array from percent
         int placement = Mathf.RoundToInt((1f - percent) * (v.Count - 3));
 
-        Vector3 p1 = v[placement];
-        Vector3 p2 = v[placement + 1];
-        Vector3 p3 = v[placement + 2];
+        Vector3 p1 = track.transform.TransformPoint(v[placement]);
+        Vector3 p2 = track.transform.TransformPoint(v[placement + 1]);
+        Vector3 p3 = track.transform.TransformPoint(v[placement + 2]);
 
         /*
          * Vertex positions along splinemesh track:
@@ -101,14 +101,14 @@ public class GatePlacement : MonoBehaviour
         lr.SetPosition(1, gate2.transform.position + Vector3.up * 0.45f);
     }
 
-    public void SetColliderPosition(BoxCollider col, float percent)
+    public void SetColliderPosition(BoxCollider col, float percent, GameObject track)
     {
         // Get a vertex position in array from percent
         int placement = Mathf.RoundToInt((1f - percent) * (v.Count - 3));
 
-        Vector3 p1 = v[placement];
-        Vector3 p2 = v[placement + 1];
-        Vector3 p3 = v[placement + 2];
+        Vector3 p1 = track.transform.TransformPoint(v[placement]);
+        Vector3 p2 = track.transform.TransformPoint(v[placement + 1]);
+        Vector3 p3 = track.transform.TransformPoint(v[placement + 2]);
 
         // Place first point between p1/p3
         Vector3 point1 = (p1 + p3) / 2 + Vector3.up * 0.5f;
