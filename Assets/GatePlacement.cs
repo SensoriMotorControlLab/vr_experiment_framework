@@ -17,26 +17,26 @@ public class GatePlacement : MonoBehaviour
     {
         foreach (Mesh m in mesh)
         {
-            Vector2[] RotatedUVs = m.uv;//Store the existing UV's
+            // Vector2[] RotatedUVs = m.uv;//Store the existing UV's
 
 
-            for (var i = 0; i < RotatedUVs.Length; i++)
-            {//Go through the array
-                var rot = Quaternion.Euler(0, 0, -90);
-                RotatedUVs[i] = rot * RotatedUVs[i];
-            }
+            // for (var i = 0; i < RotatedUVs.Length; i++)
+            // {//Go through the array
+            //     var rot = Quaternion.Euler(0, 0, -90);
+            //     RotatedUVs[i] = rot * RotatedUVs[i];
+            // }
 
-            m.uv = RotatedUVs;//re-apply the adjusted uvs
+            // m.uv = RotatedUVs;//re-apply the adjusted uvs
 
-            for (int i = 2; i < (m.vertices.Length / 2); i += 1)
+            for (int i = 2; i < (m.vertices.Length); i += 1)
                 v.Add(m.vertices[i]);
         }        
     }
-    public void ObstructionPlacement(GameObject obst, float percent){
+    public void ObstructionPlacement(GameObject obst, float percent, GameObject track){
         // Get a vertex position in array from percent
-        int placement = Mathf.RoundToInt((1f - percent) * (v.Count - 3));
-        obst.transform.position = v[placement] + (Vector3.up * 0.5f);
-        Vector3 diff = v[placement] - v[placement + 1];
+        int placement = Mathf.RoundToInt((percent) * (v.Count - 3));
+        obst.transform.position = track.transform.TransformPoint(v[placement]) + (Vector3.up * 0.5f);
+        Vector3 diff = track.transform.TransformPoint(v[placement]) - track.transform.TransformPoint(v[placement + 1]);
         float rad = MathF.Atan2(diff.z, diff.x);
         float angle = Mathf.Rad2Deg * rad;
         obst.transform.Rotate(0, 180 - angle, 0, Space.Self);
@@ -51,7 +51,7 @@ public class GatePlacement : MonoBehaviour
         gateParent.transform.DetachChildren();
 
         // Get a vertex position in array from percent
-        int placement = Mathf.RoundToInt((1f - percent) * (v.Count - 3));
+        int placement = Mathf.RoundToInt((percent) * (v.Count - 3));
 
         Vector3 p1 = track.transform.TransformPoint(v[placement]);
         Vector3 p2 = track.transform.TransformPoint(v[placement + 1]);
@@ -104,7 +104,7 @@ public class GatePlacement : MonoBehaviour
     public void SetColliderPosition(BoxCollider col, float percent, GameObject track)
     {
         // Get a vertex position in array from percent
-        int placement = Mathf.RoundToInt((1f - percent) * (v.Count - 3));
+        int placement = Mathf.RoundToInt((percent) * (v.Count - 3));
 
         Vector3 p1 = track.transform.TransformPoint(v[placement]);
         Vector3 p2 = track.transform.TransformPoint(v[placement + 1]);
