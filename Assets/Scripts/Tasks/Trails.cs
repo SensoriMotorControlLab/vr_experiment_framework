@@ -225,12 +225,13 @@ public class Trails : BaseTask
         }
 
         // rotate track according to JSON
-        float trackRot = Convert.ToSingle(ctrler.PseudoRandom("per_block_track_rotation"));
+        object ran = ctrler.PollPseudorandomList("per_block_track_rotation");
+        float trackRot = Convert.ToSingle(ran);
         track.transform.Rotate(0, trackRot , 0, Space.Self);
         
         //check if mirror on JSON is TRUE and mirror the track on the z-axis and changes the position and rotation of the gates so the track still runs clockwise
         if(ctrler.Session.CurrentBlock.settings.GetBool("per_block_track_mirror")){
-            track.transform.localScale = new Vector3(1,1,-1);
+            track.transform.localScale = new Vector3(-1,1,1);
             Vector3 tempPos1 = trailGate1.transform.position;
             Quaternion tempRot1 = trailGate1.transform.rotation;
             trailGate1.transform.position = trailGate2.transform.position;
@@ -426,10 +427,10 @@ public class Trails : BaseTask
 
     protected override void OnDestroy()
     {
-        foreach (BaseTarget t in midwayTriggers)
-        {
-            Destroy(t.gameObject);
-        }
+        // foreach (BaseTarget t in midwayTriggers)
+        // {
+        //     Destroy(t.gameObject);
+        // }
         Destroy(trailSpace);
     }
 }

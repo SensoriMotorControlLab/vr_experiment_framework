@@ -385,6 +385,9 @@ public class ExperimentController : MonoBehaviour
             case "trail":
 
                 CurrentTask = gameObject.AddComponent<Trails>();
+
+                // puck type option list shuffled
+                List<int> index_trail = InitializePseudorandomList(trial, "per_block_track_rotation");
                 //hides experiment room
                 if(!roomHidden){
                     GameObject.Find("room").SetActive(false);
