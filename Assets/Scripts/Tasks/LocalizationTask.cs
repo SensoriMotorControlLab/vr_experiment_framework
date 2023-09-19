@@ -1,3 +1,4 @@
+using System.Numerics;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -245,7 +246,9 @@ public class LocalizationTask : BaseTask
                 {
                     activeCursor.GetComponent<Renderer>().enabled = true;
                 }
-                if ((targets[0].transform.position - baseObject.transform.position).magnitude < 0.009f
+                Vector2 tempDockPos = new Vector2(targets[0].transform.position.x, targets[0].transform.position.z);
+                vector2 tempHandPos2D = new Vector2(baseObject.transform.position.x, baseObject.transform.position.z);
+                if ((tempDockPos - tempHandPos2D).magnitude < 0.009f
                                 && ctrler.CursorController.stillTime > 0.3f)
                 {
                     activeCursor.GetComponent<Renderer>().enabled = true;
@@ -256,7 +259,7 @@ public class LocalizationTask : BaseTask
                 baseObject.transform.position = ctrler.CursorController.ConvertPosition(new Vector3 (temp.x, ctrler.TargetContainer.transform.position.y, temp.z));
                 Vector2 tempHome = new Vector2(targets[1].transform.position.x, targets[1].transform.position.z);
                 Vector2 tempLocPos = new Vector2(locPos.x, locPos.z);
-                if ((tempHome - tempLocPos).magnitude < 0.005f && ctrler.CursorController.stillTime > 0.5f)
+                if ((tempHome - tempLocPos).magnitude < 0.005f && ctrler.CursorController.stillTime > 0.3f)
                 {
                     IncrementStep();
                     localizerLoc = Convert.ToSingle(ctrler.PseudoRandom("per_block_localizer_location"));
