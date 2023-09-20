@@ -1,4 +1,4 @@
-using System.Numerics;
+
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -247,7 +247,7 @@ public class LocalizationTask : BaseTask
                     activeCursor.GetComponent<Renderer>().enabled = true;
                 }
                 Vector2 tempDockPos = new Vector2(targets[0].transform.position.x, targets[0].transform.position.z);
-                vector2 tempHandPos2D = new Vector2(baseObject.transform.position.x, baseObject.transform.position.z);
+                Vector2 tempHandPos2D = new Vector2(baseObject.transform.position.x, baseObject.transform.position.z);
                 if ((tempDockPos - tempHandPos2D).magnitude < 0.009f
                                 && ctrler.CursorController.stillTime > 0.3f)
                 {
