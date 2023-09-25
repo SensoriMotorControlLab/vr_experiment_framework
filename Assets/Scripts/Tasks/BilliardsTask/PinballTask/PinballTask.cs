@@ -191,7 +191,7 @@ public class PinballTask : BilliardsTask
         // Cutoff distance is 70cm more than the distance to the target
         cutoffDistance = 0.70f + TARGET_DISTANCE;
 
-        currentHand = ctrler.CursorController.CurrentHand();
+        currentHand = ctrler.CursorController.GetCurrentHand();
 
         // Parent to experiment controller
         pinballSpace.transform.SetParent(ctrler.transform);
@@ -228,7 +228,7 @@ public class PinballTask : BilliardsTask
         }
 
         // Start tracking hand pos
-        ctrler.AddTrackedPosition("hand", ctrler.CursorController.CurrentHand());
+        ctrler.AddTrackedPosition("hand", ctrler.CursorController.GetCurrentHand());
         timeHandTrackingStarts = Time.time;
 
         // set up surface materials for the plane

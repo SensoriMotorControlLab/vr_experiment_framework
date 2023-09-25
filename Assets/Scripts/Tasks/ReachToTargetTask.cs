@@ -153,6 +153,9 @@ public class ReachToTargetTask : BaseTask
     public override void Update()
     {
         base.Update();
+        Debug.Log(ctrler.CursorController.MenuSkip());
+        Debug.Log(ctrler.CursorController.IsTriggerDown());
+        Debug.Log(ctrler.CursorController.IsTriggerReleased());
 
         baseObject = GameObject.Find("BaseObject");
         Vector3 mousePoint = GetMousePoint(baseObject.transform);

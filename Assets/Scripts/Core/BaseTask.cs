@@ -76,7 +76,7 @@ public abstract class BaseTask : MonoBehaviour
     }
 
     /// <summary>
-    /// 
+    /// Vibrates the controller if the device supports it.
     /// </summary>
     /// <param name="channel">The channel to receive the impulse.</param>
     /// <param name="amplitude">The normalized (0.0 to 1.0) amplitude value of the haptic impulse to play on the device.</param>

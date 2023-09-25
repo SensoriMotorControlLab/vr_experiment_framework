@@ -357,7 +357,7 @@ public class LocalizationTask : BaseTask
             case 0: // Enter dock
                 targets[0].SetActive(false);
                 Home.SetActive(true);
-                VibrateController(0, 0.34f, 0.15f, devices);
+                ctrler.CursorController.VibrateController(0, 0.34f, 0.15f, devices);
                 break;
             case 1: // Enter home
                 Home.SetActive(false);

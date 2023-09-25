@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-//using UnityEngine.SpatialTracking;
 using UnityEngine.XR;
 using UXF;
 using CommonUsages = UnityEngine.XR.CommonUsages;
@@ -12,47 +11,41 @@ public class CursorController : MonoBehaviour
 {
     // The visible representation of the cursor. A blue sphere
     public GameObject Model;
-
     public bool triggerUp;
-    // to check whether it's being pressed
-    public bool IsPressed { get; private set; }
-
     // References to the left and right hand positions
     public GameObject LeftHand, RightHand;
     private GameObject leftHandModel, rightHandModel;
     private GameObject leftHandCollider, rightHandCollider;
-
     private GameObject vrCamera;
-
-    public bool CursorVisible { get; private set; }
-    public bool LeftHandVisible { get; private set; }
-    public bool RightHandVisible { get; private set; }
-
-    // Which hand is involved in the current task
-    public string CurrentTaskHand { get; private set; }
-
-    // Used to access the hardware controllers
-    public InputDevice LeftHandDevice { get; private set; }
-    public InputDevice RightHandDevice { get; private set; }
-
-    // Used to track hold time
     private Vector3 previousPosition;
-    public float stillTime { get; private set; }
-
-    // Returns the distance from the cursor to the home
-    public float DistanceFromHome { get; private set; }
-
-    // Bools for when the trigger is pressed
-    private bool prevLeftTrigger, prevRightTrigger;
-
-    // Prev controller velocity for the current controller
-    public Vector3 prevVelocity;
-
-    // Bool for whether or not to use VR controllers as input for the cursor position
+    private bool prevTrigger;
     public bool UseVR;
     public bool useHand = true;
 
-    private Rigidbody rb;
+    /// <summary>
+    /// Whether or not the cursor is visible
+    /// </summary>
+    public bool CursorVisible { get; private set; }
+    /// <summary>
+    /// The current task's hand. Either "l" or "r"
+    /// </summary>
+    public string CurrentTaskHand { get; private set; }
+    /// <summary>
+    /// Get the left hand device
+    /// </summary>
+    public InputDevice LeftHandDevice { get; private set; }
+    /// <summary>
+    /// Get the right hand device
+    /// </summary>
+    public InputDevice RightHandDevice { get; private set; }
+    /// <summary>
+    /// How long the cursor has been still for
+    /// </summary>
+    public float stillTime { get; private set; }
+    /// <summary>
+    /// How far the cursor is from the home position
+    /// </summary>
+    public float DistanceFromHome { get; private set; }
 
     public enum MovementType
     {
@@ -63,10 +56,6 @@ public class CursorController : MonoBehaviour
 
     public MovementType MoveType { get; private set; }
 
-    public Vector3 GetHandVelocity(){
-        return rb.velocity;
-    }
-
     void Start()
     {
         // For oculus
@@ -75,56 +64,8 @@ public class CursorController : MonoBehaviour
 
         leftHandCollider = LeftHand.transform.Find("LeftHandCollider").gameObject;
         rightHandCollider = RightHand.transform.Find("RightHandCollider").gameObject;
-        rb = rightHandCollider.GetComponent<Rigidbody>();
-
-        List<InputDevice> devices = new List<InputDevice>();
-        //InputDevices.GetDevices(devices);
-
-        /*        InputDevices.GetDevicesWithCharacteristics(InputDeviceCharacteristics.Right, devices);
-                if (devices.Count > 0)
-                {
-                    RightHandDevice = devices[0];
-                    Debug.Log("Detecting devices...");
-                    Debug.Log("Found Right Device: " + RightHandDevice);
-                }
-                else
-                {
-                    Debug.Log("No devices detected.");
-                }
-
-
-                InputDevices.GetDevicesWithCharacteristics(InputDeviceCharacteristics.Left, devices);
-                if (devices.Count > 0)
-                {
-                    LeftHandDevice = devices[0];
-                    Debug.Log("Detecting devices...");
-                    Debug.Log("Found Left Device: " + LeftHandDevice);
-                }
-                else
-                {
-                    Debug.Log("No devices detected.");
-                }*/
-
 
         vrCamera = GameObject.Find("Main Camera");
-
-        Debug.Log(vrCamera);
-        //foreach (InputDevice device in devices)
-        //{
-        //    switch (device.characteristics)
-        //    {
-        //        case InputDeviceCharacteristics.Left:
-        //            LeftHandDevice = device;
-        //            break;
-        //        case InputDeviceCharacteristics.Right:
-        //            RightHandDevice = device;
-        //            break;
-        //    }
-
-        //    Debug.Log("Found Device: " + device.name);
-        //}
-
-        // MoveType = MovementType.aligned;
     }
 
     void Update()
@@ -138,12 +79,10 @@ public class CursorController : MonoBehaviour
             if (devices.Count > 0)
             {
                 RightHandDevice = devices[0];
-                //Debug.Log("Detecting devices...");
-                Debug.Log("Found Right Device: " + RightHandDevice);
             }
             else
             {
-                // Debug.Log("Right device not detected.");
+                Debug.LogWarning("Right device not detected.");
             }
 
         }
@@ -157,98 +96,103 @@ public class CursorController : MonoBehaviour
             if (devices.Count > 0)
             {
                 LeftHandDevice = devices[0];
-                //Debug.Log("Detecting devices...");
                 Debug.Log("Found Left Device: " + LeftHandDevice);
             }
             else
             {
-                // Debug.Log("Left device not detected.");
+                Debug.LogWarning("Left device not detected.");
             }
         }
     }
-
+    /// <summary>
+    /// Returns true if the trigger is down on the current task's hand
+    /// </summary>
+    /// <returns></returns>
     public bool IsTriggerDown()
     {
         return IsTriggerDown(CurrentTaskHand);
     }
 
-    public Vector2 Get2DAxis()
-    {
-        LeftHandDevice.TryGetFeatureValue(CommonUsages.primary2DAxis, out Vector2 left2DAxis);
-        return left2DAxis;
-    }
-
+    /// <summary>
+    /// Returns true if the trigger is down on the specified hand
+    /// </summary>
+    /// <param name="hand"></param>
+    /// <returns></returns>
     public bool IsTriggerDown(String hand)
     {
-        if (hand == "l")
-        {
-            return LeftHandDevice == null
-                ? false
-                : LeftHandDevice.TryGetFeatureValue(CommonUsages.triggerButton, out bool val) && val;
-        }
-        else
-        {
-
-            return RightHandDevice == null
-                ? false
-                : RightHandDevice.TryGetFeatureValue(CommonUsages.triggerButton, out bool val) && val;
-            // THE ABOVE CODE WORKS!
-        }
+        return hand == "l"
+            ? LeftHandDevice.TryGetFeatureValue(CommonUsages.triggerButton, out bool leftVal) && leftVal
+            : RightHandDevice.TryGetFeatureValue(CommonUsages.triggerButton, out bool rightVal) && rightVal;
     }
 
-    // Returns true if the trigger was released on this frame
-    public bool OnTriggerUp()
+    /// <summary>
+    /// Returns the 2D axis of the joystick on the current task's hand
+    /// </summary>
+    /// <returns></returns>
+    public Vector2 Get2DAxis()
     {
-        return OnTriggerUp(CurrentTaskHand);
+        return CurrentTaskHand == "l"
+            ? RightHandDevice.TryGetFeatureValue(CommonUsages.primary2DAxis, out Vector2 left2DAxis) ? left2DAxis : Vector2.zero
+            : LeftHandDevice.TryGetFeatureValue(CommonUsages.primary2DAxis, out Vector2 right2DAxis) ? right2DAxis : Vector2.zero;
     }
 
-    public bool OnTriggerUp(String hand)
+    /// <summary>
+    /// Returns true if the trigger is up on the current task's hand
+    /// </summary>
+    /// <returns></returns>
+    public bool IsTriggerReleased()
     {
-        if (hand == "l")
-        {
-            return LeftHandDevice == null
-                ? false
-                : !LeftHandDevice.TryGetFeatureValue(CommonUsages.triggerButton, out bool val) && prevLeftTrigger;
-        }
-        else
-        {
-            return RightHandDevice == null
-                ? false
-                : !RightHandDevice.TryGetFeatureValue(CommonUsages.triggerButton, out bool val) && prevRightTrigger;
-        }
+        return IsTriggerReleased(CurrentTaskHand);
     }
 
+    /// <summary>
+    /// Returns true if the trigger is up on the specified hand
+    /// </summary>
+    /// <param name="hand"></param>
+    /// <returns></returns>
+    public bool IsTriggerReleased(String hand)
+    {
+        return hand == "l"
+            ? LeftHandDevice.TryGetFeatureValue(CommonUsages.triggerButton, out bool leftVal) && leftVal && prevTrigger
+            : RightHandDevice.TryGetFeatureValue(CommonUsages.triggerButton, out bool rightVal) && rightVal && prevTrigger;
+    }
+
+    /// <summary>
+    /// Returns the velocity of the current task's hand
+    /// </summary>
+    /// <returns></returns>
     public Vector3 GetVelocity()
     {
         return GetVelocity(CurrentTaskHand);
     }
 
+    /// <summary>
+    /// Returns the velocity of the specified hand
+    /// </summary>
+    /// <param name="hand"></param>
+    /// <returns></returns>
     public Vector3 GetVelocity(String hand)
     {
-        if (hand == "l")
-        {
-            Vector3 vel;
-            LeftHandDevice.TryGetFeatureValue(CommonUsages.deviceVelocity, out vel);
-            return vel;
-        }
-        else
-        {
-            Vector3 vel;
-            RightHandDevice.TryGetFeatureValue(CommonUsages.deviceVelocity, out vel);
-            return vel;
-        }
+        return hand == "l"
+            ? LeftHandDevice.TryGetFeatureValue(CommonUsages.deviceVelocity, out Vector3 leftVel) ? leftVel : Vector3.zero
+            : RightHandDevice.TryGetFeatureValue(CommonUsages.deviceVelocity, out Vector3 rightVel) ? rightVel : Vector3.zero;
     }
-    //if left hand joystick is pressed then this send a true bool
+
+    /// <summary>
+    /// Skip the the menu is joystick on left hand is clicked
+    /// </summary>
+    /// <returns></returns>
     public bool MenuSkip()
     {
-        LeftHandDevice.TryGetFeatureValue(CommonUsages.primary2DAxisClick, out bool val);
-        return val;
+        return CurrentTaskHand == "l"
+            ? RightHandDevice.TryGetFeatureValue(CommonUsages.primary2DAxisClick, out bool rightVal) && rightVal
+            : LeftHandDevice.TryGetFeatureValue(CommonUsages.primary2DAxisClick, out bool leftVal) && leftVal;
     }
 
     /// <summary>
     /// Returns the GameObject that represents the hand involved in the current trial
     /// </summary>
-    public GameObject CurrentHand()
+    public GameObject GetCurrentHand()
     {
         return CurrentTaskHand == "l" ? LeftHand : RightHand;
     }
@@ -257,7 +201,7 @@ public class CursorController : MonoBehaviour
     /// Returns the GameObject that represents the current task's hand collider
     /// </summary>
     /// <returns></returns>
-    public GameObject CurrentCollider()
+    public GameObject GetCurrentCollider()
     {
         return CurrentTaskHand == "l" ? leftHandCollider : rightHandCollider;
     }
@@ -280,11 +224,11 @@ public class CursorController : MonoBehaviour
                 Debug.LogWarning("\"per_block_hand\" is not 'l' or 'r'. Check the JSON.");
                 break;
         }
-
-        // Default movement type to aligned
-        // MoveType = MovementType.aligned;
     }
-
+    /// <summary>
+    /// Sets the movement type of the cursor
+    /// </summary>
+    /// <param name="moveType"></param>
     public void SetMovementType(MovementType moveType)
     {
         MoveType = moveType;
@@ -305,35 +249,14 @@ public class CursorController : MonoBehaviour
     {
         leftHandModel.SetActive(visible);
         rightHandModel.SetActive(visible);
-        LeftHandVisible = RightHandVisible = false;
     }
 
-    // Update is called once per frame
+    // LateUpdate is called last once per frame
     void LateUpdate()
     {
-        triggerUp = false;
-
-        if (RightHandDevice.TryGetFeatureValue(CommonUsages.triggerButton, out bool val) && val)
-        {
-            // if start pressing, trigger event
-            if (!IsPressed)
-            {
-                IsPressed = true;
-                // Debug.Log("Trig down now");
-            }
-        }
-        else if (IsPressed) // check for button release
-        {
-            IsPressed = false;
-            triggerUp = true;
-        }
-        // Above code should work for OnTriggerUp (this means clean-up is required on current onTriggerUp method)
-
         if (ExperimentController.Instance().CurrentTask == null) return;
 
         Vector3 realHandPosition = GetHandPosition();
-
-        // Update the position of the cursor depending on which hand is involved
         transform.position = ConvertPosition(realHandPosition);
 
         if ((previousPosition - realHandPosition).magnitude > 0.0005f)
@@ -353,11 +276,13 @@ public class CursorController : MonoBehaviour
             DistanceFromHome = -1f;
         }
 
-        prevLeftTrigger = IsTriggerDown("l");
-        prevRightTrigger = IsTriggerDown("r");
+        prevTrigger = IsTriggerDown(CurrentTaskHand);
     }
 
-    //
+    /// <summary>
+    /// Returns the position of the current task's hand collider gameObject or mouse cursor
+    /// </summary>
+    /// <returns></returns>
     public Vector3 GetHandPosition()
     {
         if (UseVR)
@@ -375,6 +300,16 @@ public class CursorController : MonoBehaviour
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.transform.position.z));
         return new Vector3(mousePos.x, ExperimentController.Instance().transform.position.y, mousePos.z);
     }
+    /// <summary>
+    /// Returns the position of the current task's hand based on the VR controller
+    /// </summary>
+    /// <returns></returns>
+    public Vector3 GetRawHandPosition()
+    {
+        return CurrentTaskHand == "l"
+            ? LeftHandDevice.TryGetFeatureValue(CommonUsages.devicePosition, out Vector3 leftPos) ? leftPos : Vector3.zero
+            : RightHandDevice.TryGetFeatureValue(CommonUsages.devicePosition, out Vector3 rightPos) ? rightPos : Vector3.zero;
+    }
 
     /// <summary>
     /// Converts the user's hand location into the transformed cursor location
@@ -391,20 +326,17 @@ public class CursorController : MonoBehaviour
         switch (MoveType)
         {
             case MovementType.aligned:
-                // Debug.Log("aligned");
                 return position;
             case MovementType.rotated:
 
                 if (ctrler.Session.CurrentBlock.settings.GetString("per_block_rotation") is string)
                 {
                     float angle = ctrler.CurrentTask.GetRotation();
-                    Debug.Log(angle);
                     return Quaternion.Euler(0, -angle, 0) * (position - home) + home;
                 }
                 else
                 {
-                    float angle = ctrler.Session.CurrentTrial.settings
-                    .GetFloat("per_block_rotation");
+                    float angle = ctrler.Session.CurrentTrial.settings.GetFloat("per_block_rotation");
 
                     return Quaternion.Euler(0, -angle, 0) * (position - home) + home;
                 }
@@ -421,7 +353,7 @@ public class CursorController : MonoBehaviour
                 //  |
                 // -|   < normal
                 //  |
-                //  x   < dock / center of experiment
+                //  x   < home / center of experiment
 
                 // Project position using this new vector as the plane normal
                 return Vector3.ProjectOnPlane(position - home, normal.normalized) + home;
@@ -431,12 +363,14 @@ public class CursorController : MonoBehaviour
     }
 
     /// <summary>
-    /// Maps the mouse cursor position to the plane's Y coordinate.
-    /// A camera must be provided to determine the mouse position.
-    /// </summary>
+    /// Maps the mouse cursor position to the plane's Y coordinate. Used for non-VR tasks
+    /// <param name="planeNormal"></param>
+    /// <param name="planePos"></param>
+    /// <param name="camera"></param>
+    /// <returns></returns>
     public Vector3 MouseToPlanePoint(Vector3 planeNormal, Vector3 planePos, Camera camera)
     {
-        // If the camera is orthographic, it is a top down view and thus x and y are just screen coordinates
+        // If the camera is orthographic, it is a top down view and thus x and z are just screen coordinates
         if (camera.orthographic)
         {
             Vector3 mouseCoords = camera.ScreenToWorldPoint(Input.mousePosition);
@@ -454,20 +388,27 @@ public class CursorController : MonoBehaviour
         return plane.Raycast(r, out float enter) ? r.GetPoint(enter) : Vector3.zero;
     }
 
+    /// <summary>
+    /// Maps the controller position to the plane's Y coordinate. Used for VR tasks
+    /// </summary>
+    /// <param name="planeNormal"></param>
+    /// <param name="planePos"></param>
+    /// <param name="ctrller"></param>
+    /// <returns></returns>
     public Vector3 ControllerToPlanePoint(Vector3 planeNormal, Vector3 planePos, Vector3 ctrller)
     {
         Plane plane = new Plane(planeNormal.normalized, planePos);
-        Ray r;
+        Ray ray;
         if (ctrller.y <= planePos.y)
         {
-            r = new Ray(ctrller, Vector3.up);
+            ray = new Ray(ctrller, Vector3.up);
         }
         else
         {
-            r = new Ray(ctrller, Vector3.down);
+            ray = new Ray(ctrller, Vector3.down);
         }
 
-        return plane.Raycast(r, out float enter) ? r.GetPoint(enter) : Vector3.zero;
+        return plane.Raycast(ray, out float enter) ? ray.GetPoint(enter) : Vector3.zero;
     }
 
     /// <summary>
@@ -483,20 +424,32 @@ public class CursorController : MonoBehaviour
         }
         else
         {
-            //Debug.Log(vrCamera.name);
-            //vrCamera.GetComponent<TrackedPoseDriver>().enabled = false;
             vrCamera.SetActive(false);
         }
     }
 
-    /*
-    private void OnDrawGizmos()
+    /// <summary>
+    /// Vibrates the controller if the device supports it.
+    /// </summary>
+    /// <param name="channel"></param>
+    /// <param name="amplitude"></param>
+    /// <param name="duration"></param>
+    /// <param name="devices"></param>
+    /// <returns></returns>
+    public bool VibrateController(uint channel, float amplitude, float duration, List<InputDevice> devices)
     {
-        if (ExperimentController.Instance() == null) return;
+        foreach (var device in devices)
+        {
+            HapticCapabilities capabilities;
+            if (device.TryGetHapticCapabilities(out capabilities))
+            {
+                if (capabilities.supportsImpulse)
+                {
+                    return device.SendHapticImpulse(channel, amplitude, duration);
+                }
+            }
+        }
 
-        Vector3 mousepos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-        Gizmos.DrawSphere(new Vector3(mousepos.x, ExperimentController.Instance().transform.position.y, mousepos.z), .005f);
+        return false;
     }
-    */
 }

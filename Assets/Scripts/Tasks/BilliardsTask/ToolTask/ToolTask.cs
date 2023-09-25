@@ -547,7 +547,7 @@ public class ToolTask : BilliardsTask
                 break;
         }
 
-        currentHand = ctrler.CursorController.CurrentHand();
+        currentHand = ctrler.CursorController.GetCurrentHand();
         //currentHand.Equals("l") ? UnityEngine.XR.InputDeviceRole.LeftHanded : 
         
 
