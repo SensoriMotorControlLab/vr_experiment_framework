@@ -61,6 +61,11 @@ public class Trails : BaseTask
     private int score;
     private Scoreboard scoreboard;
 
+    private string lapDiff = "-.--";
+    private string bestLap = "-.--";
+    private string lastLap = "-.--";
+    private Dictionary<string, string> scoreboardInfo = new Dictionary<string, string>();
+
     /*
      * Step 0: 
      * 
@@ -138,7 +143,19 @@ public class Trails : BaseTask
         gatePlacement.SetGatePosition(trailGate2, trailGate2.transform.GetChild(0).gameObject, trailGate2.transform.GetChild(1).gameObject,
             trailGate2.transform.GetChild(2).GetComponent<LineRenderer>(), trailGate2.transform.GetChild(3).GetComponent<BoxCollider>(), endPoint, GameObject.Find("Spline"));
 
-        
+        if(ctrler.GetBestLapTime() != 0){
+            lapDiff = ctrler.GetLapDiff();
+            bestLap = ctrler.GetBestLapTime().ToString("0.000");
+            lastLap = ctrler.GetLastLapTime().ToString("0.000");
+        }
+
+        scoreboardInfo.Add("Demerit Points", score.ToString());
+        scoreboardInfo.Add("Lap Time", lastLap);
+        scoreboardInfo.Add("Best Lap", bestLap);
+        scoreboardInfo.Add("Lap Diff", lapDiff);
+        scoreboardInfo.Add("% on track", score.ToString());
+
+        scoreboard.SetElements(scoreboardInfo);
 
         // Place midway triggers throughout the track
         for (int i = 0; i < NUM_MID_TRIGGERS; i++)
@@ -214,10 +231,6 @@ public class Trails : BaseTask
         {
             ctrler.CursorController.SetVRCamera(false);
         }
-        else
-        {
-
-        }
         
         //check is obstruction is TRUE on the JSON and places it on the track
         if(ctrler.Session.CurrentBlock.settings.GetBool("per_block_track_occlusion")){
@@ -259,7 +272,6 @@ public class Trails : BaseTask
         switch (currentStep)
         {
             case 0:
-                ctrler.Score = 0;
                 break;
 
             case 1:
@@ -296,7 +308,6 @@ public class Trails : BaseTask
                     numImpacts++;
                     car.GetComponent<MeshRenderer>().material.color = Color.red;
                     score = numImpacts;
-                    ctrler.Score = score;
                     trailSpace.GetComponent<AudioSource>().clip = ctrler.AudioClips["incorrect"];
                     trailSpace.GetComponent<AudioSource>().Play();
                 }
@@ -315,8 +326,6 @@ public class Trails : BaseTask
     // Update is called once per frame
     void Update()
     {
-        Debug.Log("car path length: " + carPath.Count);
-        Debug.Log("cursor path length: " + cursorPath.Count);
         switch (currentStep)
         {
             case 0:
@@ -361,6 +370,15 @@ public class Trails : BaseTask
                 onTrackFrameStatus.Add(isOnTrack);
                 break;
             case 2:
+                if(ctrler.GetBestLapTime() == 0 || ctrler.GetBestLapTime() > outTrackTime + inTrackTime || ctrler.Session.currentTrialNumInBlock == 1){
+                    ctrler.SetLapDiff(ctrler.GetBestLapTime(), outTrackTime + inTrackTime);
+                    ctrler.SetBestLapTime(outTrackTime + inTrackTime);
+                    ctrler.SetLastLapTime(outTrackTime + inTrackTime);
+                }
+                else if (ctrler.GetBestLapTime() < outTrackTime + inTrackTime){
+                    ctrler.SetLapDiff(ctrler.GetBestLapTime(), outTrackTime + inTrackTime);
+                    ctrler.SetLastLapTime(outTrackTime + inTrackTime);
+                }
                 IncrementStep();
                     break;
         }
@@ -402,11 +420,11 @@ public class Trails : BaseTask
         ctrler.Session.CurrentTrial.result["per_block_type"] = ctrler.Session.CurrentBlock.settings.GetString("per_block_type");
         ctrler.LogVector2List("car_path", carPath);
         ctrler.LogVector2List("cursor_path", cursorPath);
-        ctrler.Session.CurrentTrial.result["time_in_track"] = inTrackTime;
+        ctrler.Session.CurrentTrial.result["time_on_track"] = inTrackTime;
         ctrler.Session.CurrentTrial.result["time_out_track"] = outTrackTime;
-        ctrler.Session.CurrentTrial.result["percent_in_track"] = inTrackTime / (inTrackTime + outTrackTime)*100;
+        ctrler.Session.CurrentTrial.result["percent_on_track"] = inTrackTime / (inTrackTime + outTrackTime)*100;
         ctrler.Session.CurrentTrial.result["lap_time"] = outTrackTime + inTrackTime;
-        ctrler.LogBoolList("on_track_per_frame_status", onTrackFrameStatus);
+        // ctrler.LogBoolList("on_track_per_frame_status", onTrackFrameStatus);
 
         ctrler.Session.CurrentTrial.result["demerit_points"] = score;
 

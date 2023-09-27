@@ -82,6 +82,7 @@ namespace UXF
 
             session.currentTrialNum = number;
             session.currentBlockNum = block.number;
+            session.currentTrialNumInBlock = numberInBlock;
 
             status = TrialStatus.InProgress;
             startTime = Time.time;

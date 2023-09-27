@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,6 +28,7 @@ public class Scoreboard : MonoBehaviour
     /// </summary>
     public bool ScorePrefix = true;
     public bool overideScorePrefix = false;
+    private Dictionary<string, string> scoreboardElem = new Dictionary<string, string>();
 
     // Start is called before the first frame update
     void Start()
@@ -50,6 +53,16 @@ public class Scoreboard : MonoBehaviour
 
             //ManualScoreText = ExperimentController.Instance().Score.ToString();
         }
+    }
+
+    public void SetElements(Dictionary<string, string> scoreboardInfo)
+    {
+        scoreboardElem = scoreboardInfo;
+    }
+
+    public void SetElement(string key, string value)
+    {
+        scoreboardElem.Add(key, value);
     }
 
     // Update is called once per frame

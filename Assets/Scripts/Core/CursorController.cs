@@ -398,7 +398,6 @@ public class CursorController : MonoBehaviour
                 if (ctrler.Session.CurrentBlock.settings.GetString("per_block_rotation") is string)
                 {
                     float angle = ctrler.CurrentTask.GetRotation();
-                    Debug.Log(angle);
                     return Quaternion.Euler(0, -angle, 0) * (position - home) + home;
                 }
                 else

@@ -2214,6 +2214,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1279663842529545629, guid: 58eaa6eaddb506c48ac20629e050cd57,
         type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1279663842529545629, guid: 58eaa6eaddb506c48ac20629e050cd57,
+        type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -2221,6 +2226,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2409900350334971815, guid: 58eaa6eaddb506c48ac20629e050cd57,
+        type: 3}
+      propertyPath: m_Spacing
+      value: -842.7
       objectReference: {fileID: 0}
     - target: {fileID: 4080104870188603689, guid: 58eaa6eaddb506c48ac20629e050cd57,
         type: 3}
@@ -2282,6 +2292,16 @@ PrefabInstance:
       propertyPath: m_Text
       value: 'Demerit Points:'
       objectReference: {fileID: 0}
+    - target: {fileID: 6116081743664576187, guid: 58eaa6eaddb506c48ac20629e050cd57,
+        type: 3}
+      propertyPath: m_FontData.m_MinSize
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6116081743664576187, guid: 58eaa6eaddb506c48ac20629e050cd57,
+        type: 3}
+      propertyPath: m_FontData.m_FontSize
+      value: 120
+      objectReference: {fileID: 0}
     - target: {fileID: 6510875991752790500, guid: 58eaa6eaddb506c48ac20629e050cd57,
         type: 3}
       propertyPath: ScorePrefix
@@ -2312,6 +2332,31 @@ PrefabInstance:
       propertyPath: m_Name
       value: Scoreboard
       objectReference: {fileID: 0}
+    - target: {fileID: 6798316970774053999, guid: 58eaa6eaddb506c48ac20629e050cd57,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.0015
+      objectReference: {fileID: 0}
+    - target: {fileID: 6798316970774053999, guid: 58eaa6eaddb506c48ac20629e050cd57,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.0015
+      objectReference: {fileID: 0}
+    - target: {fileID: 6798316970774053999, guid: 58eaa6eaddb506c48ac20629e050cd57,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.015
+      objectReference: {fileID: 0}
+    - target: {fileID: 6798316970774053999, guid: 58eaa6eaddb506c48ac20629e050cd57,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6798316970774053999, guid: 58eaa6eaddb506c48ac20629e050cd57,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7077611417262036450, guid: 58eaa6eaddb506c48ac20629e050cd57,
         type: 3}
       propertyPath: m_PresetInfoIsWorld
@@ -2326,6 +2371,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchorMin.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8338628760067477892, guid: 58eaa6eaddb506c48ac20629e050cd57,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 8338628760067477892, guid: 58eaa6eaddb506c48ac20629e050cd57,
         type: 3}

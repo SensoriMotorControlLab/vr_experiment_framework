@@ -82,6 +82,11 @@ public class ExperimentController : MonoBehaviour
 
     private Vector3 exp_centre_pos;
     private bool roomHidden = false;
+    private float bestLapTime = 0;
+    private int currBlock = 1;
+    private float lastLapTime = 0;
+    private float lapDiff = 0;
+
 
 
     /// <summary>
@@ -385,8 +390,6 @@ public class ExperimentController : MonoBehaviour
             case "trail":
 
                 CurrentTask = gameObject.AddComponent<Trails>();
-
-                // puck type option list shuffled
                 List<int> index_trail = InitializePseudorandomList(trial, "per_block_track_rotation");
                 //hides experiment room
                 if(!roomHidden){
@@ -403,6 +406,34 @@ public class ExperimentController : MonoBehaviour
         }
 
         CurrentTask.Setup();
+    }
+
+    public float GetBestLapTime(){
+        return bestLapTime;
+    }
+
+    public void SetBestLapTime(float time){
+        bestLapTime = time;
+    }
+
+    public float GetLastLapTime(){
+        return lastLapTime;
+    }
+
+    public void SetLastLapTime(float time){
+        lastLapTime = time;
+    }
+    public void SetLapDiff(float best, float curr){
+        if(Session.currentTrialNumInBlock == 1){
+            lapDiff = 0;
+        }
+        else {
+            lapDiff = curr - best;
+        }
+    }
+
+    public string GetLapDiff(){
+        return lapDiff.ToString("0.000");
     }
 
     /// <summary>
