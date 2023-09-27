@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UXF;
 using MovementType = CursorController.MovementType;
 
@@ -52,6 +53,9 @@ public class Trails : BaseTask
     private bool useRayCasts = false;
 
     private float inTrackTime, outTrackTime;
+    private List<bool> onTrackFrameStatus = new List<bool>();
+    private List<Vector2> carPath = new List<Vector2>();
+    private List<Vector2> cursorPath = new List<Vector2>();
 
     [SerializeField]
     private int score;
@@ -223,11 +227,6 @@ public class Trails : BaseTask
         else{
             obst.SetActive(false);
         }
-
-        // rotate track according to JSON
-        object ran = ctrler.PollPseudorandomList("per_block_track_rotation");
-        float trackRot = Convert.ToSingle(ran);
-        track.transform.Rotate(0, trackRot , 0, Space.Self);
         
         //check if mirror on JSON is TRUE and mirror the track on the z-axis and changes the position and rotation of the gates so the track still runs clockwise
         if(ctrler.Session.CurrentBlock.settings.GetBool("per_block_track_mirror")){
@@ -316,7 +315,8 @@ public class Trails : BaseTask
     // Update is called once per frame
     void Update()
     {
-        
+        Debug.Log("car path length: " + carPath.Count);
+        Debug.Log("cursor path length: " + cursorPath.Count);
         switch (currentStep)
         {
             case 0:
@@ -330,6 +330,8 @@ public class Trails : BaseTask
                 break;
 
             case 1:
+                carPath.Add(new Vector2(car.transform.position.x, car.transform.position.z));
+                cursorPath.Add(new Vector2 (ctrler.CursorController.GetHandPosition().x, ctrler.CursorController.GetHandPosition().z));
 
                 foreach (BaseTarget t in midwayTriggers)
                 {
@@ -356,12 +358,13 @@ public class Trails : BaseTask
                 if(carPastMidpoint && trailGate2.transform.GetChild(3).GetComponent<BaseTarget>().Collided){
                     IncrementStep();
                 }
-
+                onTrackFrameStatus.Add(isOnTrack);
                 break;
             case 2:
                 IncrementStep();
                     break;
         }
+        
 
         if (Finished) ctrler.EndAndPrepare();
     }
@@ -375,8 +378,6 @@ public class Trails : BaseTask
                 startCollider.size = new Vector3(startCollider.size.z, startCollider.size.y, 0.1f);
 
                 ctrler.StartTimer();
-
-                ctrler.AddTrackedPosition("car_path", car);
 
                 break;
             case 1:
@@ -398,18 +399,20 @@ public class Trails : BaseTask
 
     public override void LogParameters()
     {
-        ctrler.LogObjectPosition("car", car.transform.position);
-
+        ctrler.Session.CurrentTrial.result["per_block_type"] = ctrler.Session.CurrentBlock.settings.GetString("per_block_type");
+        ctrler.LogVector2List("car_path", carPath);
+        ctrler.LogVector2List("cursor_path", cursorPath);
         ctrler.Session.CurrentTrial.result["time_in_track"] = inTrackTime;
         ctrler.Session.CurrentTrial.result["time_out_track"] = outTrackTime;
-        ctrler.Session.CurrentTrial.result["percent_in_track"] = inTrackTime / (inTrackTime + outTrackTime);
+        ctrler.Session.CurrentTrial.result["percent_in_track"] = inTrackTime / (inTrackTime + outTrackTime)*100;
         ctrler.Session.CurrentTrial.result["lap_time"] = outTrackTime + inTrackTime;
-        ctrler.Session.CurrentTrial.result["num_impacts"] = numImpacts;
+        ctrler.LogBoolList("on_track_per_frame_status", onTrackFrameStatus);
 
-        ctrler.Score = score;
+        ctrler.Session.CurrentTrial.result["demerit_points"] = score;
 
         ctrler.Session.CurrentTrial.result["start_gate_placement"] = startPoint;
         ctrler.Session.CurrentTrial.result["start_gate_placement"] = endPoint;
+        ctrler.Session.CurrentTrial.result["oclusion_placement"] = ctrler.Session.CurrentBlock.settings.GetBool("per_block_track_occlusion");
 
     }
 

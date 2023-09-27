@@ -895,6 +895,16 @@ public class ExperimentController : MonoBehaviour
             string.Join(",", list.Select(i => string.Format($"{i.w:F6}")));
     }
 
+    public void LogVector2List(string key, List<Vector2> positions){
+        var list = positions;
+
+        Session.CurrentTrial.result[key + "_x"] =
+            string.Join(",", list.Select(i => string.Format($"{i.x:F6}")));
+
+        Session.CurrentTrial.result[key + "_z"] =
+            string.Join(",", list.Select(i => string.Format($"{i.y:F6}")));
+    }
+
     public void LogBoolList(string key, List<bool> positions)
     {
         var list = positions;
