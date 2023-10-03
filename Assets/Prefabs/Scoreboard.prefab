@@ -30,6 +30,7 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -0.131}
   m_LocalScale: {x: 0.001, y: 0.001, z: 0.012}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8338628760067477892}
   - {fileID: 1279663842529545629}
@@ -84,6 +85,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
+  m_PresetInfoIsWorld: 0
 --- !u!114 &5994538945276412209
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -156,6 +158,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1.84, y: 1.19, z: 0.24}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4073720960357429768}
   m_RootOrder: 0
@@ -179,6 +182,7 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -248,6 +252,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6770439961146712329}
   - {fileID: 6798316970774053999}
@@ -281,6 +286,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 680924249534293479}
   - {fileID: 4073720960357429768}
@@ -306,6 +312,11 @@ MonoBehaviour:
   CamSpaceText: {fileID: 5787847120013172359}
   WorldSpaceText: {fileID: 6116081743664576187}
   TrialTrackText: {fileID: 6706683284146166963}
+  ManualScoreText: 
+  scorePrefixText: 
+  AllowManualSet: 0
+  ScorePrefix: 1
+  overideScorePrefix: 0
 --- !u!1 &7480770916640234250
 GameObject:
   m_ObjectHideFlags: 0
@@ -334,6 +345,7 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 0.012}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 680924249534293479}
   m_RootOrder: 0
@@ -414,6 +426,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0, y: 0, z: 0}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4450375458756327925}
   m_Father: {fileID: 4080104870188603689}
@@ -467,6 +480,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
+  m_PresetInfoIsWorld: 0
 --- !u!114 &4454099162524174741
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -512,6 +526,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6798316970774053999}
   m_RootOrder: 0
@@ -591,6 +606,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6798316970774053999}
   m_RootOrder: 1

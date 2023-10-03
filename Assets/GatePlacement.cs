@@ -17,33 +17,33 @@ public class GatePlacement : MonoBehaviour
     {
         foreach (Mesh m in mesh)
         {
-            Vector2[] RotatedUVs = m.uv;//Store the existing UV's
+            // Vector2[] RotatedUVs = m.uv;//Store the existing UV's
 
 
-            for (var i = 0; i < RotatedUVs.Length; i++)
-            {//Go through the array
-                var rot = Quaternion.Euler(0, 0, -90);
-                RotatedUVs[i] = rot * RotatedUVs[i];
-            }
+            // for (var i = 0; i < RotatedUVs.Length; i++)
+            // {//Go through the array
+            //     var rot = Quaternion.Euler(0, 0, -90);
+            //     RotatedUVs[i] = rot * RotatedUVs[i];
+            // }
 
-            m.uv = RotatedUVs;//re-apply the adjusted uvs
+            // m.uv = RotatedUVs;//re-apply the adjusted uvs
 
-            for (int i = 2; i < (m.vertices.Length / 2); i += 1)
+            for (int i = 2; i < (m.vertices.Length); i += 1)
                 v.Add(m.vertices[i]);
         }        
     }
-    public void ObstructionPlacement(GameObject obst, float percent){
+    public void ObstructionPlacement(GameObject obst, float percent, GameObject track){
         // Get a vertex position in array from percent
-        int placement = Mathf.RoundToInt((1f - percent) * (v.Count - 3));
-        obst.transform.position = v[placement] + (Vector3.up * 0.5f);
-        Vector3 diff = v[placement] - v[placement + 1];
+        int placement = Mathf.RoundToInt((percent) * (v.Count - 3));
+        obst.transform.position = track.transform.TransformPoint(v[placement]) + (Vector3.up * 0.5f);
+        Vector3 diff = track.transform.TransformPoint(v[placement]) - track.transform.TransformPoint(v[placement + 1]);
         float rad = MathF.Atan2(diff.z, diff.x);
         float angle = Mathf.Rad2Deg * rad;
         obst.transform.Rotate(0, 180 - angle, 0, Space.Self);
 
     }
 
-    public void SetGatePosition(GameObject gateParent, GameObject gate1, GameObject gate2, LineRenderer lr, BoxCollider col, float percent)
+    public void SetGatePosition(GameObject gateParent, GameObject gate1, GameObject gate2, LineRenderer lr, BoxCollider col, float percent, GameObject track)
     {
         // Detach children
         List<Transform> gateChildren = new List<Transform>();
@@ -51,11 +51,11 @@ public class GatePlacement : MonoBehaviour
         gateParent.transform.DetachChildren();
 
         // Get a vertex position in array from percent
-        int placement = Mathf.RoundToInt((1f - percent) * (v.Count - 3));
+        int placement = Mathf.RoundToInt((percent) * (v.Count - 3));
 
-        Vector3 p1 = v[placement];
-        Vector3 p2 = v[placement + 1];
-        Vector3 p3 = v[placement + 2];
+        Vector3 p1 = track.transform.TransformPoint(v[placement]);
+        Vector3 p2 = track.transform.TransformPoint(v[placement + 1]);
+        Vector3 p3 = track.transform.TransformPoint(v[placement + 2]);
 
         /*
          * Vertex positions along splinemesh track:
@@ -67,7 +67,7 @@ public class GatePlacement : MonoBehaviour
          */
 
         // Place first pole between p1/p3
-        gate1.transform.position = (p1 + p3) / 2 + Vector3.up * 0.5f;
+        gate1.transform.position = p1 + Vector3.up * 0.5f;
         // Place second pole at p2
         gate2.transform.position = p2 + Vector3.up * 0.5f;
 
@@ -101,28 +101,36 @@ public class GatePlacement : MonoBehaviour
         lr.SetPosition(1, gate2.transform.position + Vector3.up * 0.45f);
     }
 
-    public void SetColliderPosition(BoxCollider col, float percent)
+    public void SetColliderPosition(BoxCollider col, float percent, GameObject track)
     {
-        // Get a vertex position in array from percent
-        int placement = Mathf.RoundToInt((1f - percent) * (v.Count - 3));
+         // Get a vertex position in array from percent
+        int placement = Mathf.RoundToInt((percent) * (v.Count - 3));
 
-        Vector3 p1 = v[placement];
-        Vector3 p2 = v[placement + 1];
-        Vector3 p3 = v[placement + 2];
 
-        // Place first point between p1/p3
-        Vector3 point1 = (p1 + p3) / 2 + Vector3.up * 0.5f;
-        // Place second point at p2
-        Vector3 point2 = p2 + Vector3.up * 0.5f;
+        col.transform.position = track.transform.TransformPoint(v[placement]) + (Vector3.up * 0.5f);
+        Vector3 diff = track.transform.TransformPoint(v[placement]) - track.transform.TransformPoint(v[placement - 1]);
+        float rad = MathF.Atan2(diff.z, diff.x);
+        float angle = Mathf.Rad2Deg * rad;
+        col.transform.Rotate(0, 180 - angle, 0, Space.Self);
+
+
+        // Vector3 p1 = track.transform.TransformPoint(v[placement]);
+        // Vector3 p2 = track.transform.TransformPoint(v[placement + 1]);
+        // Vector3 p3 = track.transform.TransformPoint(v[placement + 2]);
+
+        // // Place first point between p1/p3
+        // Vector3 point1 = (p1 + p3) / 2 + Vector3.up * 0.5f;
+        // // Place second point at p2
+        // Vector3 point2 = p2 + Vector3.up * 0.5f;
 
         // Place collider between gate points
-        col.transform.position = (point1 + point2) / 2;
+        col.center = new Vector3(0.8f, 0, 0);
         // Stretch collider to meet both gate points
-        col.size = new Vector3(Vector3.Distance(point1, point2), col.size.y, col.size.z);
+        col.size = new Vector3(1.75f, 1, 0.2f);
 
-        // Find direction perpendicular to the line between the two gate points
-        Vector3 dir = point1 - point2;
-        Vector3 forward = Vector3.Cross(dir, Vector3.up).normalized;
-        col.transform.forward = forward;
+        // // Find direction perpendicular to the line between the two gate points
+        // Vector3 dir = point1 - point2;
+        // Vector3 forward = Vector3.Cross(dir, Vector3.up).normalized;
+        // col.transform.forward = forward;
     }
 }

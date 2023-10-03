@@ -160,6 +160,7 @@ namespace UXF
         /// Currently active block number.
         /// </summary>
         public int currentBlockNum = 0;
+        public int currentTrialNumInBlock = 0;
 
         /// <summary>
         /// Settings for the experiment. These are provided on initialisation of the session.

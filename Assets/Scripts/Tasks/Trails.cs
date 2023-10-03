@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UXF;
 using MovementType = CursorController.MovementType;
 
@@ -52,10 +53,18 @@ public class Trails : BaseTask
     private bool useRayCasts = false;
 
     private float inTrackTime, outTrackTime;
+    private List<bool> onTrackFrameStatus = new List<bool>();
+    private List<Vector2> carPath = new List<Vector2>();
+    private List<Vector2> cursorPath = new List<Vector2>();
 
     [SerializeField]
     private int score;
     private Scoreboard scoreboard;
+
+    private string lapDiff = "-.--";
+    private string bestLap = "-.--";
+    private string lastLap = "-.--";
+    private Dictionary<string, string> scoreboardInfo = new Dictionary<string, string>();
 
     /*
      * Step 0: 
@@ -128,13 +137,25 @@ public class Trails : BaseTask
 
         startPoint = ctrler.Session.CurrentBlock.settings.GetFloat("per_block_startPoint");
         gatePlacement.SetGatePosition(trailGate1, trailGate1.transform.GetChild(0).gameObject, trailGate1.transform.GetChild(1).gameObject,
-            trailGate1.transform.GetChild(2).GetComponent<LineRenderer>(), trailGate1.transform.GetChild(3).GetComponent<BoxCollider>(), startPoint);
+            trailGate1.transform.GetChild(2).GetComponent<LineRenderer>(), trailGate1.transform.GetChild(3).GetComponent<BoxCollider>(), startPoint, GameObject.Find("Spline"));
 
         endPoint = ctrler.Session.CurrentBlock.settings.GetFloat("per_block_endPoint");
         gatePlacement.SetGatePosition(trailGate2, trailGate2.transform.GetChild(0).gameObject, trailGate2.transform.GetChild(1).gameObject,
-            trailGate2.transform.GetChild(2).GetComponent<LineRenderer>(), trailGate2.transform.GetChild(3).GetComponent<BoxCollider>(), endPoint);
+            trailGate2.transform.GetChild(2).GetComponent<LineRenderer>(), trailGate2.transform.GetChild(3).GetComponent<BoxCollider>(), endPoint, GameObject.Find("Spline"));
 
-        
+        if(ctrler.GetBestLapTime() != 0){
+            lapDiff = ctrler.GetLapDiff();
+            bestLap = ctrler.GetBestLapTime().ToString("0.000");
+            lastLap = ctrler.GetLastLapTime().ToString("0.000");
+        }
+
+        scoreboardInfo.Add("Demerit Points", score.ToString());
+        scoreboardInfo.Add("Lap Time", lastLap);
+        scoreboardInfo.Add("Best Lap", bestLap);
+        scoreboardInfo.Add("Lap Diff", lapDiff);
+        scoreboardInfo.Add("% on track", score.ToString());
+
+        scoreboard.SetElements(scoreboardInfo);
 
         // Place midway triggers throughout the track
         for (int i = 0; i < NUM_MID_TRIGGERS; i++)
@@ -161,7 +182,7 @@ public class Trails : BaseTask
                 midPoint = ((distance) / (NUM_MID_TRIGGERS + 1)) * (i + 1) + startPoint;
             }
 
-            gatePlacement.SetColliderPosition(midwayTriggers[i].GetComponent<BoxCollider>(), midPoint);
+            gatePlacement.SetColliderPosition(midwayTriggers[i].GetComponent<BoxCollider>(), midPoint, GameObject.Find("Spline"));
             midwayTriggers[i].transform.parent = track.transform;
         }
 
@@ -210,27 +231,19 @@ public class Trails : BaseTask
         {
             ctrler.CursorController.SetVRCamera(false);
         }
-        else
-        {
-
-        }
         
         //check is obstruction is TRUE on the JSON and places it on the track
         if(ctrler.Session.CurrentBlock.settings.GetBool("per_block_track_occlusion")){
             obst.SetActive(true);
-            gatePlacement.ObstructionPlacement(obst, ctrler.Session.CurrentBlock.settings.GetFloat("per_block_occlusion_location"));
+            gatePlacement.ObstructionPlacement(obst, ctrler.Session.CurrentBlock.settings.GetFloat("per_block_occlusion_location"), GameObject.Find("Spline"));
         }
         else{
             obst.SetActive(false);
         }
-
-        // rotate track according to JSON
-        float trackRot = Convert.ToSingle(ctrler.PseudoRandom("per_block_track_rotation"));
-        track.transform.Rotate(0, trackRot , 0, Space.Self);
         
         //check if mirror on JSON is TRUE and mirror the track on the z-axis and changes the position and rotation of the gates so the track still runs clockwise
         if(ctrler.Session.CurrentBlock.settings.GetBool("per_block_track_mirror")){
-            track.transform.localScale = new Vector3(1,1,-1);
+            track.transform.localScale = new Vector3(-1,1,1);
             Vector3 tempPos1 = trailGate1.transform.position;
             Quaternion tempRot1 = trailGate1.transform.rotation;
             trailGate1.transform.position = trailGate2.transform.position;
@@ -259,7 +272,6 @@ public class Trails : BaseTask
         switch (currentStep)
         {
             case 0:
-                ctrler.Score = 0;
                 break;
 
             case 1:
@@ -296,7 +308,6 @@ public class Trails : BaseTask
                     numImpacts++;
                     car.GetComponent<MeshRenderer>().material.color = Color.red;
                     score = numImpacts;
-                    ctrler.Score = score;
                     trailSpace.GetComponent<AudioSource>().clip = ctrler.AudioClips["incorrect"];
                     trailSpace.GetComponent<AudioSource>().Play();
                 }
@@ -315,7 +326,6 @@ public class Trails : BaseTask
     // Update is called once per frame
     void Update()
     {
-        
         switch (currentStep)
         {
             case 0:
@@ -329,6 +339,8 @@ public class Trails : BaseTask
                 break;
 
             case 1:
+                carPath.Add(new Vector2(car.transform.position.x, car.transform.position.z));
+                cursorPath.Add(new Vector2 (ctrler.CursorController.GetHandPosition().x, ctrler.CursorController.GetHandPosition().z));
 
                 foreach (BaseTarget t in midwayTriggers)
                 {
@@ -355,12 +367,22 @@ public class Trails : BaseTask
                 if(carPastMidpoint && trailGate2.transform.GetChild(3).GetComponent<BaseTarget>().Collided){
                     IncrementStep();
                 }
-
+                onTrackFrameStatus.Add(isOnTrack);
                 break;
             case 2:
+                if(ctrler.GetBestLapTime() == 0 || ctrler.GetBestLapTime() > outTrackTime + inTrackTime || ctrler.Session.currentTrialNumInBlock == 1){
+                    ctrler.SetLapDiff(ctrler.GetBestLapTime(), outTrackTime + inTrackTime);
+                    ctrler.SetBestLapTime(outTrackTime + inTrackTime);
+                    ctrler.SetLastLapTime(outTrackTime + inTrackTime);
+                }
+                else if (ctrler.GetBestLapTime() < outTrackTime + inTrackTime){
+                    ctrler.SetLapDiff(ctrler.GetBestLapTime(), outTrackTime + inTrackTime);
+                    ctrler.SetLastLapTime(outTrackTime + inTrackTime);
+                }
                 IncrementStep();
                     break;
         }
+        
 
         if (Finished) ctrler.EndAndPrepare();
     }
@@ -374,8 +396,6 @@ public class Trails : BaseTask
                 startCollider.size = new Vector3(startCollider.size.z, startCollider.size.y, 0.1f);
 
                 ctrler.StartTimer();
-
-                ctrler.AddTrackedPosition("car_path", car);
 
                 break;
             case 1:
@@ -397,18 +417,20 @@ public class Trails : BaseTask
 
     public override void LogParameters()
     {
-        ctrler.LogObjectPosition("car", car.transform.position);
-
-        ctrler.Session.CurrentTrial.result["time_in_track"] = inTrackTime;
+        ctrler.Session.CurrentTrial.result["per_block_type"] = ctrler.Session.CurrentBlock.settings.GetString("per_block_type");
+        ctrler.LogVector2List("car_path", carPath);
+        ctrler.LogVector2List("cursor_path", cursorPath);
+        ctrler.Session.CurrentTrial.result["time_on_track"] = inTrackTime;
         ctrler.Session.CurrentTrial.result["time_out_track"] = outTrackTime;
-        ctrler.Session.CurrentTrial.result["percent_in_track"] = inTrackTime / (inTrackTime + outTrackTime);
+        ctrler.Session.CurrentTrial.result["percent_on_track"] = inTrackTime / (inTrackTime + outTrackTime)*100;
         ctrler.Session.CurrentTrial.result["lap_time"] = outTrackTime + inTrackTime;
-        ctrler.Session.CurrentTrial.result["num_impacts"] = numImpacts;
+        // ctrler.LogBoolList("on_track_per_frame_status", onTrackFrameStatus);
 
-        ctrler.Score = score;
+        ctrler.Session.CurrentTrial.result["demerit_points"] = score;
 
         ctrler.Session.CurrentTrial.result["start_gate_placement"] = startPoint;
         ctrler.Session.CurrentTrial.result["start_gate_placement"] = endPoint;
+        ctrler.Session.CurrentTrial.result["oclusion_placement"] = ctrler.Session.CurrentBlock.settings.GetBool("per_block_track_occlusion");
 
     }
 
@@ -426,10 +448,10 @@ public class Trails : BaseTask
 
     protected override void OnDestroy()
     {
-        foreach (BaseTarget t in midwayTriggers)
-        {
-            Destroy(t.gameObject);
-        }
+        // foreach (BaseTarget t in midwayTriggers)
+        // {
+        //     Destroy(t.gameObject);
+        // }
         Destroy(trailSpace);
     }
 }

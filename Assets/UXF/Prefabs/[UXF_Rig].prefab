@@ -78,6 +78,7 @@ MonoBehaviour:
   number: 0
   currentTrialNum: 0
   currentBlockNum: 0
+  currentTrialNumInBlock: 0
   dataHandlers:
   - {fileID: 6301449615104170796}
   - {fileID: 4298776666381973480}

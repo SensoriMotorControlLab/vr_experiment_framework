@@ -82,6 +82,11 @@ public class ExperimentController : MonoBehaviour
 
     private Vector3 exp_centre_pos;
     private bool roomHidden = false;
+    private float bestLapTime = 0;
+    private int currBlock = 1;
+    private float lastLapTime = 0;
+    private float lapDiff = 0;
+
 
 
     /// <summary>
@@ -385,6 +390,7 @@ public class ExperimentController : MonoBehaviour
             case "trail":
 
                 CurrentTask = gameObject.AddComponent<Trails>();
+                List<int> index_trail = InitializePseudorandomList(trial, "per_block_track_rotation");
                 //hides experiment room
                 if(!roomHidden){
                     GameObject.Find("room").SetActive(false);
@@ -400,6 +406,34 @@ public class ExperimentController : MonoBehaviour
         }
 
         CurrentTask.Setup();
+    }
+
+    public float GetBestLapTime(){
+        return bestLapTime;
+    }
+
+    public void SetBestLapTime(float time){
+        bestLapTime = time;
+    }
+
+    public float GetLastLapTime(){
+        return lastLapTime;
+    }
+
+    public void SetLastLapTime(float time){
+        lastLapTime = time;
+    }
+    public void SetLapDiff(float best, float curr){
+        if(Session.currentTrialNumInBlock == 1){
+            lapDiff = 0;
+        }
+        else {
+            lapDiff = curr - best;
+        }
+    }
+
+    public string GetLapDiff(){
+        return lapDiff.ToString("0.000");
     }
 
     /// <summary>
@@ -890,6 +924,16 @@ public class ExperimentController : MonoBehaviour
 
         Session.CurrentTrial.result[key + "_time_stamp"] =
             string.Join(",", list.Select(i => string.Format($"{i.w:F6}")));
+    }
+
+    public void LogVector2List(string key, List<Vector2> positions){
+        var list = positions;
+
+        Session.CurrentTrial.result[key + "_x"] =
+            string.Join(",", list.Select(i => string.Format($"{i.x:F6}")));
+
+        Session.CurrentTrial.result[key + "_z"] =
+            string.Join(",", list.Select(i => string.Format($"{i.y:F6}")));
     }
 
     public void LogBoolList(string key, List<bool> positions)
