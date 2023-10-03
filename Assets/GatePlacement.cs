@@ -55,7 +55,6 @@ public class GatePlacement : MonoBehaviour
 
         Vector3 p1 = track.transform.TransformPoint(v[placement]);
         Vector3 p2 = track.transform.TransformPoint(v[placement + 1]);
-        Vector3 p3 = track.transform.TransformPoint(v[placement + 2]);
 
         /*
          * Vertex positions along splinemesh track:
