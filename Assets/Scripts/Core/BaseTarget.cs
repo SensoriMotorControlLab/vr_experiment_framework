@@ -10,7 +10,7 @@ public class BaseTarget : MonoBehaviour
     float hold_still_time = 0.3f;
 
     [SerializeField]
-    public bool Collided { get; private set; }
+    public bool Collided;
     public Collider CollidedWith { get; private set; }
 
     /// <summary>

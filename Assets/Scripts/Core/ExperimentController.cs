@@ -905,6 +905,23 @@ public class ExperimentController : MonoBehaviour
             string.Join(",", list.Select(i => string.Format($"{i.z:F6}")));
     }
 
+    public void LogPositionTime(string key, List<Vector3> positions)
+    {
+        var list = positions;
+
+        // For each element (Select), remove scientific notation and round to 6 decimal places.
+        // Then join all these numbers separated by a comma
+
+        Session.CurrentTrial.result[key + "_x"] =
+            string.Join(",", list.Select(i => string.Format($"{i.x:F6}")));
+
+        Session.CurrentTrial.result[key + "_y"] =
+            string.Join(",", list.Select(i => string.Format($"{i.y:F6}")));
+
+        Session.CurrentTrial.result[key + "Time"] =
+            string.Join(",", list.Select(i => string.Format($"{i.z:F6}")));
+    }
+
     public void LogVector4List(string key, List<Vector4> positions)
     {
         var list = positions;

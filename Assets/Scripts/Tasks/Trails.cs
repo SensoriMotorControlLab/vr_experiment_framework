@@ -50,12 +50,13 @@ public class Trails : BaseTask
     private List<BaseTarget> midwayTriggers = new List<BaseTarget>();
 
     // Whether to use raycasts or use the inner track to dermine whether offtrack
-    private bool useRayCasts = false;
+    private bool useRayCasts = true;
 
     private float inTrackTime, outTrackTime;
     private List<bool> onTrackFrameStatus = new List<bool>();
     private List<Vector2> carPath = new List<Vector2>();
-    private List<Vector2> cursorPath = new List<Vector2>();
+    private List<Vector3> outTrackPath = new List<Vector3>();
+    private List<Vector3> inTrackPath = new List<Vector3>();
 
     [SerializeField]
     private int score;
@@ -65,6 +66,7 @@ public class Trails : BaseTask
     private string bestLap = "-.--";
     private string lastLap = "-.--";
     private Dictionary<string, string> scoreboardInfo = new Dictionary<string, string>();
+    private bool hasSoundPlayed = false;
 
     /*
      * Step 0: 
@@ -217,15 +219,6 @@ public class Trails : BaseTask
 
         innerTrackColliders.AddRange(GameObject.Find("innertrack").transform.GetComponentsInChildren<BaseTarget>());
 
-        if (ctrler.Session.currentTrialNum > 1)
-        {
-            trailGate1.GetComponentInChildren<ParticleSystem>().transform.position = trailGate1.transform.position;
-            trailGate1.GetComponentInChildren<ParticleSystem>().transform.rotation = trailGate1.transform.rotation;
-            trailGate1.GetComponentInChildren<ParticleSystem>().Play();
-            trailSpace.GetComponent<AudioSource>().clip = ctrler.AudioClips["correct"];
-            trailSpace.GetComponent<AudioSource>().Play();
-        }
-
         // Use static camera for non-vr version of pinball
         if (ctrler.Session.settings.GetString("experiment_mode") == "trail")
         {
@@ -267,62 +260,6 @@ public class Trails : BaseTask
         return ctrler.Session.CurrentBlock.settings.GetFloat("per_block_rotation");
     }
 
-    private void FixedUpdate()
-    {
-        switch (currentStep)
-        {
-            case 0:
-                break;
-
-            case 1:
-
-                bool onTrack;
-                if (useRayCasts)
-                {
-                    onTrack = true;
-                    // Use raycasts to determine if car is on track
-                    foreach (Transform t in raycastOrigins)
-                    {
-                        // if any rays don't hit a collider, then the car is at least partially off the track 
-                        if (!Physics.Raycast(t.position, t.TransformDirection(Vector3.down)))
-                            onTrack = false;
-                    }
-                }
-                else
-                {
-                    onTrack = false;
-                    // Use inner track to determine if car (must be a cylinder with 0.5 scale) is on the track
-                    foreach (BaseTarget innerTrackSegment in innerTrackColliders)
-                    {
-                        // if the cylinder is at least slightly touching any inner track segment, then the car is still on the main track.
-                        if (innerTrackSegment.Collided)
-                        {
-                            onTrack = true;
-                        }
-                    }
-                }
-
-                if (isOnTrack && !onTrack)
-                {
-                    isOnTrack = onTrack;
-                    numImpacts++;
-                    car.GetComponent<MeshRenderer>().material.color = Color.red;
-                    score = numImpacts;
-                    trailSpace.GetComponent<AudioSource>().clip = ctrler.AudioClips["incorrect"];
-                    trailSpace.GetComponent<AudioSource>().Play();
-                }
-                else if (!isOnTrack && onTrack)
-                {
-                    isOnTrack = onTrack;
-                    car.GetComponent<MeshRenderer>().material.color = Color.white;
-                }    
-
-                break;
-        }
-
-        
-    }
-
     // Update is called once per frame
     void Update()
     {
@@ -339,8 +276,37 @@ public class Trails : BaseTask
                 break;
 
             case 1:
+                isOnTrack = true;
+                // Use raycasts to determine if car is on track
+                foreach (Transform t in raycastOrigins)
+                {
+                    // if any rays don't hit a collider, then the car is at least partially off the track 
+                    if (!Physics.Raycast(t.position, t.TransformDirection(Vector3.down))){
+                        isOnTrack = false;
+                        break;
+                    }
+                                
+                }
+
+                if (!isOnTrack )
+                {
+                    if(!hasSoundPlayed){
+                        trailSpace.GetComponent<AudioSource>().clip = ctrler.AudioClips["incorrect"];
+                        trailSpace.GetComponent<AudioSource>().Play();
+                        car.GetComponent<MeshRenderer>().material.color = Color.red;
+                        score++;
+                        hasSoundPlayed = true;
+                    }
+                    outTrackPath.Add(new Vector3(car.transform.position.x, car.transform.position.z, Time.time));
+                }
+                else
+                {
+                    car.GetComponent<MeshRenderer>().material.color = Color.white;
+                    inTrackPath.Add(new Vector3(car.transform.position.x, car.transform.position.z, Time.time));
+                    hasSoundPlayed = false;
+                } 
+
                 carPath.Add(new Vector2(car.transform.position.x, car.transform.position.z));
-                cursorPath.Add(new Vector2 (ctrler.CursorController.GetHandPosition().x, ctrler.CursorController.GetHandPosition().z));
 
                 foreach (BaseTarget t in midwayTriggers)
                 {
@@ -365,11 +331,19 @@ public class Trails : BaseTask
 
                 // checks if car has gone through finish line
                 if(carPastMidpoint && trailGate2.transform.GetChild(3).GetComponent<BaseTarget>().Collided){
+                    trailGate1.transform.GetChild(3).GetComponent<BaseTarget>().Collided = false;
+                    trailGate2.GetComponentInChildren<ParticleSystem>().transform.position = trailGate2.transform.position;
+                    trailGate2.GetComponentInChildren<ParticleSystem>().Play();
+                    trailSpace.GetComponent<AudioSource>().clip = ctrler.AudioClips["correct"];
+                    trailSpace.GetComponent<AudioSource>().Play();
                     IncrementStep();
+                    car.GetComponent<MeshRenderer>().material.color = Color.yellow;
                 }
                 onTrackFrameStatus.Add(isOnTrack);
                 break;
             case 2:
+                mousePoint = ctrler.CursorController.MouseToPlanePoint(transform.up, car.transform.position, Camera.main);
+                car.transform.position = ctrler.CursorController.ConvertPosition(mousePoint);
                 if(ctrler.GetBestLapTime() == 0 || ctrler.GetBestLapTime() > outTrackTime + inTrackTime || ctrler.Session.currentTrialNumInBlock == 1){
                     ctrler.SetLapDiff(ctrler.GetBestLapTime(), outTrackTime + inTrackTime);
                     ctrler.SetBestLapTime(outTrackTime + inTrackTime);
@@ -379,8 +353,11 @@ public class Trails : BaseTask
                     ctrler.SetLapDiff(ctrler.GetBestLapTime(), outTrackTime + inTrackTime);
                     ctrler.SetLastLapTime(outTrackTime + inTrackTime);
                 }
-                IncrementStep();
-                    break;
+                if (trailGate1.transform.GetChild(3).GetComponent<BaseTarget>().Collided)
+                {
+                    IncrementStep();
+                }
+                break;
         }
         
 
@@ -417,9 +394,22 @@ public class Trails : BaseTask
 
     public override void LogParameters()
     {
+        float distanceOut = 0;
+        float distanceIn = 0;
+        for(int i = 0; i<outTrackPath.Count; i += 2){
+            if(i+1 < outTrackPath.Count)
+                distanceOut += Vector3.Distance(outTrackPath[i], outTrackPath[i+1]);
+        }
+        for(int i = 0; i<inTrackPath.Count; i += 2){
+            if(i+1 < inTrackPath.Count)
+                distanceIn += Vector3.Distance(inTrackPath[i], inTrackPath[i+1]);
+        }
         ctrler.Session.CurrentTrial.result["per_block_type"] = ctrler.Session.CurrentBlock.settings.GetString("per_block_type");
         ctrler.LogVector2List("car_path", carPath);
-        ctrler.LogVector2List("cursor_path", cursorPath);
+        ctrler.LogPositionTime("out_track_path", outTrackPath);
+        ctrler.Session.CurrentTrial.result["distance_out_track"] = distanceOut;
+        ctrler.LogPositionTime("in_track_path", inTrackPath);
+        ctrler.Session.CurrentTrial.result["distance_in_track"] = distanceIn;
         ctrler.Session.CurrentTrial.result["time_on_track"] = inTrackTime;
         ctrler.Session.CurrentTrial.result["time_out_track"] = outTrackTime;
         ctrler.Session.CurrentTrial.result["percent_on_track"] = inTrackTime / (inTrackTime + outTrackTime)*100;
