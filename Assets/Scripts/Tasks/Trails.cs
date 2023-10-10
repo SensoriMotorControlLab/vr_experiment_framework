@@ -396,12 +396,12 @@ public class Trails : BaseTask
     {
         float distanceOut = 0;
         float distanceIn = 0;
-        for(int i = 0; i<outTrackPath.Count; i += 2){
-            if(i+1 < outTrackPath.Count)
+        for(int i = 0; i<outTrackPath.Count; i ++){
+            if(i+1 == outTrackPath.Count)
                 distanceOut += Vector3.Distance(outTrackPath[i], outTrackPath[i+1]);
         }
-        for(int i = 0; i<inTrackPath.Count; i += 2){
-            if(i+1 < inTrackPath.Count)
+        for(int i = 0; i<inTrackPath.Count; i ++){
+            if(i+1 == inTrackPath.Count)
                 distanceIn += Vector3.Distance(inTrackPath[i], inTrackPath[i+1]);
         }
         ctrler.Session.CurrentTrial.result["per_block_type"] = ctrler.Session.CurrentBlock.settings.GetString("per_block_type");
