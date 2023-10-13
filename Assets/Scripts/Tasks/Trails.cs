@@ -295,6 +295,7 @@ public class Trails : BaseTask
                         trailSpace.GetComponent<AudioSource>().Play();
                         car.GetComponent<MeshRenderer>().material.color = Color.red;
                         score++;
+                        scoreboard.SetElement("Demerit Points", score.ToString());
                         hasSoundPlayed = true;
                     }
                     outTrackPath.Add(new Vector3(car.transform.position.x, car.transform.position.z, Time.time));
@@ -340,6 +341,8 @@ public class Trails : BaseTask
                     car.GetComponent<MeshRenderer>().material.color = Color.yellow;
                 }
                 onTrackFrameStatus.Add(isOnTrack);
+                scoreboard.SetElement("% on track", (inTrackTime / (inTrackTime + outTrackTime)*100).ToString("0.00"));
+                scoreboard.SetElement("Lap Time", (outTrackTime + inTrackTime).ToString("0.000"));
                 break;
             case 2:
                 mousePoint = ctrler.CursorController.MouseToPlanePoint(transform.up, car.transform.position, Camera.main);
@@ -353,6 +356,8 @@ public class Trails : BaseTask
                     ctrler.SetLapDiff(ctrler.GetBestLapTime(), outTrackTime + inTrackTime);
                     ctrler.SetLastLapTime(outTrackTime + inTrackTime);
                 }
+                scoreboard.SetElement("Lap Diff", ctrler.GetLapDiff());
+                scoreboard.SetElement("Best Lap", ctrler.GetBestLapTime().ToString("0.000"));
                 if (trailGate1.transform.GetChild(3).GetComponent<BaseTarget>().Collided)
                 {
                     IncrementStep();
@@ -397,11 +402,11 @@ public class Trails : BaseTask
         float distanceOut = 0;
         float distanceIn = 0;
         for(int i = 0; i<outTrackPath.Count; i ++){
-            if(i+1 == outTrackPath.Count)
+            if(i+1 < outTrackPath.Count)
                 distanceOut += Vector3.Distance(outTrackPath[i], outTrackPath[i+1]);
         }
         for(int i = 0; i<inTrackPath.Count; i ++){
-            if(i+1 == inTrackPath.Count)
+            if(i+1 < inTrackPath.Count)
                 distanceIn += Vector3.Distance(inTrackPath[i], inTrackPath[i+1]);
         }
         ctrler.Session.CurrentTrial.result["per_block_type"] = ctrler.Session.CurrentBlock.settings.GetString("per_block_type");

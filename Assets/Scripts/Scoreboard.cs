@@ -30,6 +30,8 @@ public class Scoreboard : MonoBehaviour
     public bool overideScorePrefix = false;
     private Dictionary<string, string> scoreboardElem = new Dictionary<string, string>();
 
+    public bool isCustomScore = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -62,14 +64,21 @@ public class Scoreboard : MonoBehaviour
 
     public void SetElement(string key, string value)
     {
-        scoreboardElem.Add(key, value);
+        scoreboardElem[key] = value;
     }
 
     // Update is called once per frame
     void Update()
     {
         Text target = WorldSpace ? WorldSpaceText : CamSpaceText;
-
+        if(isCustomScore && overideScorePrefix){
+            target.text = "";
+            foreach (var key in scoreboardElem.Keys)
+            {
+                target.text += key + ": " + scoreboardElem[key] + "\n";
+            }
+            return;
+        }
         if (AllowManualSet)
         {
             if (ScorePrefix) target.text = "Score: " + ManualScoreText;

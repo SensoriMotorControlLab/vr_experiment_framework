@@ -209,6 +209,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c5ead821fcb27e44947bc95add789d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Collided: 0
   CollisionModeOnly: 1
 --- !u!1 &651805858504453513
 GameObject:
@@ -1191,6 +1192,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c5ead821fcb27e44947bc95add789d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Collided: 0
   CollisionModeOnly: 1
 --- !u!1 &7731615460210286767
 GameObject:
@@ -1645,6 +1647,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c5ead821fcb27e44947bc95add789d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Collided: 0
   CollisionModeOnly: 1
 --- !u!1 &3999053650124513943 stripped
 GameObject:
@@ -1664,6 +1667,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c5ead821fcb27e44947bc95add789d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Collided: 0
   CollisionModeOnly: 1
 --- !u!1 &7214194698614334688 stripped
 GameObject:
@@ -1683,6 +1687,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c5ead821fcb27e44947bc95add789d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Collided: 0
   CollisionModeOnly: 1
 --- !u!1001 &3071379108203711768
 PrefabInstance:
@@ -2239,13 +2244,28 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4080104870188603689, guid: 58eaa6eaddb506c48ac20629e050cd57,
         type: 3}
+      propertyPath: m_LocalScale.x
+      value: 4.7938085
+      objectReference: {fileID: 0}
+    - target: {fileID: 4080104870188603689, guid: 58eaa6eaddb506c48ac20629e050cd57,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 4.7938085
+      objectReference: {fileID: 0}
+    - target: {fileID: 4080104870188603689, guid: 58eaa6eaddb506c48ac20629e050cd57,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 4.7938085
+      objectReference: {fileID: 0}
+    - target: {fileID: 4080104870188603689, guid: 58eaa6eaddb506c48ac20629e050cd57,
+        type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2.02
+      value: -12.22
       objectReference: {fileID: 0}
     - target: {fileID: 4080104870188603689, guid: 58eaa6eaddb506c48ac20629e050cd57,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 5.9
       objectReference: {fileID: 0}
     - target: {fileID: 4080104870188603689, guid: 58eaa6eaddb506c48ac20629e050cd57,
         type: 3}
@@ -2287,10 +2307,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5787847120013172359, guid: 58eaa6eaddb506c48ac20629e050cd57,
+        type: 3}
+      propertyPath: m_Text
+      value: 'Score:
+
+'
+      objectReference: {fileID: 0}
     - target: {fileID: 6116081743664576187, guid: 58eaa6eaddb506c48ac20629e050cd57,
         type: 3}
       propertyPath: m_Text
-      value: 'Demerit Points:'
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 6116081743664576187, guid: 58eaa6eaddb506c48ac20629e050cd57,
         type: 3}
@@ -2306,6 +2333,11 @@ PrefabInstance:
         type: 3}
       propertyPath: ScorePrefix
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6510875991752790500, guid: 58eaa6eaddb506c48ac20629e050cd57,
+        type: 3}
+      propertyPath: isCustomScore
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6510875991752790500, guid: 58eaa6eaddb506c48ac20629e050cd57,
         type: 3}
@@ -2331,6 +2363,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Scoreboard
+      objectReference: {fileID: 0}
+    - target: {fileID: 6770439961146712329, guid: 58eaa6eaddb506c48ac20629e050cd57,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.193
+      objectReference: {fileID: 0}
+    - target: {fileID: 6770439961146712329, guid: 58eaa6eaddb506c48ac20629e050cd57,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 6798316970774053999, guid: 58eaa6eaddb506c48ac20629e050cd57,
         type: 3}
