@@ -67,6 +67,7 @@ public class Trails : BaseTask
     private string lastLap = "-.--";
     private Dictionary<string, string> scoreboardInfo = new Dictionary<string, string>();
     private bool hasSoundPlayed = false;
+    private bool isRunValid = true;
 
     /*
      * Step 0: 
@@ -381,9 +382,12 @@ public class Trails : BaseTask
 
                 break;
             case 1:
-                if (!carPastMidpoint)
+                if (!carPastMidpoint){
+                    trailSpace.GetComponent<AudioSource>().clip = ctrler.AudioClips["incorrect"];
+                    trailSpace.GetComponent<AudioSource>().Play();
+                    isRunValid = false;
                     return false;
-
+                }
                 break;
         }
 
@@ -410,6 +414,7 @@ public class Trails : BaseTask
                 distanceIn += Vector3.Distance(inTrackPath[i], inTrackPath[i+1]);
         }
         ctrler.Session.CurrentTrial.result["per_block_type"] = ctrler.Session.CurrentBlock.settings.GetString("per_block_type");
+        ctrler.Session.CurrentTrial.result["is_run_valid"] = isRunValid;
         ctrler.LogVector2List("car_path", carPath);
         ctrler.LogPositionTime("out_track_path", outTrackPath);
         ctrler.Session.CurrentTrial.result["distance_out_track"] = distanceOut;
