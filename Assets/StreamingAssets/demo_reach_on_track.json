@@ -222,7 +222,7 @@ null,
 null,
 null,
 null,
-"ins4",
+"ins10",
 null,
 "ins6",
 null,
@@ -232,7 +232,7 @@ null,
 null,
 null,
 null,
-"ins4",
+"ins10",
 null,
 "ins7",
 "ins1",
@@ -665,16 +665,19 @@ null
     
   ],
   "ins1": 
-   "Reach to red target \n Return back to dock \n Make straight, smooth, and accurate reaches"
+   "Reach to red target \n Return back to magnet \n Make straight, smooth, and accurate reaches"
   ,
   "ins2":
-  "Reach to arc \n Indicate left hand \n Move right hand back to the dock"
+  "Reach to arc \n Indicate left hand \n Move right hand back to the magnet"
   ,
   "ins4":
   "No cursor \n Do NOT use any strategies"
   ,
+  "ins10":
+  "No cursor"
+  ,
   "ins5":
-  "No cursor: don't use any strategies \n Reach out to target and hold still \n Return hand back to dock"
+  "No cursor: don't use any strategies \n Reach out to target and hold still \n Return hand back to magnet"
   ,
   "ins6":
   "BREAK \n 25% completed"
