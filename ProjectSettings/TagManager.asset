@@ -9,6 +9,8 @@ TagManager:
   - TrailRailing
   - FinishLine
   - Car
+  - Occluder
+  - Track
   layers:
   - Default
   - TransparentFX

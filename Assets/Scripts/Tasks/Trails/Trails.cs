@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UXF;
@@ -52,9 +53,11 @@ public class Trails : BaseTask
     // Whether to use raycasts or use the inner track to dermine whether offtrack
     private bool useRayCasts = true;
 
-    private float inTrackTime, outTrackTime;
+    private float inTrackTime, outTrackTime, pitStopTime;
+    private float startOcclusionTime, endOcclusionTime, occludedTime;
     private List<bool> onTrackFrameStatus = new List<bool>();
     private List<Vector2> carPath = new List<Vector2>();
+    private List<Vector2> cursorPath = new List<Vector2>();
     private List<Vector3> outTrackPath = new List<Vector3>();
     private List<Vector3> inTrackPath = new List<Vector3>();
 
@@ -151,7 +154,7 @@ public class Trails : BaseTask
             bestLap = ctrler.GetBestLapTime().ToString("0.000");
             lastLap = ctrler.GetLastLapTime().ToString("0.000");
         }
-
+        scoreboardInfo.Add("Lap: ", ctrler.Session.currentTrialNum.ToString() + "/" + ExperimentController.Instance().Session.Trials.Count().ToString());
         scoreboardInfo.Add("Demerit Points", score.ToString());
         scoreboardInfo.Add("Lap Time", lastLap);
         scoreboardInfo.Add("Best Lap", bestLap);
@@ -261,6 +264,17 @@ public class Trails : BaseTask
         return ctrler.Session.CurrentBlock.settings.GetFloat("per_block_rotation");
     }
 
+    public void SetOcclusionInfo(bool isOccluded)
+    {
+        if(isOccluded){
+            startOcclusionTime = Time.time;
+        }
+        else{
+            endOcclusionTime = Time.time;
+            occludedTime += endOcclusionTime - startOcclusionTime;
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -277,7 +291,11 @@ public class Trails : BaseTask
                 break;
 
             case 1:
+                Vector3 mousePoint = ctrler.CursorController.MouseToPlanePoint(transform.up, car.transform.position, Camera.main);
+                car.transform.position = ctrler.CursorController.ConvertPosition(mousePoint);
+
                 isOnTrack = true;
+                
                 // Use raycasts to determine if car is on track
                 foreach (Transform t in raycastOrigins)
                 {
@@ -309,6 +327,7 @@ public class Trails : BaseTask
                 } 
 
                 carPath.Add(new Vector2(car.transform.position.x, car.transform.position.z));
+                cursorPath.Add(new Vector2(mousePoint.x, mousePoint.z));
 
                 foreach (BaseTarget t in midwayTriggers)
                 {
@@ -321,10 +340,6 @@ public class Trails : BaseTask
                 // if the car hits the start gate trigger, it is not going the right way 
                 if (startCollider.GetComponent<BaseTarget>().Collided)
                     carPastMidpoint = false;
-
-                // car position = mouse position
-                Vector3 mousePoint = ctrler.CursorController.MouseToPlanePoint(transform.up, car.transform.position, Camera.main);
-                car.transform.position = ctrler.CursorController.ConvertPosition(mousePoint);
 
                 if (isOnTrack)
                     inTrackTime += Time.deltaTime;
@@ -346,6 +361,7 @@ public class Trails : BaseTask
                 scoreboard.SetElement("Lap Time", (outTrackTime + inTrackTime).ToString("0.000"));
                 break;
             case 2:
+                pitStopTime += Time.deltaTime;
                 mousePoint = ctrler.CursorController.MouseToPlanePoint(transform.up, car.transform.position, Camera.main);
                 car.transform.position = ctrler.CursorController.ConvertPosition(mousePoint);
                 if(ctrler.GetBestLapTime() == 0 || ctrler.GetBestLapTime() > outTrackTime + inTrackTime || ctrler.Session.currentTrialNumInBlock == 1){
@@ -416,6 +432,7 @@ public class Trails : BaseTask
         ctrler.Session.CurrentTrial.result["per_block_type"] = ctrler.Session.CurrentBlock.settings.GetString("per_block_type");
         ctrler.Session.CurrentTrial.result["is_run_valid"] = isRunValid;
         ctrler.LogVector2List("car_path", carPath);
+        ctrler.LogVector2List("cursor_path", cursorPath);
         ctrler.LogPositionTime("out_track_path", outTrackPath);
         ctrler.Session.CurrentTrial.result["distance_out_track"] = distanceOut;
         ctrler.LogPositionTime("in_track_path", inTrackPath);
@@ -429,8 +446,10 @@ public class Trails : BaseTask
         ctrler.Session.CurrentTrial.result["demerit_points"] = score;
 
         ctrler.Session.CurrentTrial.result["start_gate_placement"] = startPoint;
-        ctrler.Session.CurrentTrial.result["start_gate_placement"] = endPoint;
-        ctrler.Session.CurrentTrial.result["oclusion_placement"] = ctrler.Session.CurrentBlock.settings.GetBool("per_block_track_occlusion");
+        ctrler.Session.CurrentTrial.result["end_gate_placement"] = endPoint;
+        ctrler.Session.CurrentTrial.result["occlusion_placement"] = ctrler.Session.CurrentBlock.settings.GetBool("per_block_track_occlusion");
+        ctrler.Session.CurrentTrial.result["occluded_time"] = occludedTime;
+        ctrler.Session.CurrentTrial.result["pit_stop_time"] = pitStopTime;
 
     }
 
