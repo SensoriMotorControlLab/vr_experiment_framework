@@ -17,7 +17,7 @@ public class OccluderBehaviour : MonoBehaviour
     {
         if (other.gameObject.tag == "Car")
         {
-            Debug.Log("Occluder exit");
+            // Debug.Log("Occluder exit");
         }
     }
 
@@ -25,7 +25,7 @@ public class OccluderBehaviour : MonoBehaviour
     {
         if (other.gameObject.tag == "Car")
         {
-            Debug.Log("Occluder stay");
+            // Debug.Log("Occluder stay");
         }
     }
 }

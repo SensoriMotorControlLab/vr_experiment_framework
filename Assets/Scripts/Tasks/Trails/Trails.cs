@@ -18,7 +18,6 @@ public class Trails : BaseTask
     private BoxCollider startCollider; // Trigger attached to trailgate1 (start gate)
     private BoxCollider midwayCollider; // Standalone trigger used to determine if user is going correct direction
     [SerializeField]
-    private List<BaseTarget> innerTrackColliders = new List<BaseTarget>();
 
     private GameObject railing1, railing2; 
 
@@ -121,7 +120,6 @@ public class Trails : BaseTask
                 break;
 
             case "rotated":
-                print("rotated");
                 ctrler.CursorController.SetMovementType(MovementType.rotated);
                 break;
 
@@ -191,7 +189,7 @@ public class Trails : BaseTask
             gatePlacement.SetColliderPosition(midwayTriggers[i].GetComponent<BoxCollider>(), midPoint, GameObject.Find("Spline"));
             midwayTriggers[i].transform.parent = track.transform;
         }
-
+        midwayCollider.gameObject.SetActive(false);
 
         railing1 = GameObject.Find("generated_by_SplineMeshTiling");
         foreach (MeshCollider railing in railing1.transform.GetComponentsInChildren<MeshCollider>())
@@ -220,8 +218,6 @@ public class Trails : BaseTask
         {
             railing2.transform.GetChild(i).gameObject.AddComponent<BaseTarget>();
         }
-
-        innerTrackColliders.AddRange(GameObject.Find("innertrack").transform.GetComponentsInChildren<BaseTarget>());
 
         // Use static camera for non-vr version of pinball
         if (ctrler.Session.settings.GetString("experiment_mode") == "trail")
@@ -382,7 +378,7 @@ public class Trails : BaseTask
                 break;
         }
         
-
+        Debug.Log("Step: " + currentStep);
         if (Finished) ctrler.EndAndPrepare();
     }
 
