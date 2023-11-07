@@ -67,7 +67,7 @@ public class GatePlacement : MonoBehaviour
          */
 
         // Place first pole between p1/p3
-        gate1.transform.position = p1 + Vector3.up * 0.5f;
+        gate1.transform.position = p3 + Vector3.up * 0.5f;
         // Place second pole at p2
         gate2.transform.position = p2 + Vector3.up * 0.5f;
 
