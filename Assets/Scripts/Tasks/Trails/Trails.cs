@@ -172,7 +172,7 @@ public class Trails : BaseTask
             {
                 // If the end point comes before the start point
 
-                float distance = 1 - startPoint + endPoint;
+                float distance = endPoint - startPoint + 1;
 
                 midPoint = ((distance) / (NUM_MID_TRIGGERS + 1)) * (i + 1) + startPoint;
 
@@ -237,13 +237,11 @@ public class Trails : BaseTask
         //check if mirror on JSON is TRUE and mirror the track on the z-axis and changes the position and rotation of the gates so the track still runs clockwise
         if(ctrler.Session.CurrentBlock.settings.GetBool("per_block_track_mirror")){
             track.transform.localScale = new Vector3(-1,1,1);
-            // Vector3 tempPos1 = trailGate1.transform.position;
-            // Quaternion tempRot1 = trailGate1.transform.rotation;
-            // trailGate1.transform.position = trailGate2.transform.position;
-            // trailGate1.transform.rotation = trailGate2.transform.rotation;
-            // trailGate2.transform.rotation = tempRot1;
-            // trailGate2.transform.position = tempPos1;
         }
+        if(ctrler.Session.CurrentBlock.settings.GetFloat("per_block_track_rotation") != 0){
+            track.transform.Rotate(0,ctrler.Session.CurrentBlock.settings.GetFloat("per_block_track_rotation"),0);
+        }
+        
         car.transform.position = trailGate1.transform.position;
         raycastOrigins.AddRange(car.GetComponentsInChildren<Transform>());
 
