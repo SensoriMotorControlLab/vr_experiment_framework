@@ -70,6 +70,9 @@ public class Trails : BaseTask
     private Dictionary<string, string> scoreboardInfo = new Dictionary<string, string>();
     private bool hasSoundPlayed = false;
     private bool isRunValid = true;
+    private Vector3 carVelocity;
+    private Vector3 carPrevPos;
+    Quaternion targetRotation;
 
     /*
      * Step 0: 
@@ -269,9 +272,16 @@ public class Trails : BaseTask
         }
     }
 
+    void FixedUpdate()
+    {
+        carVelocity = (car.transform.position - carPrevPos);
+        carPrevPos = car.transform.position;
+    }
+
     // Update is called once per frame
     void Update()
     {
+        Vector3 fwd;
         switch (currentStep)
         {
             case 0:
@@ -289,7 +299,12 @@ public class Trails : BaseTask
                 car.transform.position = ctrler.CursorController.ConvertPosition(mousePoint);
 
                 isOnTrack = true;
-                
+
+                fwd = carVelocity.normalized + car.transform.position;
+                if(carVelocity.magnitude > 0.03f){
+                    targetRotation = Quaternion.LookRotation(fwd - car.transform.position) * Quaternion.Euler(0, -90, 0);
+                    car.transform.rotation = Quaternion.Slerp(car.transform.rotation, targetRotation, 20 * Time.deltaTime);
+                }
                 // Use raycasts to determine if car is on track
                 foreach (Transform t in raycastOrigins)
                 {
@@ -306,7 +321,7 @@ public class Trails : BaseTask
                     if(!hasSoundPlayed){
                         trailSpace.GetComponent<AudioSource>().clip = ctrler.AudioClips["incorrect"];
                         trailSpace.GetComponent<AudioSource>().Play();
-                        car.GetComponent<MeshRenderer>().material.color = Color.red;
+                        car.GetComponent<MeshRenderer>().materials[4].color = Color.red;
                         score++;
                         scoreboard.SetElement("Demerit Points", score.ToString());
                         hasSoundPlayed = true;
@@ -315,7 +330,7 @@ public class Trails : BaseTask
                 }
                 else
                 {
-                    car.GetComponent<MeshRenderer>().material.color = Color.white;
+                    car.GetComponent<MeshRenderer>().materials[4].color = Color.white;
                     inTrackPath.Add(new Vector3(car.transform.position.x, car.transform.position.z, Time.time));
                     hasSoundPlayed = false;
                 } 
@@ -348,7 +363,7 @@ public class Trails : BaseTask
                     trailSpace.GetComponent<AudioSource>().clip = ctrler.AudioClips["correct"];
                     trailSpace.GetComponent<AudioSource>().Play();
                     IncrementStep();
-                    car.GetComponent<MeshRenderer>().material.color = Color.yellow;
+                    car.GetComponent<MeshRenderer>().materials[4].color = Color.yellow;
                 }
                 onTrackFrameStatus.Add(isOnTrack);
                 scoreboard.SetElement("% on track", (inTrackTime / (inTrackTime + outTrackTime)*100).ToString("0.00"));
@@ -358,6 +373,13 @@ public class Trails : BaseTask
                 pitStopTime += Time.deltaTime;
                 mousePoint = ctrler.CursorController.MouseToPlanePoint(transform.up, car.transform.position, Camera.main);
                 car.transform.position = ctrler.CursorController.ConvertPosition(mousePoint);
+
+                fwd = carVelocity.normalized + car.transform.position;
+                if(carVelocity.magnitude > 0.03f){
+                    targetRotation = Quaternion.LookRotation(fwd - car.transform.position) * Quaternion.Euler(0, -90, 0);
+                    car.transform.rotation = Quaternion.Slerp(car.transform.rotation, targetRotation, 20 * Time.deltaTime);
+                }
+
                 if(ctrler.GetBestLapTime() == 0 || ctrler.GetBestLapTime() > outTrackTime + inTrackTime || ctrler.Session.currentTrialNumInBlock == 1){
                     ctrler.SetLapDiff(ctrler.GetBestLapTime(), outTrackTime + inTrackTime);
                     ctrler.SetBestLapTime(outTrackTime + inTrackTime);
@@ -375,8 +397,6 @@ public class Trails : BaseTask
                 }
                 break;
         }
-        
-        Debug.Log("Step: " + currentStep);
         if (Finished) ctrler.EndAndPrepare();
     }
 
