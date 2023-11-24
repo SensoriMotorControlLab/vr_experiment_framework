@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UXF;
 using MovementType = CursorController.MovementType;
+using SMCL;
 
 public class Trails : BaseTask
 {
@@ -19,12 +20,12 @@ public class Trails : BaseTask
     private BoxCollider midwayCollider; // Standalone trigger used to determine if user is going correct direction
     [SerializeField]
 
-    private GameObject railing1, railing2; 
+    private GameObject railing1, railing2;
 
-    private GatePlacement gatePlacement; 
+    private GatePlacement gatePlacement;
 
     private GameObject roadSegments;
-    private GameObject track; 
+    private GameObject track;
     private GameObject obst;
 
     private float startPoint, endPoint, midPoint; // Percentages between 0-1 where the start, mid, and end gates will be placed along the track (clockwise)
@@ -73,6 +74,7 @@ public class Trails : BaseTask
     private Vector3 carVelocity;
     private Vector3 carPrevPos;
     Quaternion targetRotation;
+    OneEuroFilter<Quaternion> carLookFilter;
 
     /*
      * Step 0: 
@@ -117,7 +119,8 @@ public class Trails : BaseTask
 
         Home = trailGate1;
 
-        switch(ctrler.Session.CurrentBlock.settings.GetString("per_block_type")){
+        switch (ctrler.Session.CurrentBlock.settings.GetString("per_block_type"))
+        {
             case "aligned":
                 ctrler.CursorController.SetMovementType(MovementType.aligned);
                 break;
@@ -150,7 +153,8 @@ public class Trails : BaseTask
         gatePlacement.SetGatePosition(trailGate2, trailGate2.transform.GetChild(0).gameObject, trailGate2.transform.GetChild(1).gameObject,
             trailGate2.transform.GetChild(2).GetComponent<LineRenderer>(), trailGate2.transform.GetChild(3).GetComponent<BoxCollider>(), endPoint, GameObject.Find("Spline"));
 
-        if(ctrler.GetBestLapTime() != 0){
+        if (ctrler.GetBestLapTime() != 0)
+        {
             lapDiff = ctrler.GetLapDiff();
             bestLap = ctrler.GetBestLapTime().ToString("0.000");
             lastLap = ctrler.GetLastLapTime().ToString("0.000");
@@ -212,7 +216,7 @@ public class Trails : BaseTask
             railing.gameObject.SetActive(false);
         }
 
-        for(int i = 0; i < railing1.transform.GetChild(0).transform.childCount; i++)
+        for (int i = 0; i < railing1.transform.GetChild(0).transform.childCount; i++)
         {
             railing1.transform.GetChild(i).gameObject.AddComponent<BaseTarget>();
         }
@@ -227,24 +231,28 @@ public class Trails : BaseTask
         {
             ctrler.CursorController.SetVRCamera(false);
         }
-        
+
         //check is obstruction is TRUE on the JSON and places it on the track
-        if(ctrler.Session.CurrentBlock.settings.GetBool("per_block_track_occlusion")){
+        if (ctrler.Session.CurrentBlock.settings.GetBool("per_block_track_occlusion"))
+        {
             obst.SetActive(true);
             gatePlacement.ObstructionPlacement(obst, ctrler.Session.CurrentBlock.settings.GetFloat("per_block_occlusion_location"), GameObject.Find("Spline"));
         }
-        else{
+        else
+        {
             obst.SetActive(false);
         }
-        
+
         //check if mirror on JSON is TRUE and mirror the track on the z-axis and changes the position and rotation of the gates so the track still runs clockwise
-        if(ctrler.Session.CurrentBlock.settings.GetBool("per_block_track_mirror")){
-            track.transform.localScale = new Vector3(-1,1,1);
+        if (ctrler.Session.CurrentBlock.settings.GetBool("per_block_track_mirror"))
+        {
+            track.transform.localScale = new Vector3(-1, 1, 1);
         }
-        if(ctrler.Session.CurrentBlock.settings.GetFloat("per_block_track_rotation") != 0){
-            track.transform.Rotate(0,ctrler.Session.CurrentBlock.settings.GetFloat("per_block_track_rotation"),0);
+        if (ctrler.Session.CurrentBlock.settings.GetFloat("per_block_track_rotation") != 0)
+        {
+            track.transform.Rotate(0, ctrler.Session.CurrentBlock.settings.GetFloat("per_block_track_rotation"), 0);
         }
-        
+
         car.transform.position = trailGate1.transform.position;
         raycastOrigins.AddRange(car.GetComponentsInChildren<Transform>());
 
@@ -254,6 +262,9 @@ public class Trails : BaseTask
         gatePlacement.SetCheckeredFlags(trailGate2.transform.GetChild(2).GetComponent<LineRenderer>(), trailGate2.transform.GetChild(0).gameObject,
         trailGate2.transform.GetChild(1).gameObject);
 
+
+        // set up one euro filter
+        carLookFilter = new OneEuroFilter<Quaternion>(200f, 0.8f, 0.0f); // arg = filter frequency, fcmin, beta
     }
 
     public override float GetRotation()
@@ -263,10 +274,12 @@ public class Trails : BaseTask
 
     public void SetOcclusionInfo(bool isOccluded)
     {
-        if(isOccluded){
+        if (isOccluded)
+        {
             startOcclusionTime = Time.time;
         }
-        else{
+        else
+        {
             endOcclusionTime = Time.time;
             occludedTime += endOcclusionTime - startOcclusionTime;
         }
@@ -301,24 +314,29 @@ public class Trails : BaseTask
                 isOnTrack = true;
 
                 fwd = carVelocity.normalized + car.transform.position;
-                if(carVelocity.magnitude > 0.03f){
+                if (carVelocity.magnitude > 0.02f)
+                {
                     targetRotation = Quaternion.LookRotation(fwd - car.transform.position) * Quaternion.Euler(0, -90, 0);
-                    car.transform.rotation = Quaternion.Slerp(car.transform.rotation, targetRotation, 20 * Time.deltaTime);
+                    // car.transform.rotation = Quaternion.Slerp(car.transform.rotation, targetRotation, 20 * Time.deltaTime);
+                    car.transform.rotation = carLookFilter.Filter(targetRotation);
+                    // car.transform.rotation = targetRotation;
                 }
                 // Use raycasts to determine if car is on track
                 foreach (Transform t in raycastOrigins)
                 {
                     // if any rays don't hit a collider, then the car is at least partially off the track 
-                    if (!Physics.Raycast(t.position, t.TransformDirection(Vector3.down))){
+                    if (!Physics.Raycast(t.position, t.TransformDirection(Vector3.down)))
+                    {
                         isOnTrack = false;
                         break;
                     }
-                                
+
                 }
 
-                if (!isOnTrack )
+                if (!isOnTrack)
                 {
-                    if(!hasSoundPlayed){
+                    if (!hasSoundPlayed)
+                    {
                         trailSpace.GetComponent<AudioSource>().clip = ctrler.AudioClips["incorrect"];
                         trailSpace.GetComponent<AudioSource>().Play();
                         car.GetComponent<MeshRenderer>().materials[4].color = Color.red;
@@ -333,7 +351,7 @@ public class Trails : BaseTask
                     car.GetComponent<MeshRenderer>().materials[4].color = Color.white;
                     inTrackPath.Add(new Vector3(car.transform.position.x, car.transform.position.z, Time.time));
                     hasSoundPlayed = false;
-                } 
+                }
 
                 carPath.Add(new Vector2(car.transform.position.x, car.transform.position.z));
                 cursorPath.Add(new Vector2(mousePoint.x, mousePoint.z));
@@ -343,8 +361,8 @@ public class Trails : BaseTask
                     // if the car hits the midway trigger, it is going the correct way
                     if (t.Collided)
                         carPastMidpoint = true;
-                }    
-                
+                }
+
 
                 // if the car hits the start gate trigger, it is not going the right way 
                 if (startCollider.GetComponent<BaseTarget>().Collided)
@@ -356,7 +374,8 @@ public class Trails : BaseTask
                     outTrackTime += Time.deltaTime;
 
                 // checks if car has gone through finish line
-                if(carPastMidpoint && trailGate2.transform.GetChild(3).GetComponent<BaseTarget>().Collided){
+                if (carPastMidpoint && trailGate2.transform.GetChild(3).GetComponent<BaseTarget>().Collided)
+                {
                     trailGate1.transform.GetChild(3).GetComponent<BaseTarget>().Collided = false;
                     trailGate2.GetComponentInChildren<ParticleSystem>().transform.position = trailGate2.transform.position;
                     trailGate2.GetComponentInChildren<ParticleSystem>().Play();
@@ -366,7 +385,7 @@ public class Trails : BaseTask
                     car.GetComponent<MeshRenderer>().materials[4].color = Color.yellow;
                 }
                 onTrackFrameStatus.Add(isOnTrack);
-                scoreboard.SetElement("% on track", (inTrackTime / (inTrackTime + outTrackTime)*100).ToString("0.00"));
+                scoreboard.SetElement("% on track", (inTrackTime / (inTrackTime + outTrackTime) * 100).ToString("0.00"));
                 scoreboard.SetElement("Lap Time", (outTrackTime + inTrackTime).ToString("0.000"));
                 break;
             case 2:
@@ -375,17 +394,20 @@ public class Trails : BaseTask
                 car.transform.position = ctrler.CursorController.ConvertPosition(mousePoint);
 
                 fwd = carVelocity.normalized + car.transform.position;
-                if(carVelocity.magnitude > 0.03f){
+                if (carVelocity.magnitude > 0.02f)
+                {
                     targetRotation = Quaternion.LookRotation(fwd - car.transform.position) * Quaternion.Euler(0, -90, 0);
                     car.transform.rotation = Quaternion.Slerp(car.transform.rotation, targetRotation, 20 * Time.deltaTime);
                 }
 
-                if(ctrler.GetBestLapTime() == 0 || ctrler.GetBestLapTime() > outTrackTime + inTrackTime || ctrler.Session.currentTrialNumInBlock == 1){
+                if (ctrler.GetBestLapTime() == 0 || ctrler.GetBestLapTime() > outTrackTime + inTrackTime || ctrler.Session.currentTrialNumInBlock == 1)
+                {
                     ctrler.SetLapDiff(ctrler.GetBestLapTime(), outTrackTime + inTrackTime);
                     ctrler.SetBestLapTime(outTrackTime + inTrackTime);
                     ctrler.SetLastLapTime(outTrackTime + inTrackTime);
                 }
-                else if (ctrler.GetBestLapTime() < outTrackTime + inTrackTime){
+                else if (ctrler.GetBestLapTime() < outTrackTime + inTrackTime)
+                {
                     ctrler.SetLapDiff(ctrler.GetBestLapTime(), outTrackTime + inTrackTime);
                     ctrler.SetLastLapTime(outTrackTime + inTrackTime);
                 }
@@ -412,7 +434,8 @@ public class Trails : BaseTask
 
                 break;
             case 1:
-                if (!carPastMidpoint){
+                if (!carPastMidpoint)
+                {
                     trailSpace.GetComponent<AudioSource>().clip = ctrler.AudioClips["incorrect"];
                     trailSpace.GetComponent<AudioSource>().Play();
                     isRunValid = false;
@@ -435,13 +458,15 @@ public class Trails : BaseTask
     {
         float distanceOut = 0;
         float distanceIn = 0;
-        for(int i = 0; i<outTrackPath.Count; i ++){
-            if(i+1 < outTrackPath.Count)
-                distanceOut += Vector3.Distance(outTrackPath[i], outTrackPath[i+1]);
+        for (int i = 0; i < outTrackPath.Count; i++)
+        {
+            if (i + 1 < outTrackPath.Count)
+                distanceOut += Vector3.Distance(outTrackPath[i], outTrackPath[i + 1]);
         }
-        for(int i = 0; i<inTrackPath.Count; i ++){
-            if(i+1 < inTrackPath.Count)
-                distanceIn += Vector3.Distance(inTrackPath[i], inTrackPath[i+1]);
+        for (int i = 0; i < inTrackPath.Count; i++)
+        {
+            if (i + 1 < inTrackPath.Count)
+                distanceIn += Vector3.Distance(inTrackPath[i], inTrackPath[i + 1]);
         }
         ctrler.Session.CurrentTrial.result["per_block_type"] = ctrler.Session.CurrentBlock.settings.GetString("per_block_type");
         ctrler.Session.CurrentTrial.result["is_run_valid"] = isRunValid;
@@ -453,7 +478,7 @@ public class Trails : BaseTask
         ctrler.Session.CurrentTrial.result["distance_in_track"] = distanceIn;
         ctrler.Session.CurrentTrial.result["time_on_track"] = inTrackTime;
         ctrler.Session.CurrentTrial.result["time_out_track"] = outTrackTime;
-        ctrler.Session.CurrentTrial.result["percent_on_track"] = inTrackTime / (inTrackTime + outTrackTime)*100;
+        ctrler.Session.CurrentTrial.result["percent_on_track"] = inTrackTime / (inTrackTime + outTrackTime) * 100;
         ctrler.Session.CurrentTrial.result["lap_time"] = outTrackTime + inTrackTime;
         // ctrler.LogBoolList("on_track_per_frame_status", onTrackFrameStatus);
 
@@ -472,8 +497,8 @@ public class Trails : BaseTask
         // Realign XR Rig to non-tilted position
         if (ctrler.Session.settings.GetString("experiment_mode") == "trail_vr")
         {
-           /* XRRig.transform.RotateAround(trailSpace.transform.position, trailSpace.transform.forward,
-                ctrler.Session.CurrentBlock.settings.GetFloat("per_block_tilt") * -1);*/
+            /* XRRig.transform.RotateAround(trailSpace.transform.position, trailSpace.transform.forward,
+                 ctrler.Session.CurrentBlock.settings.GetFloat("per_block_tilt") * -1);*/
         }
 
         trailSpace.SetActive(false);
