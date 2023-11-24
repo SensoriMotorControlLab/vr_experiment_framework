@@ -282,6 +282,7 @@ public class Trails : BaseTask
     void Update()
     {
         Vector3 fwd;
+        float turnRatio;
         switch (currentStep)
         {
             case 0:
@@ -301,10 +302,10 @@ public class Trails : BaseTask
                 isOnTrack = true;
 
                 fwd = carVelocity.normalized + car.transform.position;
-                if(carVelocity.magnitude > 0.03f){
-                    targetRotation = Quaternion.LookRotation(fwd - car.transform.position) * Quaternion.Euler(0, -90, 0);
-                    car.transform.rotation = Quaternion.Slerp(car.transform.rotation, targetRotation, 20 * Time.deltaTime);
-                }
+                turnRatio = carVelocity.magnitude * 150 * Time.deltaTime;
+                targetRotation = Quaternion.LookRotation(fwd - car.transform.position) * Quaternion.Euler(0, -90, 0);
+                car.transform.rotation = Quaternion.Slerp(car.transform.rotation, targetRotation, turnRatio);
+
                 // Use raycasts to determine if car is on track
                 foreach (Transform t in raycastOrigins)
                 {
@@ -375,10 +376,9 @@ public class Trails : BaseTask
                 car.transform.position = ctrler.CursorController.ConvertPosition(mousePoint);
 
                 fwd = carVelocity.normalized + car.transform.position;
-                if(carVelocity.magnitude > 0.03f){
-                    targetRotation = Quaternion.LookRotation(fwd - car.transform.position) * Quaternion.Euler(0, -90, 0);
-                    car.transform.rotation = Quaternion.Slerp(car.transform.rotation, targetRotation, 20 * Time.deltaTime);
-                }
+                turnRatio = carVelocity.magnitude * 150 * Time.deltaTime;
+                targetRotation = Quaternion.LookRotation(fwd - car.transform.position) * Quaternion.Euler(0, -90, 0);
+                car.transform.rotation = Quaternion.Slerp(car.transform.rotation, targetRotation, turnRatio);
 
                 if(ctrler.GetBestLapTime() == 0 || ctrler.GetBestLapTime() > outTrackTime + inTrackTime || ctrler.Session.currentTrialNumInBlock == 1){
                     ctrler.SetLapDiff(ctrler.GetBestLapTime(), outTrackTime + inTrackTime);
