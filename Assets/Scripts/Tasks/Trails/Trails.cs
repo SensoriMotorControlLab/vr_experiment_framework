@@ -31,6 +31,8 @@ public class Trails : BaseTask
     private float startPoint, endPoint, midPoint; // Percentages between 0-1 where the start, mid, and end gates will be placed along the track (clockwise)
 
     private GameObject car;
+    private GameObject carControlPoint;
+    private GameObject carPivotPoint;
 
     [SerializeField]
     private bool carPastMidpoint = false;
@@ -75,6 +77,7 @@ public class Trails : BaseTask
     private Vector3 carPrevPos;
     Quaternion targetRotation;
     OneEuroFilter<Quaternion> carLookFilter;
+    MovingAverage carLookAvg;
 
     /*
      * Step 0: 
@@ -116,6 +119,8 @@ public class Trails : BaseTask
         track = GameObject.Find("Track");
         obst = GameObject.Find("Occlusion");
         car = GameObject.Find("Car");
+        carControlPoint = GameObject.Find("CarControlPoint");
+        carPivotPoint = GameObject.Find("CarPivotPoint");
 
         Home = trailGate1;
 
@@ -253,7 +258,8 @@ public class Trails : BaseTask
             track.transform.Rotate(0, ctrler.Session.CurrentBlock.settings.GetFloat("per_block_track_rotation"), 0);
         }
 
-        car.transform.position = trailGate1.transform.position;
+        //car.transform.position = trailGate1.transform.position;
+        carControlPoint.transform.position = trailGate1.transform.position;
         raycastOrigins.AddRange(car.GetComponentsInChildren<Transform>());
 
         gatePlacement.SetCheckeredFlags(trailGate1.transform.GetChild(2).GetComponent<LineRenderer>(), trailGate1.transform.GetChild(0).gameObject,
@@ -265,6 +271,7 @@ public class Trails : BaseTask
 
         // set up one euro filter
         carLookFilter = new OneEuroFilter<Quaternion>(200f, 0.8f, 0.0f); // arg = filter frequency, fcmin, beta
+        carLookAvg = new MovingAverage(10);
     }
 
     public override float GetRotation()
@@ -287,8 +294,16 @@ public class Trails : BaseTask
 
     void FixedUpdate()
     {
-        carVelocity = (car.transform.position - carPrevPos);
-        carPrevPos = car.transform.position;
+        //carVelocity = (carControlPoint.transform.position - carPrevPos);
+        // carPrevPos = carControlPoint.transform.position;
+        // carPrevPos = carPivotPoint.transform.position;
+
+        // update movinga average every frame
+        carLookAvg.Add(carControlPoint.transform.position - carPrevPos);
+        carPrevPos = carControlPoint.transform.position;
+
+        carVelocity = carLookAvg.Average;
+
     }
 
     // Update is called once per frame
@@ -309,16 +324,17 @@ public class Trails : BaseTask
 
             case 1:
                 Vector3 mousePoint = ctrler.CursorController.MouseToPlanePoint(transform.up, car.transform.position, Camera.main);
-                car.transform.position = ctrler.CursorController.ConvertPosition(mousePoint);
+                //car.transform.position = ctrler.CursorController.ConvertPosition(mousePoint);
+                carControlPoint.transform.position = ctrler.CursorController.ConvertPosition(mousePoint);
 
                 isOnTrack = true;
 
-                fwd = carVelocity.normalized + car.transform.position;
+                fwd = carVelocity.normalized + carControlPoint.transform.position;
                 if (carVelocity.magnitude > 0.02f)
                 {
-                    targetRotation = Quaternion.LookRotation(fwd - car.transform.position) * Quaternion.Euler(0, -90, 0);
+                    targetRotation = Quaternion.LookRotation(fwd - carControlPoint.transform.position) * Quaternion.Euler(0, -90, 0);
                     // car.transform.rotation = Quaternion.Slerp(car.transform.rotation, targetRotation, 20 * Time.deltaTime);
-                    car.transform.rotation = carLookFilter.Filter(targetRotation);
+                    carControlPoint.transform.rotation = carLookFilter.Filter(targetRotation);
                     // car.transform.rotation = targetRotation;
                 }
                 // Use raycasts to determine if car is on track
@@ -391,7 +407,8 @@ public class Trails : BaseTask
             case 2:
                 pitStopTime += Time.deltaTime;
                 mousePoint = ctrler.CursorController.MouseToPlanePoint(transform.up, car.transform.position, Camera.main);
-                car.transform.position = ctrler.CursorController.ConvertPosition(mousePoint);
+                // car.transform.position = ctrler.CursorController.ConvertPosition(mousePoint);
+                carControlPoint.transform.position = ctrler.CursorController.ConvertPosition(mousePoint);
 
                 fwd = carVelocity.normalized + car.transform.position;
                 if (carVelocity.magnitude > 0.02f)

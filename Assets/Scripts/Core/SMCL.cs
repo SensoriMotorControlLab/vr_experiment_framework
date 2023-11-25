@@ -4,8 +4,34 @@ using UnityEngine;
 
 namespace SMCL
 {
-    // One Euro Filter implemetation from /github.com/DarioMazzanti/OneEuroFilterUnity
 
+    // simple moving average
+    public class MovingAverage
+    {
+        private Queue<Vector3> values = new Queue<Vector3>();
+        private int maxSize;
+        private Vector3 sum = Vector3.zero;
+
+        public MovingAverage(int size)
+        {
+            maxSize = size;
+        }
+
+        public void Add(Vector3 newValue)
+        {
+            sum += newValue;
+            values.Enqueue(newValue);
+
+            if (values.Count > maxSize)
+            {
+                sum -= values.Dequeue();
+            }
+        }
+
+        public Vector3 Average => (values.Count == 0) ? Vector3.zero : sum / values.Count;
+    }
+
+    // One Euro Filter implemetation from /github.com/DarioMazzanti/OneEuroFilterUnity
     class LowPassFilter
     {
         float y, a, s;
