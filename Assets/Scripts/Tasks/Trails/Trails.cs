@@ -45,7 +45,7 @@ public class Trails : BaseTask
 
     // Number of triggers spread evenly between start & end point.
     // The user has to contact at least one of these for a lap to count.
-    private const int NUM_MID_TRIGGERS = 2;
+    private int midTriggersCounter = 2;
 
     private List<BaseTarget> midwayTriggers = new List<BaseTarget>();
 
@@ -128,7 +128,6 @@ public class Trails : BaseTask
 
 
         }
-
         for (int i = 0; i < roadSegments.transform.childCount; i++)
         { // add road segments to gatePlacement list of meshes
             gatePlacement.mesh.Add(roadSegments.transform.GetChild(i).GetComponent<MeshFilter>().mesh);
@@ -144,11 +143,11 @@ public class Trails : BaseTask
 
         startPoint = ctrler.Session.CurrentBlock.settings.GetFloat("per_block_startPoint");
         gatePlacement.SetGatePosition(trailGate1, trailGate1.transform.GetChild(0).gameObject, trailGate1.transform.GetChild(1).gameObject,
-            trailGate1.transform.GetChild(2).GetComponent<LineRenderer>(), trailGate1.transform.GetChild(3).GetComponent<BoxCollider>(), startPoint, GameObject.Find("Spline"));
+            trailGate1.transform.GetChild(2).GetComponent<LineRenderer>(), trailGate1.transform.GetChild(3).GetComponent<BoxCollider>(), startPoint, roadSegments);
 
         endPoint = ctrler.Session.CurrentBlock.settings.GetFloat("per_block_endPoint");
         gatePlacement.SetGatePosition(trailGate2, trailGate2.transform.GetChild(0).gameObject, trailGate2.transform.GetChild(1).gameObject,
-            trailGate2.transform.GetChild(2).GetComponent<LineRenderer>(), trailGate2.transform.GetChild(3).GetComponent<BoxCollider>(), endPoint, GameObject.Find("Spline"));
+            trailGate2.transform.GetChild(2).GetComponent<LineRenderer>(), trailGate2.transform.GetChild(3).GetComponent<BoxCollider>(), endPoint, roadSegments);
 
         if(ctrler.GetBestLapTime() != 0){
             lapDiff = ctrler.GetLapDiff();
@@ -164,8 +163,14 @@ public class Trails : BaseTask
 
         scoreboard.SetElements(scoreboardInfo);
 
+        // set up how many midway triggers to place according to the distance between start and end point
+        if (endPoint < startPoint)
+        midTriggersCounter = Mathf.RoundToInt((endPoint - startPoint + 1) * 10);
+        else
+        midTriggersCounter = Mathf.RoundToInt((endPoint - startPoint) *10 );
+
         // Place midway triggers throughout the track
-        for (int i = 0; i < NUM_MID_TRIGGERS; i++)
+        for (int i = 0; i < midTriggersCounter; i++)
         {
             midwayTriggers.Add(Instantiate(midwayCollider.gameObject).GetComponent<BaseTarget>());
 
@@ -177,7 +182,7 @@ public class Trails : BaseTask
 
                 float distance = endPoint - startPoint + 1;
 
-                midPoint = ((distance) / (NUM_MID_TRIGGERS + 1)) * (i + 1) + startPoint;
+                midPoint = ((distance) / (midTriggersCounter + 1)) * (i + 1) + startPoint;
 
                 if (midPoint > 1)
                     midPoint -= 1;
@@ -186,10 +191,10 @@ public class Trails : BaseTask
             {
                 float distance = endPoint - startPoint;
 
-                midPoint = ((distance) / (NUM_MID_TRIGGERS + 1)) * (i + 1) + startPoint;
+                midPoint = ((distance) / (midTriggersCounter + 1)) * (i + 1) + startPoint;
             }
 
-            gatePlacement.SetColliderPosition(midwayTriggers[i].GetComponent<BoxCollider>(), midPoint, GameObject.Find("Spline"));
+            gatePlacement.SetColliderPosition(midwayTriggers[i].GetComponent<BoxCollider>(), midPoint, roadSegments);
             midwayTriggers[i].transform.parent = track.transform;
         }
         midwayCollider.gameObject.SetActive(false);
@@ -254,6 +259,8 @@ public class Trails : BaseTask
         gatePlacement.SetCheckeredFlags(trailGate2.transform.GetChild(2).GetComponent<LineRenderer>(), trailGate2.transform.GetChild(0).gameObject,
         trailGate2.transform.GetChild(1).gameObject);
 
+        gatePlacement.CarPlacement(car, startPoint, roadSegments);
+
     }
 
     public override float GetRotation()
@@ -300,10 +307,9 @@ public class Trails : BaseTask
                 car.transform.position = ctrler.CursorController.ConvertPosition(mousePoint);
 
                 isOnTrack = true;
-
-                fwd = carVelocity.normalized + car.transform.position;
+                
                 turnRatio = carVelocity.magnitude * 150 * Time.deltaTime;
-                targetRotation = Quaternion.LookRotation(fwd - car.transform.position) * Quaternion.Euler(0, -90, 0);
+                targetRotation = Quaternion.LookRotation(carVelocity.normalized) * Quaternion.Euler(0, -90, 0);
                 car.transform.rotation = Quaternion.Slerp(car.transform.rotation, targetRotation, turnRatio);
 
                 // Use raycasts to determine if car is on track
