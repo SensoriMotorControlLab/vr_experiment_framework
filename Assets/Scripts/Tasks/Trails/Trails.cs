@@ -46,6 +46,7 @@ public class Trails : BaseTask
     // Number of triggers spread evenly between start & end point.
     // The user has to contact at least one of these for a lap to count.
     private int midTriggersCounter = 2;
+    private int numMidTriggersHit = 0;
 
     private List<BaseTarget> midwayTriggers = new List<BaseTarget>();
 
@@ -388,7 +389,12 @@ public class Trails : BaseTask
                 {
                     // if the car hits the midway trigger, it is going the correct way
                     if (t.Collided)
-                        carPastMidpoint = true;
+                    {
+                        numMidTriggersHit++;
+                        if(numMidTriggersHit >= Mathf.RoundToInt((midTriggersCounter/2)+1))
+                            carPastMidpoint = true;
+                    }
+                        
                 }    
                 
 
