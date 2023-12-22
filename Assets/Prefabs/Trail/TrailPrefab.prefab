@@ -1013,7 +1013,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3143183134297564163}
   m_Layer: 0
-  m_Name: Raycast origin (4)
+  m_Name: LR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1237,7 +1237,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4473148933140123139}
   m_Layer: 0
-  m_Name: Raycast origin (1)
+  m_Name: RF
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1366,7 +1366,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1768735711568252918}
   m_Layer: 0
-  m_Name: Raycast origin (2)
+  m_Name: LF
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1397,7 +1397,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3599723074539463342}
   m_Layer: 0
-  m_Name: Raycast origin (3)
+  m_Name: RR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
