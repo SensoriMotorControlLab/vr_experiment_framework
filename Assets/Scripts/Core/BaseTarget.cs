@@ -11,6 +11,7 @@ public class BaseTarget : MonoBehaviour
 
     [SerializeField]
     public bool Collided;
+    public bool hasCollided = false;
     public Collider CollidedWith { get; private set; }
 
     /// <summary>
@@ -43,6 +44,7 @@ public class BaseTarget : MonoBehaviour
         }
 
         Collided = true;
+
         CollidedWith = collision.collider;
     }
 

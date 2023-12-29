@@ -388,11 +388,18 @@ public class Trails : BaseTask
                 foreach (BaseTarget t in midwayTriggers)
                 {
                     // if the car hits the midway trigger, it is going the correct way
-                    if (t.Collided)
+                    if (t.Collided && !t.hasCollided)
                     {
+                        t.hasCollided = true;
                         numMidTriggersHit++;
-                        if(numMidTriggersHit >= Mathf.RoundToInt((midTriggersCounter/2)+1))
+                        if(numMidTriggersHit >= (midwayTriggers.Count/2)+1)
+                        {
                             carPastMidpoint = true;
+                        }
+                        else
+                        {
+                            carPastMidpoint = false;
+                        }
                     }
                         
                 }    
