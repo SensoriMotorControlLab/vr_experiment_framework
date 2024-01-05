@@ -11,6 +11,8 @@ TagManager:
   - Car
   - Occluder
   - Track
+  - CarTrail
+  - Grass
   layers:
   - Default
   - TransparentFX

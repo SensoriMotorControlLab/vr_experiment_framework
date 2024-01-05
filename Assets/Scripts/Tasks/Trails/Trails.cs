@@ -325,7 +325,7 @@ public class Trails : BaseTask
                 foreach (Transform t in raycastOrigins)
                 {
                     // if any rays don't hit a collider, then the car is at least partially off the track 
-                    if (!Physics.Raycast(t.position, t.TransformDirection(Vector3.down))){
+                    if (!Physics.Raycast(t.position, t.TransformDirection(Vector3.down)) || t.transform.tag == "Grass"){
                         isOnTrack = false;
 
                         switch(t.name){
