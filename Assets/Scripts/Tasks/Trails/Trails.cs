@@ -392,7 +392,12 @@ public class Trails : BaseTask
                     {
                         t.hasCollided = true;
                         numMidTriggersHit++;
+                        Debug.Log(midwayTriggers.Count);
                         if(numMidTriggersHit >= (midwayTriggers.Count/2)+1)
+                        {
+                            carPastMidpoint = true;
+                        }
+                        else if(midwayTriggers.Count == 1)
                         {
                             carPastMidpoint = true;
                         }
@@ -400,6 +405,7 @@ public class Trails : BaseTask
                         {
                             carPastMidpoint = false;
                         }
+                        Debug.Log("Car past midpoint: " + carPastMidpoint);
                     }
                         
                 }    
