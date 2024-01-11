@@ -72,7 +72,7 @@ public class GatePlacement : MonoBehaviour
         Vector3 lookDir = (p4 + p3) / 2 + (Vector3.up * 0.5f);
 
         obst.transform.position = (p1 + p2) / 2 + (Vector3.up * 0.5f);
-        Debug.Log(lookDir + " " + obst.transform.position);
+        // Debug.Log(lookDir + " " + obst.transform.position);
 
         Vector3 fwd = lookDir - obst.transform.position;
         obst.transform.rotation = Quaternion.LookRotation(fwd) * Quaternion.Euler(0, -90, 0);
@@ -118,9 +118,11 @@ public class GatePlacement : MonoBehaviour
         gateParent.transform.position = (gate1.transform.position + gate2.transform.position) / 2;
 
         // Place collider between gate points
-        col.transform.position = (gate1.transform.position + gate2.transform.position) / 2;
+        Vector3 colPos = (gate1.transform.position + gate2.transform.position) / 2;
+        col.transform.position = new Vector3(colPos.x, colPos.y, colPos.z);
+        col.transform.localPosition = new Vector3(col.transform.localPosition.x - 0.5f, col.transform.localPosition.y, col.transform.localPosition.z);
         // Stretch collider to meet both gate points
-        col.size = new Vector3(Vector3.Distance(gate1.transform.position, gate2.transform.position), col.size.y, col.size.z);
+        col.size = new Vector3(Vector3.Distance(gate1.transform.position, gate2.transform.position), 1, 1.0f);
 
         // Find direction perpendicular to the line between the two gate points
         Vector3 dir = gate1.transform.position - gate2.transform.position;

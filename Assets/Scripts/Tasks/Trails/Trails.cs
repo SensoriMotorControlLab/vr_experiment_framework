@@ -178,36 +178,6 @@ public class Trails : BaseTask
         else
         midTriggersCounter = Mathf.RoundToInt((endPoint - startPoint) *10 );
 
-        // Place midway triggers throughout the track
-        for (int i = 0; i < midTriggersCounter; i++)
-        {
-            midwayTriggers.Add(Instantiate(midwayCollider.gameObject).GetComponent<BaseTarget>());
-
-            // Start    Mid1     Mid2     End
-            // |--------|--------|--------|
-            if (endPoint < startPoint)
-            {
-                // If the end point comes before the start point
-
-                float distance = endPoint - startPoint + 1;
-
-                midPoint = ((distance) / (midTriggersCounter + 1)) * (i + 1) + startPoint;
-
-                if (midPoint > 1)
-                    midPoint -= 1;
-            }
-            else
-            {
-                float distance = endPoint - startPoint;
-
-                midPoint = ((distance) / (midTriggersCounter + 1)) * (i + 1) + startPoint;
-            }
-
-            gatePlacement.SetColliderPosition(midwayTriggers[i].GetComponent<BoxCollider>(), midPoint, roadSegments);
-            midwayTriggers[i].transform.parent = track.transform;
-        }
-        midwayCollider.gameObject.SetActive(false);
-
         railing1 = GameObject.Find("generated_by_SplineMeshTiling");
         foreach (MeshCollider railing in railing1.transform.GetComponentsInChildren<MeshCollider>())
         {
@@ -253,6 +223,8 @@ public class Trails : BaseTask
         
         //check if mirror on JSON is TRUE and mirror the track on the z-axis and changes the position and rotation of the gates so the track still runs clockwise
         if(ctrler.Session.CurrentBlock.settings.GetBool("per_block_track_mirror")){
+            trailGate1.transform.localScale = new Vector3(-1,1,1);
+            trailGate2.transform.localScale = new Vector3(-1,1,1);
             track.transform.localScale = new Vector3(-1,1,1);
         }
         if(ctrler.Session.CurrentBlock.settings.GetFloat("per_block_track_rotation") != 0){
@@ -269,6 +241,36 @@ public class Trails : BaseTask
         trailGate2.transform.GetChild(1).gameObject);
 
         gatePlacement.CarPlacement(car, startPoint, roadSegments);
+
+        // Place midway triggers throughout the track
+        for (int i = 0; i < midTriggersCounter; i++)
+        {
+            midwayTriggers.Add(Instantiate(midwayCollider.gameObject).GetComponent<BaseTarget>());
+
+            // Start    Mid1     Mid2     End
+            // |--------|--------|--------|
+            if (endPoint < startPoint)
+            {
+                // If the end point comes before the start point
+
+                float distance = endPoint - startPoint + 1;
+
+                midPoint = ((distance) / (midTriggersCounter + 1)) * (i + 1) + startPoint;
+
+                if (midPoint > 1)
+                    midPoint -= 1;
+            }
+            else
+            {
+                float distance = endPoint - startPoint;
+
+                midPoint = ((distance) / (midTriggersCounter + 1)) * (i + 1) + startPoint;
+            }
+
+            gatePlacement.SetColliderPosition(midwayTriggers[i].GetComponent<BoxCollider>(), midPoint, roadSegments);
+            midwayTriggers[i].transform.parent = track.transform;
+        }
+        midwayCollider.gameObject.SetActive(false);
 
     }
 
@@ -405,7 +407,7 @@ public class Trails : BaseTask
                         {
                             carPastMidpoint = false;
                         }
-                        Debug.Log("Car past midpoint: " + carPastMidpoint);
+                        // Debug.Log("Car past midpoint: " + carPastMidpoint);
                     }
                         
                 }    
@@ -469,9 +471,6 @@ public class Trails : BaseTask
         switch (currentStep)
         {
             case 0:
-                // make the start trigger smaller after the car is picked up
-                startCollider.size = new Vector3(startCollider.size.z, startCollider.size.y, 0.1f);
-
                 ctrler.StartTimer();
 
                 break;

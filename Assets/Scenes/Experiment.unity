@@ -3330,7 +3330,7 @@ PrefabInstance:
     - target: {fileID: 7839017981507438752, guid: 0a3b6392f04558844bd340e68ced1ff9,
         type: 3}
       propertyPath: m_Text
-      value: 1
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 7877310278013525260, guid: 0a3b6392f04558844bd340e68ced1ff9,
         type: 3}

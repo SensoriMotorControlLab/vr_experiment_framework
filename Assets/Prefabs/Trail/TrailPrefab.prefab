@@ -492,7 +492,7 @@ GameObject:
   - component: {fileID: 3893564634271747176}
   - component: {fileID: 947391444511888586}
   - component: {fileID: 5443672548660421999}
-  - component: {fileID: 1229498547906060844}
+  - component: {fileID: 8707233492873979841}
   m_Layer: 0
   m_Name: Car
   m_TagString: CarTrail
@@ -597,9 +597,9 @@ Rigidbody:
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 3
---- !u!136 &1229498547906060844
-CapsuleCollider:
+  m_CollisionDetection: 1
+--- !u!65 &8707233492873979841
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -608,10 +608,9 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
-  m_Radius: 0.1
-  m_Height: 0.5
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  serializedVersion: 2
+  m_Size: {x: 0.4, y: 1.709619, z: 2.4209795}
+  m_Center: {x: 0, y: 0.8757844, z: 0}
 --- !u!1 &2074890337484835512
 GameObject:
   m_ObjectHideFlags: 0
@@ -2206,6 +2205,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7026011183747097859, guid: eaa45a0e2a2202644b7054a47ad0c960,
+        type: 3}
+      propertyPath: m_Size.z
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 7595950642808581904, guid: eaa45a0e2a2202644b7054a47ad0c960,
         type: 3}
       propertyPath: m_Enabled
@@ -2664,8 +2668,13 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 536126370896853447, guid: a8bd30a5a6b80fe49b53d8b5344d8595,
         type: 3}
+      propertyPath: m_Size.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 536126370896853447, guid: a8bd30a5a6b80fe49b53d8b5344d8595,
+        type: 3}
       propertyPath: m_Size.z
-      value: 0.1
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 536126370896853447, guid: a8bd30a5a6b80fe49b53d8b5344d8595,
         type: 3}
@@ -2691,6 +2700,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: TrailGate2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6803103051497076162, guid: a8bd30a5a6b80fe49b53d8b5344d8595,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7811018598379269900, guid: a8bd30a5a6b80fe49b53d8b5344d8595,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8038542237766512694, guid: a8bd30a5a6b80fe49b53d8b5344d8595,
         type: 3}
@@ -2854,12 +2873,37 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 536126370896853447, guid: a8bd30a5a6b80fe49b53d8b5344d8595,
         type: 3}
+      propertyPath: m_Size.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 536126370896853447, guid: a8bd30a5a6b80fe49b53d8b5344d8595,
+        type: 3}
       propertyPath: m_Size.z
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 536126370896853447, guid: a8bd30a5a6b80fe49b53d8b5344d8595,
         type: 3}
+      propertyPath: m_Center.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 536126370896853447, guid: a8bd30a5a6b80fe49b53d8b5344d8595,
+        type: 3}
+      propertyPath: m_Center.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 536126370896853447, guid: a8bd30a5a6b80fe49b53d8b5344d8595,
+        type: 3}
+      propertyPath: m_Center.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 536126370896853447, guid: a8bd30a5a6b80fe49b53d8b5344d8595,
+        type: 3}
       propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2901438810734233383, guid: a8bd30a5a6b80fe49b53d8b5344d8595,
+        type: 3}
+      propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5818775672201726370, guid: a8bd30a5a6b80fe49b53d8b5344d8595,
@@ -2870,12 +2914,22 @@ PrefabInstance:
     - target: {fileID: 5818775672201726370, guid: a8bd30a5a6b80fe49b53d8b5344d8595,
         type: 3}
       propertyPath: CollisionModeOnly
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6237002731092315768, guid: a8bd30a5a6b80fe49b53d8b5344d8595,
         type: 3}
       propertyPath: m_Name
       value: TrailGate1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6803103051497076162, guid: a8bd30a5a6b80fe49b53d8b5344d8595,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7811018598379269900, guid: a8bd30a5a6b80fe49b53d8b5344d8595,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8038542237766512694, guid: a8bd30a5a6b80fe49b53d8b5344d8595,
         type: 3}
@@ -2931,6 +2985,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9040910571814078606, guid: a8bd30a5a6b80fe49b53d8b5344d8595,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a8bd30a5a6b80fe49b53d8b5344d8595, type: 3}
