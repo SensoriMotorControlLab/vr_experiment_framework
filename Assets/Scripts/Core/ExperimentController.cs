@@ -86,6 +86,13 @@ public class ExperimentController : MonoBehaviour
     private int currBlock = 1;
     private float lastLapTime = 0;
     private float lapDiff = 0;
+    public List<float> currBlockLapTimeList = new List<float>();
+    public List<float> currBlockPercentOnTrackList = new List<float>();
+    public int currBlockTotalDemerits = 0;
+
+    public List<float> pBlockMedLapTimeList = new List<float>();
+    public List<float> pBlockMedPercentTrackList = new List<float>();
+    public List<int> pBlockTotalDemeritsList = new List<int>();
 
 
 

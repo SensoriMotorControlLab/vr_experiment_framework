@@ -117,10 +117,7 @@ public class GatePlacement : MonoBehaviour
         // Place gate parent between gate poles
         gateParent.transform.position = (gate1.transform.position + gate2.transform.position) / 2;
 
-        // Place collider between gate points
-        Vector3 colPos = (gate1.transform.position + gate2.transform.position) / 2;
-        col.transform.position = new Vector3(colPos.x, colPos.y, colPos.z);
-        col.transform.localPosition = new Vector3(col.transform.localPosition.x - 0.5f, col.transform.localPosition.y, col.transform.localPosition.z);
+        // col.transform.localPosition = new Vector3(0, 0, 0);
         // Stretch collider to meet both gate points
         col.size = new Vector3(Vector3.Distance(gate1.transform.position, gate2.transform.position), 1, 1.0f);
 
@@ -131,6 +128,10 @@ public class GatePlacement : MonoBehaviour
         gate2.transform.forward = forward;
         gateParent.transform.forward = forward;
         col.transform.forward = forward;
+
+        // Place collider between gate points
+        Vector3 colPos = (gate1.transform.position + gate2.transform.position) / 2;
+        col.transform.position = new Vector3(colPos.x, colPos.y, colPos.z) + (gateParent.transform.forward * 0.5f);
 
         // Reparent to gateParent
         foreach (Transform child in gateChildren)

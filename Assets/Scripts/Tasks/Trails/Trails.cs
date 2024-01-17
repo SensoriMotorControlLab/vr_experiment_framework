@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UXF;
@@ -26,6 +27,7 @@ public class Trails : BaseTask
     private GameObject roadSegments;
     private GameObject track; 
     private GameObject obst;
+    private GameObject GridLayout;
 
     private float startPoint, endPoint, midPoint; // Percentages between 0-1 where the start, mid, and end gates will be placed along the track (clockwise)
 
@@ -123,6 +125,7 @@ public class Trails : BaseTask
         track = GameObject.Find("Track");
         obst = GameObject.Find("Occlusion");
         car = GameObject.Find("Car");
+        GridLayout = GameObject.Find("GridLayoutGroup");
 
         Home = trailGate1;
 
@@ -272,6 +275,75 @@ public class Trails : BaseTask
         }
         midwayCollider.gameObject.SetActive(false);
 
+        // create textmeshpro object for playerprefs to store median laptime and percent on track of all the blocks separately until the current block
+        if(ctrler.Session.currentBlockNum > 1 && ctrler.Session.currentTrialNumInBlock == 1)
+        {
+            for(int i = 0; i < ctrler.Session.currentBlockNum - 1; i++){
+
+                GameObject medianPercentOnTrack = new GameObject("medianPercentOnTrack");
+                medianPercentOnTrack.transform.parent = GridLayout.transform;
+                medianPercentOnTrack.transform.localScale = new Vector3(1,1,1);
+                medianPercentOnTrack.transform.localRotation = Quaternion.Euler(0,0,0);
+                medianPercentOnTrack.AddComponent<TextMeshPro>();
+                medianPercentOnTrack.GetComponent<TextMeshPro>().text = ctrler.pBlockMedPercentTrackList[i].ToString();
+                medianPercentOnTrack.GetComponent<TextMeshPro>().fontSize = 90;
+                medianPercentOnTrack.GetComponent<TextMeshPro>().alignment = TextAlignmentOptions.Center;
+                Color TextColor = Color.white;
+                if(i-1 >= 0)
+                {
+                    TextColor = (ctrler.pBlockMedPercentTrackList[i-1] < ctrler.pBlockMedPercentTrackList[i]) ? Color.green : Color.red;
+                    TextColor = (ctrler.pBlockMedPercentTrackList[i-1] == ctrler.pBlockMedPercentTrackList[i]) ? Color.white : TextColor;
+                }
+                medianPercentOnTrack.GetComponent<TextMeshPro>().color = TextColor;
+
+                GameObject medianLapTime = new GameObject("medianLapTime");
+                medianLapTime.transform.parent = GridLayout.transform;
+                medianLapTime.transform.localScale = new Vector3(1,1,1);
+                medianLapTime.transform.localRotation = Quaternion.Euler(0,0,0);
+                medianLapTime.AddComponent<TextMeshPro>();
+                medianLapTime.GetComponent<TextMeshPro>().text = ctrler.pBlockMedLapTimeList[i].ToString();
+                medianLapTime.GetComponent<TextMeshPro>().fontSize = 90;
+                medianLapTime.GetComponent<TextMeshPro>().alignment = TextAlignmentOptions.Center;
+                TextColor = Color.white;
+                if(i-1 >= 0)
+                {
+                    TextColor = (ctrler.pBlockMedLapTimeList[i-1] > ctrler.pBlockMedLapTimeList[i]) ? Color.green : Color.red;
+                    TextColor = (ctrler.pBlockMedLapTimeList[i-1] == ctrler.pBlockMedLapTimeList[i]) ? Color.white : TextColor;
+                }
+                medianLapTime.GetComponent<TextMeshPro>().color = TextColor;
+
+                // now for playerprefs demerit points
+                GameObject demeritPoints = new GameObject("demeritPoints");
+                demeritPoints.transform.parent = GridLayout.transform;                
+                demeritPoints.transform.localScale = new Vector3(1,1,1);
+                demeritPoints.transform.localRotation = Quaternion.Euler(0,0,0);
+                demeritPoints.AddComponent<TextMeshPro>();
+                demeritPoints.GetComponent<TextMeshPro>().text = ctrler.pBlockTotalDemeritsList[i].ToString();
+                demeritPoints.GetComponent<TextMeshPro>().fontSize = 90;
+                demeritPoints.GetComponent<TextMeshPro>().alignment = TextAlignmentOptions.Center;
+                TextColor = Color.white;
+                if(i-1 >= 0)
+                {
+                    TextColor = (ctrler.pBlockTotalDemeritsList[i-1] > ctrler.pBlockTotalDemeritsList[i]) ? Color.green : Color.red;
+                    TextColor = (ctrler.pBlockTotalDemeritsList[i-1] == ctrler.pBlockTotalDemeritsList[i]) ? Color.white : TextColor;
+                }
+                demeritPoints.GetComponent<TextMeshPro>().color = TextColor;
+
+                GameObject Set = new GameObject("Set");
+                Set.transform.parent = GridLayout.transform;
+                Set.transform.localScale = new Vector3(1,1,1);
+                Set.transform.localRotation = Quaternion.Euler(0,0,0);
+                Set.AddComponent<TextMeshPro>();
+                Set.GetComponent<TextMeshPro>().text = (i+1).ToString();
+                Set.GetComponent<TextMeshPro>().fontSize = 90;
+                Set.GetComponent<TextMeshPro>().alignment = TextAlignmentOptions.Center;
+                Set.GetComponent<TextMeshPro>().color = Color.white;
+            }
+        }
+        else
+            GridLayout.SetActive(false);
+
+
     }
 
     public override float GetRotation()
@@ -320,8 +392,11 @@ public class Trails : BaseTask
                 isOnTrack = true;
                 
                 turnRatio = carVelocity.magnitude * 150 * Time.deltaTime;
-                targetRotation = Quaternion.LookRotation(carVelocity.normalized) * Quaternion.Euler(0, -90, 0);
-                car.transform.rotation = Quaternion.Slerp(car.transform.rotation, targetRotation, turnRatio);
+                if (carVelocity.normalized != Vector3.zero)
+                {
+                    targetRotation = Quaternion.LookRotation(carVelocity.normalized) * Quaternion.Euler(0, -90, 0);
+                    car.transform.rotation = Quaternion.Slerp(car.transform.rotation, targetRotation, turnRatio);
+                }
 
                 // Use raycasts to determine if car is on track
                 foreach (Transform t in raycastOrigins)
@@ -394,7 +469,6 @@ public class Trails : BaseTask
                     {
                         t.hasCollided = true;
                         numMidTriggersHit++;
-                        Debug.Log(midwayTriggers.Count);
                         if(numMidTriggersHit >= (midwayTriggers.Count/2)+1)
                         {
                             carPastMidpoint = true;
@@ -441,10 +515,12 @@ public class Trails : BaseTask
                 mousePoint = ctrler.CursorController.MouseToPlanePoint(transform.up, car.transform.position, Camera.main);
                 car.transform.position = ctrler.CursorController.ConvertPosition(mousePoint);
 
-                fwd = carVelocity.normalized + car.transform.position;
                 turnRatio = carVelocity.magnitude * 150 * Time.deltaTime;
-                targetRotation = Quaternion.LookRotation(fwd - car.transform.position) * Quaternion.Euler(0, -90, 0);
-                car.transform.rotation = Quaternion.Slerp(car.transform.rotation, targetRotation, turnRatio);
+                if (carVelocity.normalized != Vector3.zero)
+                {
+                    targetRotation = Quaternion.LookRotation(carVelocity.normalized) * Quaternion.Euler(0, -90, 0);
+                    car.transform.rotation = Quaternion.Slerp(car.transform.rotation, targetRotation, turnRatio);
+                }
 
                 if(ctrler.GetBestLapTime() == 0 || ctrler.GetBestLapTime() > outTrackTime + inTrackTime || ctrler.Session.currentTrialNumInBlock == 1){
                     ctrler.SetLapDiff(ctrler.GetBestLapTime(), outTrackTime + inTrackTime);
@@ -496,6 +572,51 @@ public class Trails : BaseTask
 
     public override void LogParameters()
     {
+        float percentOnTrack = inTrackTime / (inTrackTime + outTrackTime)*100;
+        float lapTime = outTrackTime + inTrackTime;
+        
+        int currentBlockNum = ctrler.Session.currentBlockNum;
+        int currentTrialNum = ctrler.Session.currentTrialNumInBlock;
+   
+        if(currentTrialNum == 1)
+        {
+            ctrler.currBlockLapTimeList.Clear();
+            ctrler.currBlockPercentOnTrackList.Clear();
+            ctrler.currBlockTotalDemerits = 0;
+        }           
+        ctrler.currBlockTotalDemerits += score;
+        ctrler.currBlockLapTimeList.Add(lapTime);
+        ctrler.currBlockPercentOnTrackList.Add(percentOnTrack);
+        if(currentTrialNum == ctrler.Session.CurrentBlock.trials.Count)
+        {
+            //put all saved laptime and percent on track into separate lists
+            List<float> lapTimeList = new List<float>();
+            List<float> percentOnTrackList = new List<float>();
+
+            //get the median of the laptime and percent on track
+            lapTimeList = ctrler.currBlockLapTimeList.OrderBy(x => x).ToList();
+            percentOnTrackList = ctrler.currBlockPercentOnTrackList.OrderBy(x => x).ToList();
+
+            float medianLapTime;
+            float medianPercentOnTrack;
+
+            if(lapTimeList.Count() == 1 && percentOnTrackList.Count() == 1){
+                medianLapTime = lapTimeList[0];
+                medianPercentOnTrack = percentOnTrackList[0];
+            }
+            else
+            {
+                int medianIndexTime = lapTimeList.Count()/2;
+                int medianIndexPercent = percentOnTrackList.Count()/2;
+                medianLapTime = lapTimeList[medianIndexTime];
+                medianPercentOnTrack = percentOnTrackList[medianIndexPercent];
+            }
+
+            ctrler.pBlockMedLapTimeList.Add(medianLapTime);
+            ctrler.pBlockMedPercentTrackList.Add(medianPercentOnTrack);
+            ctrler.pBlockTotalDemeritsList.Add(ctrler.currBlockTotalDemerits);
+        }
+       
         float distanceOut = 0;
         float distanceIn = 0;
         for(int i = 0; i<outTrackPath.Count; i ++){
@@ -524,8 +645,8 @@ public class Trails : BaseTask
         ctrler.LogPositionTime("LR_out_track_path", LR_OutPath);
         ctrler.Session.CurrentTrial.result["time_on_track"] = inTrackTime;
         ctrler.Session.CurrentTrial.result["time_out_track"] = outTrackTime;
-        ctrler.Session.CurrentTrial.result["percent_on_track"] = inTrackTime / (inTrackTime + outTrackTime)*100;
-        ctrler.Session.CurrentTrial.result["lap_time"] = outTrackTime + inTrackTime;
+        ctrler.Session.CurrentTrial.result["percent_on_track"] = percentOnTrack;
+        ctrler.Session.CurrentTrial.result["lap_time"] = lapTime;
         // ctrler.LogBoolList("on_track_per_frame_status", onTrackFrameStatus);
 
         ctrler.Session.CurrentTrial.result["demerit_points"] = score;

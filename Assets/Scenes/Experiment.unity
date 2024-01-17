@@ -1650,6 +1650,12 @@ MonoBehaviour:
   room: {fileID: 624970418}
   isPaused: 0
   pauseTimeLength: 10
+  currBlockLapTimeList: []
+  currBlockPercentOnTrackList: []
+  currBlockTotalDemerits: 0
+  pBlockMedLapTimeList: []
+  pBlockMedPercentTrackList: []
+  pBlockTotalDemeritsList: 
 --- !u!114 &1000910855
 MonoBehaviour:
   m_ObjectHideFlags: 0
