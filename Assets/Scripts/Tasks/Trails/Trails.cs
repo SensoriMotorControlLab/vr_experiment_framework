@@ -152,14 +152,15 @@ public class Trails : BaseTask
         * 2: checkered line (line renderer component)
         * 3: trigger (collider component)
         */
-
+        endPoint = ctrler.Session.CurrentBlock.settings.GetFloat("per_block_endPoint");
         startPoint = ctrler.Session.CurrentBlock.settings.GetFloat("per_block_startPoint");
+        bool isInverted = (startPoint > endPoint) ? true : false;
         gatePlacement.SetGatePosition(trailGate1, trailGate1.transform.GetChild(0).gameObject, trailGate1.transform.GetChild(1).gameObject,
-            trailGate1.transform.GetChild(2).GetComponent<LineRenderer>(), trailGate1.transform.GetChild(3).GetComponent<BoxCollider>(), startPoint, roadSegments);
+            trailGate1.transform.GetChild(2).GetComponent<LineRenderer>(), trailGate1.transform.GetChild(3).GetComponent<BoxCollider>(), startPoint, roadSegments, isInverted);
 
         endPoint = ctrler.Session.CurrentBlock.settings.GetFloat("per_block_endPoint");
         gatePlacement.SetGatePosition(trailGate2, trailGate2.transform.GetChild(0).gameObject, trailGate2.transform.GetChild(1).gameObject,
-            trailGate2.transform.GetChild(2).GetComponent<LineRenderer>(), trailGate2.transform.GetChild(3).GetComponent<BoxCollider>(), endPoint, roadSegments);
+            trailGate2.transform.GetChild(2).GetComponent<LineRenderer>(), trailGate2.transform.GetChild(3).GetComponent<BoxCollider>(), endPoint, roadSegments, isInverted);
 
         if(ctrler.GetBestLapTime() != 0){
             lapDiff = ctrler.GetLapDiff();

@@ -79,7 +79,7 @@ public class GatePlacement : MonoBehaviour
 
     }
 
-    public void SetGatePosition(GameObject gateParent, GameObject gate1, GameObject gate2, LineRenderer lr, BoxCollider col, float percent, GameObject track)
+    public void SetGatePosition(GameObject gateParent, GameObject gate1, GameObject gate2, LineRenderer lr, BoxCollider col, float percent, GameObject track, bool isInverted)
     {
         // Detach children
         List<Transform> gateChildren = new List<Transform>();
@@ -131,7 +131,8 @@ public class GatePlacement : MonoBehaviour
 
         // Place collider between gate points
         Vector3 colPos = (gate1.transform.position + gate2.transform.position) / 2;
-        col.transform.position = new Vector3(colPos.x, colPos.y, colPos.z) + (gateParent.transform.forward * 0.5f);
+        float coliderSide = isInverted ? -0.5f : 0.5f;
+        col.transform.position = new Vector3(colPos.x, colPos.y, colPos.z) + (gateParent.transform.forward * coliderSide);
 
         // Reparent to gateParent
         foreach (Transform child in gateChildren)
