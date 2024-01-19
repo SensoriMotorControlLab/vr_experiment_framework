@@ -171,7 +171,7 @@ public class Trails : BaseTask
         // scoreboardInfo.Add("Lap Time", lastLap);
         // scoreboardInfo.Add("Best Lap", bestLap);
         // scoreboardInfo.Add("Lap Diff", lapDiff);
-        // scoreboardInfo.Add("% on track", score.ToString());
+        scoreboardInfo.Add("% on track", score.ToString());
 
         scoreboard.SetElements(scoreboardInfo);
 
@@ -507,8 +507,8 @@ public class Trails : BaseTask
                     car.GetComponent<MeshRenderer>().materials[4].color = Color.yellow;
                 }
                 onTrackFrameStatus.Add(isOnTrack);
-                // scoreboard.SetElement("% on track", (inTrackTime / (inTrackTime + outTrackTime)*100).ToString("0.00"));
-                // scoreboard.SetElement("Lap Time", (outTrackTime + inTrackTime).ToString("0.000"));
+                scoreboard.SetElement("% on track", (inTrackTime / (inTrackTime + outTrackTime)*100).ToString("0.00"));
+                scoreboard.SetElement("Lap Time", (outTrackTime + inTrackTime).ToString("0.000"));
                 break;
             case 2:
                 pitStopTime += Time.deltaTime;
