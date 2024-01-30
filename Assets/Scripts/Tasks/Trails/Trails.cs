@@ -59,17 +59,21 @@ public class Trails : BaseTask
     private float startOcclusionTime, endOcclusionTime, occludedTime;
     private List<bool> onTrackFrameStatus = new List<bool>();
     private List<Vector2> carPath = new List<Vector2>();
-    private List<Vector2> cursorPath = new List<Vector2>();
+    private List<Vector3> cursorPath = new List<Vector3>();
     private List<Vector3> outTrackPath = new List<Vector3>();
     private List<Vector3> inTrackPath = new List<Vector3>();
-    private List<Vector3> RF_InPath = new List<Vector3>();
-    private List<Vector3> RF_OutPath = new List<Vector3>();
-    private List<Vector3> LF_InPath = new List<Vector3>();
-    private List<Vector3> LF_OutPath = new List<Vector3>();
-    private List<Vector3> RR_InPath = new List<Vector3>();
-    private List<Vector3> RR_OutPath = new List<Vector3>();
-    private List<Vector3> LR_InPath = new List<Vector3>();
-    private List<Vector3> LR_OutPath = new List<Vector3>();
+    private List<Vector2> RF_Path = new List<Vector2>();
+    private List<float> RF_OutPathTime = new List<float>();
+    private List<float> RF_InPathTime = new List<float>();
+    private List<Vector2> LF_Path = new List<Vector2>();
+    private List<float> LF_OutPathTime = new List<float>();
+    private List<float> LF_InPathTime = new List<float>();
+    private List<Vector2> RR_Path = new List<Vector2>();
+    private List<float> RR_OutPathTime = new List<float>();
+    private List<float> RR_InPathTime = new List<float>();
+    private List<Vector2> LR_Path = new List<Vector2>();
+    private List<float> LR_OutPathTime = new List<float>();
+    private List<float> LR_InPathTime = new List<float>();
 
     [SerializeField]
     private int score;
@@ -80,7 +84,6 @@ public class Trails : BaseTask
     private string lastLap = "-.--";
     private Dictionary<string, string> scoreboardInfo = new Dictionary<string, string>();
     private bool hasSoundPlayed = false;
-    private bool isRunValid = true;
     private Vector3 carVelocity;
     private Vector3 carPrevPos;
     Quaternion targetRotation;
@@ -349,7 +352,7 @@ public class Trails : BaseTask
 
     public override float GetRotation()
     {
-        return ctrler.Session.CurrentBlock.settings.GetFloat("per_block_rotation");
+        return ctrler.Session.CurrentBlock.settings.GetFloat("per_block_rotated_type");
     }
 
     public void SetOcclusionInfo(bool isOccluded)
@@ -408,36 +411,52 @@ public class Trails : BaseTask
 
                         switch(t.name){
                             case "RF":
-                                RF_OutPath.Add(new Vector3(t.position.x, t.position.z, Time.time));
+                                RF_OutPathTime.Add(Time.time);
                                 break;
                             case "LF":
-                                LF_OutPath.Add(new Vector3(t.position.x, t.position.z, Time.time));
+                                LF_OutPathTime.Add(Time.time);
                                 break;
                             case "RR":
-                                RR_OutPath.Add(new Vector3(t.position.x, t.position.z, Time.time));
+                                RR_OutPathTime.Add(Time.time);
                                 break;
                             case "LR":
-                                LR_OutPath.Add(new Vector3(t.position.x, t.position.z, Time.time));
+                                LR_OutPathTime.Add(Time.time);
                                 break;
                         }
-                        break;
                     }
-                    else{
+                    else
+                    {
                         switch(t.name){
                             case "RF":
-                                RF_InPath.Add(new Vector3(t.position.x, t.position.z, Time.time));
+                                RF_InPathTime.Add(Time.time);
                                 break;
                             case "LF":
-                                LF_InPath.Add(new Vector3(t.position.x, t.position.z, Time.time));
+                                LF_InPathTime.Add(Time.time);
                                 break;
                             case "RR":
-                                RR_InPath.Add(new Vector3(t.position.x, t.position.z, Time.time));
+                                RR_InPathTime.Add(Time.time);
                                 break;
                             case "LR":
-                                LR_InPath.Add(new Vector3(t.position.x, t.position.z, Time.time));
+                                LR_InPathTime.Add(Time.time);
                                 break;
                         }
                     }
+
+                    switch(t.name)
+                    {
+                        case "RF":
+                            RF_Path.Add(new Vector3(t.position.x, t.position.z));
+                            break;
+                        case "LF":
+                            LF_Path.Add(new Vector3(t.position.x, t.position.z));
+                            break;
+                        case "RR":
+                            RR_Path.Add(new Vector3(t.position.x, t.position.z));
+                            break;
+                        case "LR":
+                            LR_Path.Add(new Vector3(t.position.x, t.position.z));
+                            break;
+                        }
                                 
                 }
 
@@ -461,7 +480,7 @@ public class Trails : BaseTask
                 } 
 
                 carPath.Add(new Vector2(car.transform.position.x, car.transform.position.z));
-                cursorPath.Add(new Vector2(mousePoint.x, mousePoint.z));
+                cursorPath.Add(new Vector3(mousePoint.x, mousePoint.z, Time.time));
 
                 foreach (BaseTarget t in midwayTriggers)
                 {
@@ -549,15 +568,6 @@ public class Trails : BaseTask
         {
             case 0:
                 ctrler.StartTimer();
-
-                break;
-            case 1:
-                if (!carPastMidpoint){
-                    trailSpace.GetComponent<AudioSource>().clip = ctrler.AudioClips["incorrect"];
-                    trailSpace.GetComponent<AudioSource>().Play();
-                    isRunValid = false;
-                    return false;
-                }
                 break;
         }
 
@@ -629,21 +639,24 @@ public class Trails : BaseTask
                 distanceIn += Vector3.Distance(inTrackPath[i], inTrackPath[i+1]);
         }
         ctrler.Session.CurrentTrial.result["per_block_type"] = ctrler.Session.CurrentBlock.settings.GetString("per_block_type");
-        ctrler.Session.CurrentTrial.result["is_run_valid"] = isRunValid;
-        ctrler.LogVector2List("cursor_path", cursorPath);
+        ctrler.LogVector3List("cursor_path", cursorPath);
         ctrler.LogVector2List("car_path", carPath);
         ctrler.LogPositionTime("out_track_path", outTrackPath);
         ctrler.Session.CurrentTrial.result["distance_out_track"] = distanceOut;
         ctrler.LogPositionTime("in_track_path", inTrackPath);
         ctrler.Session.CurrentTrial.result["distance_in_track"] = distanceIn;
-        ctrler.LogPositionTime("RF_in_track_path", RF_InPath);
-        ctrler.LogPositionTime("RF_out_track_path", RF_OutPath);
-        ctrler.LogPositionTime("LF_in_track_path", LF_InPath);
-        ctrler.LogPositionTime("LF_out_track_path", LF_OutPath);
-        ctrler.LogPositionTime("RR_in_track_path", RR_InPath);
-        ctrler.LogPositionTime("RR_out_track_path", RR_OutPath);
-        ctrler.LogPositionTime("LR_in_track_path", LR_InPath);
-        ctrler.LogPositionTime("LR_out_track_path", LR_OutPath);
+        ctrler.LogVector2List("RFW_in_track_path", RF_Path);
+        ctrler.LogList("RFW_in_track_time", RF_InPathTime);
+        ctrler.LogList("RFW_out_track_time", RF_OutPathTime);
+        ctrler.LogVector2List("LFW_in_track_path", LF_Path);
+        ctrler.LogList("LFW_in_track_time", LF_InPathTime);
+        ctrler.LogList("LFW_out_track_time", LF_OutPathTime);
+        ctrler.LogVector2List("RRW_in_track_path", RR_Path);
+        ctrler.LogList("RRW_in_track_time", RR_InPathTime);
+        ctrler.LogList("RRW_out_track_time", RR_OutPathTime);
+        ctrler.LogVector2List("LRW_in_track_path", LR_Path);
+        ctrler.LogList("LRW_in_track_time", LR_InPathTime);
+        ctrler.LogList("LRW_out_track_time", LR_OutPathTime);
         ctrler.Session.CurrentTrial.result["time_on_track"] = inTrackTime;
         ctrler.Session.CurrentTrial.result["time_out_track"] = outTrackTime;
         ctrler.Session.CurrentTrial.result["percent_on_track"] = percentOnTrack;
@@ -657,6 +670,7 @@ public class Trails : BaseTask
         ctrler.Session.CurrentTrial.result["occlusion_placement"] = ctrler.Session.CurrentBlock.settings.GetBool("per_block_track_occlusion");
         ctrler.Session.CurrentTrial.result["occluded_time"] = occludedTime;
         ctrler.Session.CurrentTrial.result["pit_stop_time"] = pitStopTime;
+        ctrler.Session.CurrentTrial.result["Track_rotation"] = ctrler.Session.CurrentBlock.settings.GetFloat("per_block_track_rotation");
 
     }
 

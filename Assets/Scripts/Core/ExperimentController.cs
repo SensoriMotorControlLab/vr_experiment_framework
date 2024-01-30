@@ -911,6 +911,12 @@ public class ExperimentController : MonoBehaviour
             string.Join(",", list.Select(i => string.Format($"{i.z:F6}")));
     }
 
+    public void LogList(string key, List<float> list)
+    {
+        Session.CurrentTrial.result[key] =
+            string.Join(",", list.Select(i => string.Format($"{i}")));
+    }
+
     public void LogPositionTime(string key, List<Vector3> positions)
     {
         var list = positions;
