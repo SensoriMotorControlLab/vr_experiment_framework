@@ -234,8 +234,8 @@ public class Trails : BaseTask
             trailGate2.transform.localScale = new Vector3(-1,1,1);
             track.transform.localScale = new Vector3(-1,1,1);
         }
-        if(ctrler.Session.CurrentBlock.settings.GetFloat("per_block_track_rotation") != 0){
-            track.transform.Rotate(0,ctrler.Session.CurrentBlock.settings.GetFloat("per_block_track_rotation"),0);
+        if(ctrler.Session.CurrentBlock.settings.GetFloat("per_block_track_orientation") != 0){
+            track.transform.Rotate(0,ctrler.Session.CurrentBlock.settings.GetFloat("per_block_track_orientation"),0);
         }
         
         car.transform.position = trailGate1.transform.position;
@@ -352,7 +352,7 @@ public class Trails : BaseTask
 
     public override float GetRotation()
     {
-        return ctrler.Session.CurrentBlock.settings.GetFloat("per_block_rotated_type");
+        return ctrler.Session.CurrentBlock.settings.GetFloat("per_block_rotation");
     }
 
     public void SetOcclusionInfo(bool isOccluded)
@@ -670,7 +670,7 @@ public class Trails : BaseTask
         ctrler.Session.CurrentTrial.result["occlusion_placement"] = ctrler.Session.CurrentBlock.settings.GetBool("per_block_track_occlusion");
         ctrler.Session.CurrentTrial.result["occluded_time"] = occludedTime;
         ctrler.Session.CurrentTrial.result["pit_stop_time"] = pitStopTime;
-        ctrler.Session.CurrentTrial.result["Track_rotation"] = ctrler.Session.CurrentBlock.settings.GetFloat("per_block_track_rotation");
+        ctrler.Session.CurrentTrial.result["Track_orientation"] = ctrler.Session.CurrentBlock.settings.GetFloat("per_block_track_orientation");
 
     }
 
