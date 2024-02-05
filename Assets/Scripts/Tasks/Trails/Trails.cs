@@ -65,15 +65,19 @@ public class Trails : BaseTask
     private List<Vector2> RF_Path = new List<Vector2>();
     private List<float> RF_OutPathTime = new List<float>();
     private List<float> RF_InPathTime = new List<float>();
+    private bool RF_InTrack = true;
     private List<Vector2> LF_Path = new List<Vector2>();
     private List<float> LF_OutPathTime = new List<float>();
     private List<float> LF_InPathTime = new List<float>();
+    private bool LF_InTrack = true;
     private List<Vector2> RR_Path = new List<Vector2>();
     private List<float> RR_OutPathTime = new List<float>();
     private List<float> RR_InPathTime = new List<float>();
+    private bool RR_InTrack = true;
     private List<Vector2> LR_Path = new List<Vector2>();
     private List<float> LR_OutPathTime = new List<float>();
     private List<float> LR_InPathTime = new List<float>();
+    private bool LR_InTrack = true;
 
     [SerializeField]
     private int score;
@@ -411,16 +415,28 @@ public class Trails : BaseTask
 
                         switch(t.name){
                             case "RF":
-                                RF_OutPathTime.Add(Time.time);
+                                if(RF_InTrack){
+                                    RF_InTrack = false;
+                                    RF_OutPathTime.Add(Time.time);
+                                }
                                 break;
                             case "LF":
-                                LF_OutPathTime.Add(Time.time);
+                                if(LF_InTrack){
+                                    LF_InTrack = false;
+                                    LF_OutPathTime.Add(Time.time);
+                                }
                                 break;
                             case "RR":
-                                RR_OutPathTime.Add(Time.time);
+                                if(RR_InTrack){
+                                    RR_InTrack = false;
+                                    RR_OutPathTime.Add(Time.time);
+                                }
                                 break;
                             case "LR":
-                                LR_OutPathTime.Add(Time.time);
+                                if(LR_InTrack){
+                                    LR_InTrack = false;
+                                    LR_OutPathTime.Add(Time.time);
+                                }
                                 break;
                         }
                     }
@@ -428,16 +444,28 @@ public class Trails : BaseTask
                     {
                         switch(t.name){
                             case "RF":
-                                RF_InPathTime.Add(Time.time);
+                                if(!RF_InTrack){
+                                    RF_InTrack = true;
+                                    RF_InPathTime.Add(Time.time);
+                                }
                                 break;
                             case "LF":
-                                LF_InPathTime.Add(Time.time);
+                                if(!LF_InTrack){
+                                    LF_InTrack = true;
+                                    LF_InPathTime.Add(Time.time);
+                                }
                                 break;
                             case "RR":
-                                RR_InPathTime.Add(Time.time);
+                                if(!RR_InTrack){
+                                    RR_InTrack = true;
+                                    RR_InPathTime.Add(Time.time);
+                                }
                                 break;
                             case "LR":
-                                LR_InPathTime.Add(Time.time);
+                                if(!LR_InTrack){
+                                    LR_InTrack = true;
+                                    LR_InPathTime.Add(Time.time);
+                                }
                                 break;
                         }
                     }
@@ -638,6 +666,7 @@ public class Trails : BaseTask
             if(i+1 < inTrackPath.Count)
                 distanceIn += Vector3.Distance(inTrackPath[i], inTrackPath[i+1]);
         }
+
         ctrler.Session.CurrentTrial.result["per_block_type"] = ctrler.Session.CurrentBlock.settings.GetString("per_block_type");
         ctrler.LogVector3List("cursor_path", cursorPath);
         ctrler.LogVector2List("car_path", carPath);
@@ -645,16 +674,16 @@ public class Trails : BaseTask
         ctrler.Session.CurrentTrial.result["distance_out_track"] = distanceOut;
         ctrler.LogPositionTime("in_track_path", inTrackPath);
         ctrler.Session.CurrentTrial.result["distance_in_track"] = distanceIn;
-        ctrler.LogVector2List("RFW_in_track_path", RF_Path);
+        ctrler.LogVector2List("RFW_path", RF_Path);
         ctrler.LogList("RFW_in_track_time", RF_InPathTime);
         ctrler.LogList("RFW_out_track_time", RF_OutPathTime);
-        ctrler.LogVector2List("LFW_in_track_path", LF_Path);
+        ctrler.LogVector2List("LFW_path", LF_Path);
         ctrler.LogList("LFW_in_track_time", LF_InPathTime);
         ctrler.LogList("LFW_out_track_time", LF_OutPathTime);
-        ctrler.LogVector2List("RRW_in_track_path", RR_Path);
+        ctrler.LogVector2List("RRW_path", RR_Path);
         ctrler.LogList("RRW_in_track_time", RR_InPathTime);
         ctrler.LogList("RRW_out_track_time", RR_OutPathTime);
-        ctrler.LogVector2List("LRW_in_track_path", LR_Path);
+        ctrler.LogVector2List("LRW_path", LR_Path);
         ctrler.LogList("LRW_in_track_time", LR_InPathTime);
         ctrler.LogList("LRW_out_track_time", LR_OutPathTime);
         ctrler.Session.CurrentTrial.result["time_on_track"] = inTrackTime;
