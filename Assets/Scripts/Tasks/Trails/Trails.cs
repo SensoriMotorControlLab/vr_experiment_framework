@@ -61,6 +61,8 @@ public class Trails : BaseTask
     private List<Vector2> carPath = new List<Vector2>();
     private List<Vector3> cursorPath = new List<Vector3>();
     private List<Vector3> outTrackPath = new List<Vector3>();
+    private List<float> outTrackPathTime = new List<float>();
+    private List<float> inTrackPathTime = new List<float>();
     private List<Vector3> inTrackPath = new List<Vector3>();
     private List<Vector2> RF_Path = new List<Vector2>();
     private List<float> RF_OutPathTime = new List<float>();
@@ -78,6 +80,7 @@ public class Trails : BaseTask
     private List<float> LR_OutPathTime = new List<float>();
     private List<float> LR_InPathTime = new List<float>();
     private bool LR_InTrack = true;
+    private List<float> carAngle = new List<float>();
 
     [SerializeField]
     private int score;
@@ -351,6 +354,25 @@ public class Trails : BaseTask
         else
             GridLayout.SetActive(false);
 
+        foreach (Transform t in raycastOrigins)
+        {
+            switch(t.name)
+            {
+                case "RF":
+                    RF_Path.Add(new Vector2(t.localPosition.x, t.localPosition.z));
+                    break;
+                case "LF":
+                    LF_Path.Add(new Vector2(t.localPosition.x, t.localPosition.z));
+                    break;
+                case "RR":
+                    RR_Path.Add(new Vector2(t.localPosition.x, t.localPosition.z));
+                    break;
+                case "LR":
+                    LR_Path.Add(new Vector2(t.localPosition.x, t.localPosition.z));
+                    break;
+            }
+        }
+
 
     }
 
@@ -405,6 +427,8 @@ public class Trails : BaseTask
                     targetRotation = Quaternion.LookRotation(carVelocity.normalized) * Quaternion.Euler(0, -90, 0);
                     car.transform.rotation = Quaternion.Slerp(car.transform.rotation, targetRotation, turnRatio);
                 }
+
+                carAngle.Add(360 - car.transform.eulerAngles.y);
 
                 // Use raycasts to determine if car is on track
                 foreach (Transform t in raycastOrigins)
@@ -469,22 +493,6 @@ public class Trails : BaseTask
                                 break;
                         }
                     }
-
-                    switch(t.name)
-                    {
-                        case "RF":
-                            RF_Path.Add(new Vector3(t.position.x, t.position.z));
-                            break;
-                        case "LF":
-                            LF_Path.Add(new Vector3(t.position.x, t.position.z));
-                            break;
-                        case "RR":
-                            RR_Path.Add(new Vector3(t.position.x, t.position.z));
-                            break;
-                        case "LR":
-                            LR_Path.Add(new Vector3(t.position.x, t.position.z));
-                            break;
-                        }
                                 
                 }
 
@@ -666,26 +674,39 @@ public class Trails : BaseTask
             if(i+1 < inTrackPath.Count)
                 distanceIn += Vector3.Distance(inTrackPath[i], inTrackPath[i+1]);
         }
+        outTrackPathTime.AddRange(RF_OutPathTime);
+        outTrackPathTime.AddRange(LF_OutPathTime);
+        outTrackPathTime.AddRange(RR_OutPathTime);
+        outTrackPathTime.AddRange(LR_OutPathTime);
+        outTrackPathTime.Sort();
+
+        inTrackPathTime.AddRange(RF_InPathTime);
+        inTrackPathTime.AddRange(LF_InPathTime);
+        inTrackPathTime.AddRange(RR_InPathTime);
+        inTrackPathTime.AddRange(LR_InPathTime);
+        inTrackPathTime.Sort();
+
 
         ctrler.Session.CurrentTrial.result["per_block_type"] = ctrler.Session.CurrentBlock.settings.GetString("per_block_type");
-        ctrler.LogVector3List("cursor_path", cursorPath);
+        ctrler.LogPositionTime("cursor_path", cursorPath);
         ctrler.LogVector2List("car_path", carPath);
-        ctrler.LogPositionTime("out_track_path", outTrackPath);
+        ctrler.LogList("car_angle", carAngle);
+        ctrler.LogList("Exit_track_time", outTrackPathTime);
         ctrler.Session.CurrentTrial.result["distance_out_track"] = distanceOut;
-        ctrler.LogPositionTime("in_track_path", inTrackPath);
+        ctrler.LogList("Enter_track_Time", inTrackPathTime);
         ctrler.Session.CurrentTrial.result["distance_in_track"] = distanceIn;
-        ctrler.LogVector2List("RFW_path", RF_Path);
-        ctrler.LogList("RFW_in_track_time", RF_InPathTime);
-        ctrler.LogList("RFW_out_track_time", RF_OutPathTime);
-        ctrler.LogVector2List("LFW_path", LF_Path);
-        ctrler.LogList("LFW_in_track_time", LF_InPathTime);
-        ctrler.LogList("LFW_out_track_time", LF_OutPathTime);
-        ctrler.LogVector2List("RRW_path", RR_Path);
-        ctrler.LogList("RRW_in_track_time", RR_InPathTime);
-        ctrler.LogList("RRW_out_track_time", RR_OutPathTime);
-        ctrler.LogVector2List("LRW_path", LR_Path);
-        ctrler.LogList("LRW_in_track_time", LR_InPathTime);
-        ctrler.LogList("LRW_out_track_time", LR_OutPathTime);
+        ctrler.LogVector2List("RFW_offset", RF_Path);
+        ctrler.LogList("RFW_enter_track_time", RF_InPathTime);
+        ctrler.LogList("RFW_exit_track_time", RF_OutPathTime);
+        ctrler.LogVector2List("LFW_offset", LF_Path);
+        ctrler.LogList("LFW_enter_track_time", LF_InPathTime);
+        ctrler.LogList("LFW_exit_track_time", LF_OutPathTime);
+        ctrler.LogVector2List("RRW_offset", RR_Path);
+        ctrler.LogList("RRW_enter_track_time", RR_InPathTime);
+        ctrler.LogList("RRW_exit_track_time", RR_OutPathTime);
+        ctrler.LogVector2List("LRW_offset", LR_Path);
+        ctrler.LogList("LRW_enter_track_time", LR_InPathTime);
+        ctrler.LogList("LRW_exit_track_time", LR_OutPathTime);
         ctrler.Session.CurrentTrial.result["time_on_track"] = inTrackTime;
         ctrler.Session.CurrentTrial.result["time_out_track"] = outTrackTime;
         ctrler.Session.CurrentTrial.result["percent_on_track"] = percentOnTrack;

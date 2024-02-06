@@ -927,7 +927,7 @@ public class ExperimentController : MonoBehaviour
         Session.CurrentTrial.result[key + "_x"] =
             string.Join(",", list.Select(i => string.Format($"{i.x:F6}")));
 
-        Session.CurrentTrial.result[key + "_y"] =
+        Session.CurrentTrial.result[key + "_z"] =
             string.Join(",", list.Select(i => string.Format($"{i.y:F6}")));
 
         Session.CurrentTrial.result[key + "Time"] =
