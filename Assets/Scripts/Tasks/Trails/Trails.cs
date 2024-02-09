@@ -686,7 +686,11 @@ public class Trails : BaseTask
         inTrackPathTime.AddRange(LR_InPathTime);
         inTrackPathTime.Sort();
 
-
+        ctrler.Session.CurrentTrial.result["Track_mirror"] = ctrler.Session.CurrentBlock.settings.GetFloat("per_block_track_mirror");
+        ctrler.Session.CurrentTrial.result["Track_orientation"] = ctrler.Session.CurrentBlock.settings.GetFloat("per_block_track_orientation");
+        ctrler.Session.CurrentTrial.result["demerit_points"] = score;
+        ctrler.Session.CurrentTrial.result["start_gate_placement"] = startPoint;
+        ctrler.Session.CurrentTrial.result["end_gate_placement"] = endPoint;
         ctrler.Session.CurrentTrial.result["per_block_type"] = ctrler.Session.CurrentBlock.settings.GetString("per_block_type");
         ctrler.LogPositionTime("cursor_path", cursorPath);
         ctrler.LogVector2List("car_path", carPath);
@@ -712,15 +716,9 @@ public class Trails : BaseTask
         ctrler.Session.CurrentTrial.result["percent_on_track"] = percentOnTrack;
         ctrler.Session.CurrentTrial.result["lap_time"] = lapTime;
         // ctrler.LogBoolList("on_track_per_frame_status", onTrackFrameStatus);
-
-        ctrler.Session.CurrentTrial.result["demerit_points"] = score;
-
-        ctrler.Session.CurrentTrial.result["start_gate_placement"] = startPoint;
-        ctrler.Session.CurrentTrial.result["end_gate_placement"] = endPoint;
         ctrler.Session.CurrentTrial.result["occlusion_placement"] = ctrler.Session.CurrentBlock.settings.GetBool("per_block_track_occlusion");
         ctrler.Session.CurrentTrial.result["occluded_time"] = occludedTime;
         ctrler.Session.CurrentTrial.result["pit_stop_time"] = pitStopTime;
-        ctrler.Session.CurrentTrial.result["Track_orientation"] = ctrler.Session.CurrentBlock.settings.GetFloat("per_block_track_orientation");
 
     }
 
