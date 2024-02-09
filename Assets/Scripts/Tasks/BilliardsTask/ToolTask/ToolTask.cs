@@ -433,7 +433,7 @@ public class ToolTask : BilliardsTask
                 break;
         }
 
-                Debug.Log("current step: " + currentStep);
+                //Debug.Log("current step: " + currentStep);
         return base.IncrementStep();
     }
 

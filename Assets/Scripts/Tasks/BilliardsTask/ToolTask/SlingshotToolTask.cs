@@ -7,8 +7,11 @@ public class SlingshotToolTask : ToolTask
 {
     Vector3 pos = new Vector3();
     private Vector3 ball_start_pos;
-    private Vector3 shotDir;
+    private Vector3 shotDir = Vector3.zero;
+    private float pullDistance = 0.0f;
+    private const float MAX_PULL_DISTANCE = 0.25f;
     private bool fired;
+    private bool held = false;
 
     public override void Setup()
     {
@@ -72,8 +75,16 @@ public class SlingshotToolTask : ToolTask
         // record and apply launch velocity
         launchAngle = Vector2.SignedAngle(new Vector2(1f, 0f), new Vector2(shotDir.x, shotDir.z));
 
+        /*
+        Debug.Log("SHOT DIR " + shotDir);
+        Debug.Log("PULL DISTANCE " + pullDistance);
+        Debug.Log("MAX PULLs DISTANCE " + MAX_PULL_DISTANCE);
+        Debug.Log("PERCENT FORCE " + pullDistance/MAX_PULL_DISTANCE);
+        Debug.Log("CLAMPED PERCENT FORCE " + Mathf.Clamp(pullDistance / MAX_PULL_DISTANCE, 0.0f, 1.0f));
+        */
+
         // run the FireBilliadsBall function from the BilliardsBallBehaviour script
-        baseObject.GetComponent<BilliardsBallBehaviour>().FireBilliardsBall(shotDir, FIRE_FORCE);
+        baseObject.GetComponent<BilliardsBallBehaviour>().FireBilliardsBall(shotDir, FIRE_FORCE * Mathf.Clamp((pullDistance/MAX_PULL_DISTANCE), 0.0f, 1.0f));
 
         IncrementStep();
     }
@@ -83,8 +94,8 @@ public class SlingshotToolTask : ToolTask
     /// </summary>
     protected void SetElastic()
     {
-        elasticL.SetPosition(1, selectedObject.transform.GetChild(0).gameObject.transform.position);
-        elasticR.SetPosition(1, selectedObject.transform.GetChild(1).gameObject.transform.position);
+        elasticL.SetPosition(1, selectedObject.transform.GetChild(1).gameObject.transform.position);
+        elasticR.SetPosition(1, selectedObject.transform.GetChild(0).gameObject.transform.position);
     }
 
     // Update is called once per frame
@@ -111,6 +122,7 @@ public class SlingshotToolTask : ToolTask
                 // grab object
                 if (Vector3.Distance(mousePoint, toolObjects.transform.position) <= 0.07f && (Input.GetMouseButton(0) || ctrler.CursorController.IsTriggerDown()))
                 {
+                    held = true;
                     VibrateController(0, 0.34f, Time.deltaTime, devices);
                     toolOffset = mousePoint - toolObjects.transform.position;
                     IncrementStep();
@@ -121,12 +133,30 @@ public class SlingshotToolTask : ToolTask
 
             // the user triggers the object 
             case 1:
+                held = Input.GetMouseButton(0) || ctrler.CursorController.IsTriggerDown();
+
+                if (held)
+                {
+                    pullDistance = Vector3.Distance(mousePoint, ball_start_pos);
+                }
+
+                Vector3 vec = Vector3.ClampMagnitude(mousePoint, MAX_PULL_DISTANCE);
+                vec.y = mousePoint.y;
+
                 //as long as the ball is not fired the slingshot and ball will follow the mouse or vr controller
                 if (!fired)
                 {
+                    Vector3 oldMousePoint = mousePoint;
+                    mousePoint = vec;
+
                     BallFollowMouse(baseObject, toolOffset);
+                    //baseObject.transform.position = vec - toolOffset;
                     ObjectFollowMouse(toolObjects, toolOffset);
+
+
+                    mousePoint = oldMousePoint;
                 }
+                /*
                 else
                 {
                     // previously in case 2 (can take out of there maybe)
@@ -139,7 +169,7 @@ public class SlingshotToolTask : ToolTask
                     {
                         toolObjects.transform.position = Home.transform.position;
                     }
-                }
+                }*/
 
                 // CHECK: what is this being used for?
                 float time = 0f;
@@ -187,11 +217,11 @@ public class SlingshotToolTask : ToolTask
         }
 
         // fire condition (when we reach a threshold)
-        if (Vector3.Distance(slingShotBall.transform.position, Home.transform.position) > 0.17f && !fired)
+        if (!fired && !held)
         {
             VibrateController(0, 1f, Time.deltaTime * 4, devices);
-            shotDir = Home.transform.position - mousePoint;
-            shotDir /= time;
+            shotDir = Home.transform.position - toolObjects.transform.position;
+            shotDir /= Time.fixedDeltaTime;
 
             //baseObject.GetComponent<Rigidbody>().velocity = shotDir * 0.2f;
             pos = toolObjects.transform.position;
