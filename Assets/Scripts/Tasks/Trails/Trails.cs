@@ -237,9 +237,9 @@ public class Trails : BaseTask
         
         //check if mirror on JSON is TRUE and mirror the track on the z-axis and changes the position and rotation of the gates so the track still runs clockwise
         if(ctrler.Session.CurrentBlock.settings.GetBool("per_block_track_mirror")){
-            trailGate1.transform.localScale = new Vector3(-1,1,1);
-            trailGate2.transform.localScale = new Vector3(-1,1,1);
-            track.transform.localScale = new Vector3(-1,1,1);
+            trailGate1.transform.localScale = new Vector3(1,1,-1);
+            trailGate2.transform.localScale = new Vector3(1,1,-1);
+            track.transform.localScale = new Vector3(1,1,-1);
         }
         if(ctrler.Session.CurrentBlock.settings.GetFloat("per_block_track_orientation") != 0){
             track.transform.Rotate(0,ctrler.Session.CurrentBlock.settings.GetFloat("per_block_track_orientation"),0);

@@ -165,7 +165,7 @@ namespace UXF
         /// <summary>
         /// Settings for the experiment. These are provided on initialisation of the session.
         /// </summary>
-        public Settings settings { get; private set; }
+        public Settings settings { get; set; }
 
         /// <summary>
         /// Returns true if current trial is in progress
