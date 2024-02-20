@@ -94,6 +94,7 @@ public class Trails : BaseTask
     private Vector3 carVelocity;
     private Vector3 carPrevPos;
     Quaternion targetRotation;
+    bool wasOutOfTrack = false;
 
     /*
      * Step 0: 
@@ -505,11 +506,18 @@ public class Trails : BaseTask
                         score++;
                         scoreboard.SetElement("Demerit Points", score.ToString());
                         hasSoundPlayed = true;
+                        outTrackPathTime.Add(Time.time);
+                        wasOutOfTrack = true;
                     }
                     outTrackPath.Add(new Vector3(car.transform.position.x, car.transform.position.z, Time.time));
                 }
                 else
                 {
+                    if(wasOutOfTrack)
+                    {
+                        inTrackPathTime.Add(Time.time);
+                        wasOutOfTrack = false;
+                    }
                     car.GetComponent<MeshRenderer>().materials[4].color = Color.white;
                     inTrackPath.Add(new Vector3(car.transform.position.x, car.transform.position.z, Time.time));
                     hasSoundPlayed = false;
@@ -674,17 +682,6 @@ public class Trails : BaseTask
             if(i+1 < inTrackPath.Count)
                 distanceIn += Vector3.Distance(inTrackPath[i], inTrackPath[i+1]);
         }
-        outTrackPathTime.AddRange(RF_OutPathTime);
-        outTrackPathTime.AddRange(LF_OutPathTime);
-        outTrackPathTime.AddRange(RR_OutPathTime);
-        outTrackPathTime.AddRange(LR_OutPathTime);
-        outTrackPathTime.Sort();
-
-        inTrackPathTime.AddRange(RF_InPathTime);
-        inTrackPathTime.AddRange(LF_InPathTime);
-        inTrackPathTime.AddRange(RR_InPathTime);
-        inTrackPathTime.AddRange(LR_InPathTime);
-        inTrackPathTime.Sort();
 
         ctrler.Session.CurrentTrial.result["Track_mirror"] = ctrler.Session.CurrentBlock.settings.GetFloat("per_block_track_mirror");
         ctrler.Session.CurrentTrial.result["Track_orientation"] = ctrler.Session.CurrentBlock.settings.GetFloat("per_block_track_orientation");
