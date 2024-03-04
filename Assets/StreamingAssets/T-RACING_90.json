@@ -1,0 +1,39 @@
+{
+  "session_1": {
+    "optional_params": [],
+    "experiment_mode": "trail",
+    "exp_record_score": true,
+    "per_block_n": [ 30, 30, 30, 30, 30, 30, 30, 30, 30, 30 ],
+    "per_block_hand": [ "r", "r", "r", "r", "r","r", "r", "r", "r", "r" ],
+    "per_block_type": [ "aligned", "aligned", "aligned", "aligned", "aligned", "aligned", "aligned", "aligned", "aligned", "aligned" ],
+    "per_block_instruction": [ "ins1", null, "ins3", "ins4", "ins5", "ins1", null, "ins3", "ins4", "ins5"  ],
+    "per_block_track_score": [ true, true, true, true, true, true, true, true, true, true ],
+    "per_block_timerTime": [ 1, 1, 1 , 1, 1, 1, 1, 1 , 1, 1 ],
+    "per_block_startPoint": [ 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5 ], 
+    "per_block_endPoint": [ 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4  ],
+    "per_block_occlusion_location":[0.9, 0.3, 0.75, 0.25, 0.9, 0.9, 0.3, 0.75, 0.25, 0.9],
+    "per_block_track_orientation": [ 90, 90, 90 , 90, 90, 90, 90, 90 , 90, 90  ],
+    "per_block_track_mirror":[false, false, false, false, false, false, false, false, false, false],
+    "per_block_track_occlusion": [false, false, false, false, false, false, false, false, false, false],
+    "per_block_rotation": [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+  }, 
+  "session_2": {
+    "optional_params": [],
+    "experiment_mode": "trail",
+    "exp_record_score": true,
+    "per_block_n": [ 30, 30, 30, 30 ],
+    "per_block_hand": [ "r", "r", "r", "r" ],
+    "per_block_type": [ "rotated", "aligned", "aligned", "aligned" ],
+    "per_block_instruction": [ "ins1", null, "ins3", "ins4" ],
+    "per_block_track_score": [ true, true, true, true ],
+    "per_block_timerTime": [ 1, 1, 1 , 1 ],
+    "per_block_startPoint": [ 0.5, 0.5, 0.5, 0.5], 
+    "per_block_endPoint": [  0.4, 0.4, 0.4, 0.4 ],
+    "per_block_occlusion_location":[0.9, 0.3, 0.75, 0.25],
+    "per_block_track_orientation": [ 90, 270, 0 , 90 ],
+    "per_block_track_mirror":[false, false, true, false],
+    "per_block_track_occlusion": [false, false, false, false],
+    "per_block_rotation": [ 0, 0, 0, 0]
+  }
+
+}

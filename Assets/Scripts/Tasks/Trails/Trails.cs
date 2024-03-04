@@ -178,7 +178,7 @@ public class Trails : BaseTask
             bestLap = ctrler.GetBestLapTime().ToString("0.000");
             lastLap = ctrler.GetLastLapTime().ToString("0.000");
         }
-        scoreboardInfo.Add("Lap: ", ctrler.Session.currentTrialNum.ToString() + "/" + ExperimentController.Instance().Session.Trials.Count().ToString());
+        scoreboardInfo.Add("Lap ", ctrler.Session.currentTrialNum.ToString() + "/" + ExperimentController.Instance().Session.Trials.Count().ToString());
         scoreboardInfo.Add("Demerit Points", score.ToString());
         // scoreboardInfo.Add("Lap Time", lastLap);
         // scoreboardInfo.Add("Best Lap", bestLap);
