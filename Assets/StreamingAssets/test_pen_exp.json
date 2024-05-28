@@ -1,14 +1,12 @@
 {
   "experiment_mode": "targetTrack",
-  "optional_params": [
-    "vr"
-  ],
+  "optional_params": [],
   "track_score": true,
   "per_block_type": [
     "instruction",
     "aligned",
     "instruction",
-    "localization",
+    "rotated",
     "instruction",
     "nocursor",
     "instruction",
@@ -58,7 +56,7 @@
     null,
     null,
     null,
-    null,
+    "br1",
     null,
     null,
     null,
@@ -156,9 +154,9 @@
   ],
   "per_block_n": [
     1,
-    16,
+    4,
     1,
-    8,
+    16,
     1,
     8,
     1,
@@ -308,7 +306,7 @@
     null,
     "tl2",
     null,
-    "tl1",
+    "tl2",
     null,
     "tl2",
     null,
@@ -706,7 +704,7 @@
     1
   ],
   "br1": [
-    30,
-    30
+    45,
+    45
   ]
 }
