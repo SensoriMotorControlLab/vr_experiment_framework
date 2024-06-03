@@ -5,49 +5,50 @@
   
     "exp_record_score": true,
   
-    "per_block_type": [ "aligned", "aligned", "aligned" ],
+    "per_block_type": [ "aligned", "aligned", "aligned", "aligned", "rotated", "rotated", "rotated", "rotated", "aligned", "aligned" ],
   
-    "per_block_rotation": [ 45, 45, 45 ],
+    "per_block_rotation": [ 30, 30, 30, 30, 30, -30, 30, -30, 0, 0 ],
   
-    "per_block_n": [ 3, 3, 3 ],
+    "per_block_n": [ 4, 4, 4,4,4,4,4,4, 4,4],
   
-    "per_block_hand": [ "r", "r", "r" ],
+    "per_block_hand": [ "r", "r", "r", "r", "r", "r", "r", "r", "r", "r" ],
   
-    "per_block_targetListToUse": [ "tl2", "tl2", "tl1" ],
+    "per_block_targetListToUse": [ "tl2", "tl2", "tl2", "tl2", "tl2", "tl2","tl2", "tl2", "tl2", "tl2" ],
   
-    "tl2": [ 80, 90, 100 ],
+    "tl2": [ 85, 95, 105, 115 ],
     "tl1": [ 30, 45, 60 ],
   
-    "per_block_visual_feedback": [ true, true, true ],
+    "per_block_visual_feedback": [ true, true, true, true, true, true, true, true, true, true ],
   
-    "per_block_surface_materials": [ "fabric", "default", "ice" ],
+    "per_block_surface_materials": [ "fabric", "fabric", "fabric", "fabric", "ice", "ice", "ice","ice",  "fabric", "fabric" ],
   
-    "per_block_list_triggerType": [ "tt1", "tt1", "tt1" ],
+    "per_block_list_triggerType": [ "tt2", "tt1", "tt2", "tt1", "tt2", "tt1", "tt2", "tt1", "tt2", "tt1"],
   
-    "tt1": [ "curling", "curling", "curling" ],
+    "tt1": ["curling", "curling", "curling",  "curling", "curling", "curling",  "curling", "curling", "curling",  "curling"],
+    "tt2": [ "impact", "impact", "impact",  "impact", "impact", "impact",  "impact", "impact", "impact",  "impact"],
   
-    "per_block_list_puck_type": [ "pt1", "pt1", "pt1" ],
+    "per_block_list_puck_type": [ "pt1", "pt1", "pt1", "pt1", "pt1", "pt1", "pt1", "pt1", "pt1", "pt1" ],
   
-    "pt1": [ "ball", "ball", "ball"],
+    "pt1": [ "ball", "ball", "ball",  "ball", "ball", "ball",  "ball", "ball", "ball", "ball"],
   
-    "per_block_list_tool_type": [ "tT", "tT", "tT" ],
+    "per_block_list_tool_type": [ "tT2", "tT", "tT2", "tT", "tT2", "tT", "tT2", "tT", "tT2", "tT" ],
   
-    "tT": [ "squeegee", "squeegee", "squeegee" ],
+    "tT": [ "squeegee", "squeegee", "squeegee",  "squeegee", "squeegee", "squeegee",  "squeegee", "squeegee", "squeegee",  "squeegee" ],
+    "tT2": [ "paddle", "paddle", "paddle",  "paddle", "paddle", "paddle",  "paddle", "paddle", "paddle",  "paddle" ],
+    "per_block_surface_dynamic_friction": [ 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1 ],
+    "per_block_surface_static_friction": [ 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1 ],
   
-    "per_block_surface_dynamic_friction": [ 0.1, 0.1, 0.1 ],
-    "per_block_surface_static_friction": [ 0.1, 0.1, 0.1 ],
+    "per_block_tool_dynamic_friction": [ 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3 ],
+    "per_block_tool_static_friction": [ 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3 ],
   
-    "per_block_tool_dynamic_friction": [ 0.3, 0.3, 0.3 ],
-    "per_block_tool_static_friction": [ 0.3, 0.3, 0.3 ],
+    "per_block_track_score": [ true, true, true, true, true, true, true, true, true, true ],
+    "per_block_timerTime": [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 ],
   
-    "per_block_track_score": [ true, true, true ],
-    "per_block_timerTime": [ 2, 2, 2 ],
+    "per_block_tilt_after_fire": [ false, false, false, false, false, false, false, false, false, false],
+    "per_block_list_camera_tilt": [ null, null, null, null, null, null, null, null, null, null ],
+    "per_block_list_surface_tilt": [ null, null, null, null, null, null, null, null, null, null],
   
-    "per_block_tilt_after_fire": [ false, false, false],
-    "per_block_list_camera_tilt": [ null, null, null],
-    "per_block_list_surface_tilt": [ null, null, null],
-  
-    "ct1": [ -2, 0, 2],
+    "ct1": [ -2, 0, 2, 0],
     "ct2": [ 0 ],
     "st1": [0, 0, 0]
   }
