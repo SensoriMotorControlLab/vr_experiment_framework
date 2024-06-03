@@ -1,9 +1,10 @@
 {
     "experiment_mode": "tool_vr",
+"optional_params":[],
     "exp_record_score": true,
     "per_block_type": [
-        "aligned",
-        "aligned",
+        "rotated",
+        "rotated",
         "instruction",
         "aligned",
         "aligned",
@@ -53,8 +54,8 @@
         "rotated"
     ],
     "per_block_rotation": [
-        0,
-        0,
+        30,
+        -30,
         0,
         0,
         0,
@@ -104,8 +105,8 @@
         -30
     ],
     "per_block_n": [
-       24,
-       24,
+       5,
+       5,
         1,
         8,
         8,
@@ -428,10 +429,10 @@
         "impact"
     ],
     "tt_s": [
-        "slingshot",
-        "slingshot",
-        "slingshot",
-        "slingshot"
+        "curling",
+        "curling",
+        "curling",
+        "curling"
     ],
     "per_block_list_puck_type": [
         "pt1",
@@ -548,10 +549,10 @@
         "paddle"
     ],
     "tType_s": [
-        "slingshot",
-        "slingshot",
-        "slingshot",
-        "slingshot"
+        "squeegee",
+        "squeegee",
+        "squeegee",
+        "squeegee"
     ],
     "per_block_surface_dynamic_friction": [
         0.1,
