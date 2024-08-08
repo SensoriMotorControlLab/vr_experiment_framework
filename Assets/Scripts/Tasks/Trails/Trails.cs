@@ -139,6 +139,7 @@ public class Trails : BaseTask
         GridLayout = GameObject.Find("GridLayoutGroup");
 
         Home = trailGate1;
+        track.transform.GetChild(0).gameObject.GetComponent<TrackWidth>().ThinTrack();
 
         switch(ctrler.Session.CurrentBlock.settings.GetString("per_block_type")){
             case "aligned":
@@ -433,63 +434,66 @@ public class Trails : BaseTask
                 foreach (Transform t in raycastOrigins)
                 {
                     // if any rays don't hit a collider, then the car is at least partially off the track 
-                    if (!Physics.Raycast(t.position, t.TransformDirection(Vector3.down)) || t.transform.tag == "Grass"){
-                        isOnTrack = false;
+                    if (Physics.Raycast(t.position, t.TransformDirection(Vector3.down), out RaycastHit hit)){
 
-                        switch(t.name){
-                            case "RF":
-                                if(RF_InTrack){
-                                    RF_InTrack = false;
-                                    RF_OutPathTime.Add(Time.time);
+                        if(hit.collider.tag == "Grass"){
+                            isOnTrack = false;
+
+                            switch(t.name){
+                                case "RF":
+                                    if(RF_InTrack){
+                                        RF_InTrack = false;
+                                        RF_OutPathTime.Add(Time.time);
+                                    }
+                                    break;
+                                case "LF":
+                                    if(LF_InTrack){
+                                        LF_InTrack = false;
+                                        LF_OutPathTime.Add(Time.time);
+                                    }
+                                    break;
+                                case "RR":
+                                    if(RR_InTrack){
+                                        RR_InTrack = false;
+                                        RR_OutPathTime.Add(Time.time);
+                                    }
+                                    break;
+                                case "LR":
+                                    if(LR_InTrack){
+                                        LR_InTrack = false;
+                                        LR_OutPathTime.Add(Time.time);
+                                    }
+                                    break;
                                 }
-                                break;
-                            case "LF":
-                                if(LF_InTrack){
-                                    LF_InTrack = false;
-                                    LF_OutPathTime.Add(Time.time);
-                                }
-                                break;
-                            case "RR":
-                                if(RR_InTrack){
-                                    RR_InTrack = false;
-                                    RR_OutPathTime.Add(Time.time);
-                                }
-                                break;
-                            case "LR":
-                                if(LR_InTrack){
-                                    LR_InTrack = false;
-                                    LR_OutPathTime.Add(Time.time);
-                                }
-                                break;
                         }
-                    }
-                    else
-                    {
-                        switch(t.name){
-                            case "RF":
-                                if(!RF_InTrack){
-                                    RF_InTrack = true;
-                                    RF_InPathTime.Add(Time.time);
-                                }
-                                break;
-                            case "LF":
-                                if(!LF_InTrack){
-                                    LF_InTrack = true;
-                                    LF_InPathTime.Add(Time.time);
-                                }
-                                break;
-                            case "RR":
-                                if(!RR_InTrack){
-                                    RR_InTrack = true;
-                                    RR_InPathTime.Add(Time.time);
-                                }
-                                break;
-                            case "LR":
-                                if(!LR_InTrack){
-                                    LR_InTrack = true;
-                                    LR_InPathTime.Add(Time.time);
-                                }
-                                break;
+                        else
+                        {
+                            switch(t.name){
+                                case "RF":
+                                    if(!RF_InTrack){
+                                        RF_InTrack = true;
+                                        RF_InPathTime.Add(Time.time);
+                                    }
+                                    break;
+                                case "LF":
+                                    if(!LF_InTrack){
+                                        LF_InTrack = true;
+                                        LF_InPathTime.Add(Time.time);
+                                    }
+                                    break;
+                                case "RR":
+                                    if(!RR_InTrack){
+                                        RR_InTrack = true;
+                                        RR_InPathTime.Add(Time.time);
+                                    }
+                                    break;
+                                case "LR":
+                                    if(!LR_InTrack){
+                                        LR_InTrack = true;
+                                        LR_InPathTime.Add(Time.time);
+                                    }
+                                    break;
+                        }
                         }
                     }
                                 
