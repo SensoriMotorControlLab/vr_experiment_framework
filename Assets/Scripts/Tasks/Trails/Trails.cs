@@ -139,7 +139,7 @@ public class Trails : BaseTask
         GridLayout = GameObject.Find("GridLayoutGroup");
 
         Home = trailGate1;
-        track.transform.GetChild(0).gameObject.GetComponent<TrackWidth>().ThinTrack();
+        track.transform.GetChild(0).gameObject.GetComponent<TrackWidth>().ThinTrack(ctrler.Session.CurrentBlock.settings.GetFloat("per_block_track_thinner"));
 
         switch(ctrler.Session.CurrentBlock.settings.GetString("per_block_type")){
             case "aligned":

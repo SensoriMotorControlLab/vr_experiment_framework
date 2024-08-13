@@ -23,8 +23,9 @@ public class TrackWidth : MonoBehaviour
 
 
     // Start is called before the first frame update
-    public void ThinTrack()
+    public void ThinTrack(float thinner)
     {
+        thinnerPercentage = thinner;
         GameObject genMesh = transform.GetChild(0).gameObject;
 
         for (int i = 0; i < genMesh.transform.childCount; i++)
