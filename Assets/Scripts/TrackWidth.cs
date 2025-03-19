@@ -23,10 +23,11 @@ public class TrackWidth : MonoBehaviour
 
 
     // Start is called before the first frame update
-    public void ThinTrack(float thinner)
+    public List<List<Vector2>> ThinTrack(float thinner)
     {
         thinnerPercentage = thinner;
         GameObject genMesh = transform.GetChild(0).gameObject;
+        List<List<Vector2>> points = new List<List<Vector2>>();
 
         for (int i = 0; i < genMesh.transform.childCount; i++)
         {
@@ -94,7 +95,22 @@ public class TrackWidth : MonoBehaviour
         CreateMesh(lineOne, pointsDir, false, true);
         CreateMesh(lineTwo, pointsDir, true, false);
 
+        points.Add(EdgePoints(lineOne));
+        points.Add(EdgePoints(lineTwo));
+
+        return points;
+
     }
+
+    List<Vector2> EdgePoints (List<Vector3> line)
+    {
+        List<Vector2> edgePoints = new List<Vector2>();
+        for (int i = 0; i < line.Count; i++)
+        {
+            edgePoints.Add(new Vector2(line[i].x, line[i].z));
+        }
+        return edgePoints;
+    } 
 
     List<Vector3> InterpolateInnerPoints(List<Vector3> innerPoints, int targetCount)
     {

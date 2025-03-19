@@ -96,6 +96,8 @@ public class Trails : BaseTask
     Quaternion targetRotation;
     bool wasOutOfTrack = false;
 
+    List<List<Vector2>> points = new List<List<Vector2>>();
+
     /*
      * Step 0: 
      * 
@@ -139,7 +141,7 @@ public class Trails : BaseTask
         GridLayout = GameObject.Find("GridLayoutGroup");
 
         Home = trailGate1;
-        track.transform.GetChild(0).gameObject.GetComponent<TrackWidth>().ThinTrack(ctrler.Session.CurrentBlock.settings.GetFloat("per_block_track_thinner"));
+        points = track.transform.GetChild(0).gameObject.GetComponent<TrackWidth>().ThinTrack(ctrler.Session.CurrentBlock.settings.GetFloat("per_block_track_thinner"));
 
         switch(ctrler.Session.CurrentBlock.settings.GetString("per_block_type")){
             case "aligned":
@@ -627,8 +629,25 @@ public class Trails : BaseTask
         //IncrementStep();
     }
 
+    List<Vector2> CentrePoints(List<Vector2> innerPoints, List<Vector2> outerPoints)
+    {
+        List<Vector2> centrePoints = new List<Vector2>();
+        for (int i = 0; i < innerPoints.Count; i++)
+        {
+            centrePoints.Add(new Vector2 ((innerPoints[i].x + outerPoints[i].x) / 2, (innerPoints[i].y + outerPoints[i].y) / 2));
+        }
+        return centrePoints;
+    }
+
     public override void LogParameters()
     {
+        List<Vector2> centrePoints = new List<Vector2>();
+        if(points[0].Count == points[1].Count)
+        {
+            centrePoints = CentrePoints(points[0], points[1]);
+        }
+        
+
         float percentOnTrack = inTrackTime / (inTrackTime + outTrackTime)*100;
         float lapTime = outTrackTime + inTrackTime;
         
@@ -710,6 +729,9 @@ public class Trails : BaseTask
         ctrler.LogVector2List("LRW_offset", LR_Path);
         ctrler.LogList("LRW_enter_track_time", LR_InPathTime);
         ctrler.LogList("LRW_exit_track_time", LR_OutPathTime);
+        ctrler.LogVector2List("inner track point", points[0]);
+        ctrler.LogVector2List("centre track point", centrePoints);
+        ctrler.LogVector2List("outer track point", points[1]);
         ctrler.Session.CurrentTrial.result["time_on_track"] = inTrackTime;
         ctrler.Session.CurrentTrial.result["time_out_track"] = outTrackTime;
         ctrler.Session.CurrentTrial.result["percent_on_track"] = percentOnTrack;
