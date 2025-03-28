@@ -141,7 +141,7 @@ public class Trails : BaseTask
         GridLayout = GameObject.Find("GridLayoutGroup");
 
         Home = trailGate1;
-        points = track.transform.GetChild(0).gameObject.GetComponent<TrackWidth>().ThinTrack(ctrler.Session.CurrentBlock.settings.GetFloat("per_block_track_thinner"));
+        track.transform.GetChild(0).gameObject.GetComponent<TrackWidth>().ThinTrack(ctrler.Session.CurrentBlock.settings.GetFloat("per_block_track_thinner"));
 
         switch(ctrler.Session.CurrentBlock.settings.GetString("per_block_type")){
             case "aligned":
@@ -245,7 +245,49 @@ public class Trails : BaseTask
         }
         if(ctrler.Session.CurrentBlock.settings.GetFloat("per_block_track_orientation") != 0){
             track.transform.Rotate(0,ctrler.Session.CurrentBlock.settings.GetFloat("per_block_track_orientation"),0);
+            
         }
+
+        
+        
+        GameObject inside = GameObject.Find("InsideLine");
+        GameObject outside = GameObject.Find("OutsideLine");
+        LineRenderer insideTrack = inside.GetComponent<LineRenderer>();
+        LineRenderer outsideTrack = outside.GetComponent<LineRenderer>();
+        Vector3[] insideTrackPositions = new Vector3[insideTrack.positionCount];
+        Vector3[] outsideTrackPositions = new Vector3[outsideTrack.positionCount];
+        insideTrack.GetPositions(insideTrackPositions);
+        outsideTrack.GetPositions(outsideTrackPositions);
+
+        for(int i = 0; i < insideTrackPositions.Length; i++){
+            insideTrackPositions[i] = new Vector3(insideTrackPositions[i].x - 1.31f, insideTrackPositions[i].y, insideTrackPositions[i].z - 1.84f);
+            if(ctrler.Session.CurrentBlock.settings.GetFloat("per_block_track_orientation") != 0){
+                insideTrackPositions[i] = Quaternion.Euler(0,ctrler.Session.CurrentBlock.settings.GetFloat("per_block_track_orientation"),0) * insideTrackPositions[i];
+            }
+            if(ctrler.Session.CurrentBlock.settings.GetBool("per_block_track_mirror")){
+                insideTrackPositions[i] = new Vector3(-insideTrackPositions[i].x, insideTrackPositions[i].y, insideTrackPositions[i].z);
+            }
+            
+        }
+        for(int i = 0; i < outsideTrackPositions.Length; i++){
+            outsideTrackPositions[i] = new Vector3(outsideTrackPositions[i].x - 1.31f, outsideTrackPositions[i].y, outsideTrackPositions[i].z - 1.84f);
+            if(ctrler.Session.CurrentBlock.settings.GetFloat("per_block_track_orientation") != 0){
+                outsideTrackPositions[i] = Quaternion.Euler(0,ctrler.Session.CurrentBlock.settings.GetFloat("per_block_track_orientation"),0) * outsideTrackPositions[i];
+            }
+            if(ctrler.Session.CurrentBlock.settings.GetBool("per_block_track_mirror")){
+                outsideTrackPositions[i] = new Vector3(-outsideTrackPositions[i].x, outsideTrackPositions[i].y, outsideTrackPositions[i].z);
+            }
+        }
+        points.Add(new List<Vector2>());
+        points.Add(new List<Vector2>());
+        points[0].AddRange(insideTrackPositions.Select(x => new Vector2(x.x, x.z)));
+        points[1].AddRange(outsideTrackPositions.Select(x => new Vector2(x.x, x.z)));
+        insideTrack.SetPositions(insideTrackPositions);
+        outsideTrack.SetPositions(outsideTrackPositions);
+
+
+
+
         
         car.transform.position = trailGate1.transform.position;
         raycastOrigins.AddRange(car.GetComponentsInChildren<Transform>());
